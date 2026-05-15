@@ -1,73 +1,44 @@
-# React + TypeScript + Vite
+# 🦠 EcoSalud IA - Bucaramanga
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### Predicción Epidemiológica de Dengue con Inteligencia Artificial
 
-Currently, two official plugins are available:
+Este proyecto es el desarrollo para la **Categoría Avanzado** del concurso gubernamental **"Datos al Ecosistema 2026: IA para Colombia"**. Se trata de un simulador predictivo inmersivo que utiliza datos abiertos del SIVIGILA y variables climáticas de la CDMB para anticipar brotes de dengue en Bucaramanga y su área metropolitana.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🚀 Características Principales
 
-## React Compiler
+- **Landing Page Inmersiva**: Experiencia de scrollytelling con animaciones avanzadas (GSAP, ScrollTrigger).
+- **Mapa Geoespacial Real**: Visualización de clusters de casos basada en GeoJSON oficial del DANE.
+- **Simulador Predictivo**: Interfaz interactiva para proyectar el impacto del dengue según temperatura y precipitaciones.
+- **Gráficos Dinámicos**: Canal endémico, distribución etaria y por sexo animados dinámicamente.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Tecnologías Utilizadas
 
-## Expanding the ESLint configuration
+- **Frontend**: React 19 + TypeScript + Vite.
+- **Animaciones**: GSAP (GreenSock) + ScrollTrigger.
+- **Visualización**: Canvas API + SVG Nativo + Mapbox (Planificado).
+- **Estilos**: Vanilla CSS con variables de diseño (Tokens) y Glassmorphism.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 📦 Instalación y Desarrollo
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/TU-USUARIO/ecosalud-ia-bucaramanga.git
+   ```
+2. Instalar dependencias:
+   ```bash
+   npm install
+   ```
+3. Iniciar el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 📊 Datos
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+El proyecto utiliza:
+- **SIVIGILA**: Datos históricos de casos de dengue.
+- **CDMB**: Telemetría climática (Humedad, Temperatura, Lluvias).
+- **DANE**: Marco Geoestadístico Nacional para límites del Área Metropolitana de Bucaramanga.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+*Proyecto diseñado para el Reto de Salud y Bienestar - Colombia 2026.*
