@@ -141,7 +141,7 @@ const SolutionSection: React.FC = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 65%',
-          once: true,
+          toggleActions: 'play none none reverse',
         },
       }
     );
@@ -149,8 +149,8 @@ const SolutionSection: React.FC = () => {
     ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top 50%',
-      once: true,
       onEnter: () => setInView(true),
+      onLeaveBack: () => setInView(false),
     });
   }, []);
 

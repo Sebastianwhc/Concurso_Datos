@@ -212,7 +212,7 @@ const ThreatSection: React.FC = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 75%',
-          once: true,
+          toggleActions: 'play none none reverse',
         },
       }
     );
@@ -221,8 +221,8 @@ const ThreatSection: React.FC = () => {
     ScrollTrigger.create({
       trigger: statsRef.current,
       start: 'top 70%',
-      once: true,
       onEnter: () => setInView(true),
+      onLeaveBack: () => setInView(false),
     });
 
     // Parallax for chart containers
@@ -235,7 +235,7 @@ const ThreatSection: React.FC = () => {
           x: 0,
           duration: 1.2,
           ease: 'power3.out',
-          scrollTrigger: { trigger: statsRef.current, start: 'top 70%', once: true },
+          scrollTrigger: { trigger: statsRef.current, start: 'top 70%', toggleActions: 'play none none reverse' },
         }
       );
       gsap.fromTo(
@@ -246,7 +246,7 @@ const ThreatSection: React.FC = () => {
           x: 0,
           duration: 1.2,
           ease: 'power3.out',
-          scrollTrigger: { trigger: statsRef.current, start: 'top 70%', once: true },
+          scrollTrigger: { trigger: statsRef.current, start: 'top 70%', toggleActions: 'play none none reverse' },
         }
       );
     }

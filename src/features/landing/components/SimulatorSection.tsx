@@ -32,7 +32,7 @@ const SimulatorSection: React.FC = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 65%',
-          once: true,
+          toggleActions: 'play none none reverse',
         },
       }
     );
@@ -49,7 +49,7 @@ const SimulatorSection: React.FC = () => {
         scrollTrigger: {
           trigger: mockupRef.current,
           start: 'top 70%',
-          once: true,
+          toggleActions: 'play none none reverse',
         },
       }
     );

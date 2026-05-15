@@ -278,6 +278,7 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
       ctx.stroke();
     }
 
+    if (!active) dotsRef.current = [];
     /* ── 4. Initialize dots on first active frame ── */
     if (active && dotsRef.current.length === 0 && geo.features.length > 0) {
       dotsRef.current = generateDotsInFeatures(geo.features, bounds, w, h, padding, 500);
@@ -479,7 +480,7 @@ const TerritorySection: React.FC = () => {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top 60%',
-          once: true,
+          toggleActions: 'play none none reverse',
         },
       }
     );
@@ -487,8 +488,8 @@ const TerritorySection: React.FC = () => {
     ScrollTrigger.create({
       trigger: sectionRef.current,
       start: 'top 55%',
-      once: true,
       onEnter: () => setMapActive(true),
+      onLeaveBack: () => setMapActive(false),
     });
   }, []);
 
