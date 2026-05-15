@@ -20,7 +20,7 @@ const EndemicChannelChart: React.FC<{ inView: boolean }> = ({ inView }) => {
   const chartW = w - padL - padR;
   const chartH = h - padT - padB;
 
-  const weeks = Array.from({ length: 52 }, (_, i) => i + 1);
+
   const xScale = (wk: number) => padL + ((wk - 1) / 51) * chartW;
   const yScale = (val: number) => padT + chartH - (val / 120) * chartH;
 
@@ -36,7 +36,7 @@ const EndemicChannelChart: React.FC<{ inView: boolean }> = ({ inView }) => {
 
   const makeArea = (top: number[], bottom: number[]) => {
     const topPath = top.map((v, i) => `${i === 0 ? 'M' : 'L'} ${xScale(i + 1)} ${yScale(v)}`).join(' ');
-    const bottomPath = bottom.map((v, i) => `L ${xScale(52 - i)} ${yScale(v)}`).join(' ');
+
     const reversedBottom = [...bottom].reverse();
     const bottomPathR = reversedBottom.map((v, i) => `L ${xScale(52 - i)} ${yScale(v)}`).join(' ');
     return `${topPath} ${bottomPathR} Z`;

@@ -168,7 +168,7 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
   const frameRef = useRef(0);
   const startTimeRef = useRef(0);
   const [loaded, setLoaded] = useState(false);
-  const [counter, setCounter] = useState(0);
+
 
   // Load GeoJSON
   useEffect(() => {
@@ -316,7 +316,7 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
       ctx.globalAlpha = 1;
     });
 
-    setCounter(visibleCount);
+
 
     /* ── 6. Pulsing cluster hotspots ── */
     if (active && elapsed > 2) {
