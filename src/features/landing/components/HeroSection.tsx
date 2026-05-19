@@ -55,7 +55,6 @@ const HeroSection: React.FC = () => {
       style={{
         position: 'relative',
         width: '100%',
-        minHeight: '100vh',
         minHeight: '100svh',
         display: 'flex',
         flexDirection: 'column',

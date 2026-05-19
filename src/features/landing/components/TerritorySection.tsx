@@ -417,16 +417,19 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
       sizeRef.current = size;
       canvas.width = size * dpr;
       canvas.height = size * dpr;
-      canvas.style.width = `${size}px`;
-      canvas.style.height = `${size}px`;
-      // reset dots so they regenerate at new scale
+      // Reset dots so they regenerate at new scale
       dotsRef.current = [];
       const ctx = canvas.getContext('2d');
-      if (ctx) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(dpr, dpr); }
+      if (ctx) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+      }
     };
 
     applySize();
-    const ro = new ResizeObserver(() => { applySize(); });
+    const ro = new ResizeObserver(() => {
+      applySize();
+    });
     ro.observe(wrapper);
 
     frameRef.current = requestAnimationFrame(draw);
@@ -437,6 +440,7 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
   }, [draw, loaded]);
 
   const wrapperStyle: React.CSSProperties = {
+    position: 'relative',
     width: '100%',
     maxWidth: '520px',
     aspectRatio: '1',
@@ -445,14 +449,11 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
     border: '1px solid rgba(0, 180, 255, 0.1)',
     boxShadow: '0 0 60px rgba(0, 100, 255, 0.1), 0 0 120px rgba(0, 50, 120, 0.05)',
     background: 'rgba(12, 18, 30, 0.6)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
   };
 
   if (!loaded) {
     return (
-      <div ref={wrapperRef} style={wrapperStyle}>
+      <div ref={wrapperRef} style={{ ...wrapperStyle, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>Cargando mapa...</span>
       </div>
     );
@@ -463,6 +464,11 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
       <canvas
         ref={canvasRef}
         style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
           display: 'block',
           borderRadius: '20px',
         }}
@@ -530,11 +536,11 @@ const TerritorySection: React.FC = () => {
         }}
       />
 
-      <div className="territory-grid" style={{ position: 'relative', zIndex: 1 }}>
+      <div className="territory-grid" style={{ position: 'relative', zIndex: 1, width: '100%', maxWidth: '1100px' }}>
         {/* Real GeoJSON Map */}
         <div
           className="territory-text"
-          style={{ display: 'flex', justifyContent: 'center', opacity: 0 }}
+          style={{ display: 'flex', justifyContent: 'center', opacity: 0, width: '100%', maxWidth: '100%' }}
         >
           <MapCanvas active={mapActive} />
         </div>
