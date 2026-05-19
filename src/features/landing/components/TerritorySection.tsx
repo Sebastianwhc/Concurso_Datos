@@ -162,11 +162,13 @@ const generateDotsInFeatures = (
 
 /* ─── Canvas Map Component ─── */
 const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const dotsRef = useRef<CaseDot[]>([]);
   const geoRef = useRef<GeoJSON | null>(null);
   const frameRef = useRef(0);
   const startTimeRef = useRef(0);
+  const sizeRef = useRef(340);
   const [loaded, setLoaded] = useState(false);
 
 
@@ -188,10 +190,10 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const size = 520;
+    const size = sizeRef.current || 340;
     const w = size;
     const h = size;
-    const padding = 40;
+    const padding = Math.round(size * 0.077); // ~40px at 520, scales down
 
     ctx.clearRect(0, 0, w, h);
 
@@ -256,7 +258,7 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
       cLat /= mainRing.length;
       const [lx, ly] = projectCoords(cLon, cLat, bounds, w, h, padding);
 
-      ctx.font = '600 9px Inter, system-ui, sans-serif';
+      ctx.font = `600 ${Math.round(size * 0.017)}px Inter, system-ui, sans-serif`;
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(0, 200, 255, 0.3)';
       ctx.fillText(feature.properties.MPIO_CNMBR, lx, ly);
@@ -348,22 +350,22 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
     }
 
     /* ── 7. Compass + Scale ── */
+    const sc = size / 520; // scale factor
     ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.font = '700 10px Inter, system-ui, sans-serif';
+    ctx.font = `700 ${Math.round(10 * sc)}px Inter, system-ui, sans-serif`;
     ctx.textAlign = 'center';
-    ctx.fillText('N', w - 25, 25);
+    ctx.fillText('N', w - 25 * sc, 25 * sc);
     ctx.beginPath();
-    ctx.moveTo(w - 25, 29);
-    ctx.lineTo(w - 25, 44);
+    ctx.moveTo(w - 25 * sc, 29 * sc);
+    ctx.lineTo(w - 25 * sc, 44 * sc);
     ctx.strokeStyle = 'rgba(255,255,255,0.12)';
     ctx.lineWidth = 1;
     ctx.setLineDash([]);
     ctx.stroke();
-    // Arrow head
     ctx.beginPath();
-    ctx.moveTo(w - 28, 32);
-    ctx.lineTo(w - 25, 25);
-    ctx.lineTo(w - 22, 32);
+    ctx.moveTo(w - 28 * sc, 32 * sc);
+    ctx.lineTo(w - 25 * sc, 25 * sc);
+    ctx.lineTo(w - 22 * sc, 32 * sc);
     ctx.strokeStyle = 'rgba(255,255,255,0.18)';
     ctx.lineWidth = 1;
     ctx.stroke();
@@ -372,91 +374,100 @@ const MapCanvas: React.FC<{ active: boolean }> = ({ active }) => {
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(18, h - 22);
-    ctx.lineTo(78, h - 22);
+    ctx.moveTo(18 * sc, h - 22 * sc);
+    ctx.lineTo(78 * sc, h - 22 * sc);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(18, h - 26);
-    ctx.lineTo(18, h - 18);
+    ctx.moveTo(18 * sc, h - 26 * sc);
+    ctx.lineTo(18 * sc, h - 18 * sc);
     ctx.stroke();
     ctx.beginPath();
-    ctx.moveTo(78, h - 26);
-    ctx.lineTo(78, h - 18);
+    ctx.moveTo(78 * sc, h - 26 * sc);
+    ctx.lineTo(78 * sc, h - 18 * sc);
     ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,0.18)';
-    ctx.font = '500 8px Inter, system-ui, sans-serif';
-    ctx.fillText('5 km', 48, h - 10);
+    ctx.font = `500 ${Math.round(8 * sc)}px Inter, system-ui, sans-serif`;
+    ctx.fillText('5 km', 48 * sc, h - 10 * sc);
 
     /* ── 8. Counter overlay ── */
     if (active && visibleCount > 0) {
       ctx.fillStyle = 'rgba(0, 200, 255, 0.2)';
-      ctx.font = '600 9px Inter, system-ui, sans-serif';
+      ctx.font = `600 ${Math.round(9 * sc)}px Inter, system-ui, sans-serif`;
       ctx.textAlign = 'left';
-      ctx.fillText(`${visibleCount} casos georreferenciados`, 18, 22);
+      ctx.fillText(`${visibleCount} casos georreferenciados`, 18 * sc, 22 * sc);
     }
 
     /* ── 9. Title ── */
     ctx.fillStyle = 'rgba(255,255,255,0.1)';
-    ctx.font = '500 8px Inter, system-ui, sans-serif';
+    ctx.font = `500 ${Math.round(8 * sc)}px Inter, system-ui, sans-serif`;
     ctx.textAlign = 'left';
-    ctx.fillText('Área Metropolitana de Bucaramanga — DANE 2018 / SIVIGILA 2025', 18, h - 38);
+    if (size > 300) ctx.fillText('AMB — DANE 2018 / SIVIGILA 2025', 18 * sc, h - 38 * sc);
 
     frameRef.current = requestAnimationFrame(draw);
   }, [active, loaded]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !loaded) return;
+    const wrapper = wrapperRef.current;
+    if (!canvas || !wrapper || !loaded) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const size = 520;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    canvas.style.width = `${size}px`;
-    canvas.style.height = `${size}px`;
-    const ctx = canvas.getContext('2d');
-    if (ctx) ctx.scale(dpr, dpr);
+    const applySize = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const size = Math.min(wrapper.clientWidth, 520);
+      sizeRef.current = size;
+      canvas.width = size * dpr;
+      canvas.height = size * dpr;
+      canvas.style.width = `${size}px`;
+      canvas.style.height = `${size}px`;
+      // reset dots so they regenerate at new scale
+      dotsRef.current = [];
+      const ctx = canvas.getContext('2d');
+      if (ctx) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.scale(dpr, dpr); }
+    };
+
+    applySize();
+    const ro = new ResizeObserver(() => { applySize(); });
+    ro.observe(wrapper);
 
     frameRef.current = requestAnimationFrame(draw);
-    return () => cancelAnimationFrame(frameRef.current);
+    return () => {
+      cancelAnimationFrame(frameRef.current);
+      ro.disconnect();
+    };
   }, [draw, loaded]);
+
+  const wrapperStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: '520px',
+    aspectRatio: '1',
+    borderRadius: '20px',
+    overflow: 'hidden',
+    border: '1px solid rgba(0, 180, 255, 0.1)',
+    boxShadow: '0 0 60px rgba(0, 100, 255, 0.1), 0 0 120px rgba(0, 50, 120, 0.05)',
+    background: 'rgba(12, 18, 30, 0.6)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+  };
 
   if (!loaded) {
     return (
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '520px',
-          aspectRatio: '1',
-          borderRadius: '20px',
-          background: 'rgba(12, 18, 30, 0.6)',
-          border: '1px solid rgba(0, 180, 255, 0.08)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'rgba(255,255,255,0.3)',
-          fontSize: '0.85rem',
-        }}
-      >
-        Cargando mapa...
+      <div ref={wrapperRef} style={wrapperStyle}>
+        <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>Cargando mapa...</span>
       </div>
     );
   }
 
   return (
-    <canvas
-      ref={canvasRef}
-      style={{
-        width: '100%',
-        maxWidth: '520px',
-        height: 'auto',
-        aspectRatio: '1',
-        borderRadius: '20px',
-        border: '1px solid rgba(0, 180, 255, 0.1)',
-        boxShadow:
-          '0 0 60px rgba(0, 100, 255, 0.1), 0 0 120px rgba(0, 50, 120, 0.05), inset 0 0 60px rgba(0, 50, 120, 0.03)',
-      }}
-    />
+    <div ref={wrapperRef} style={wrapperStyle}>
+      <canvas
+        ref={canvasRef}
+        style={{
+          display: 'block',
+          borderRadius: '20px',
+        }}
+      />
+    </div>
   );
 };
 
