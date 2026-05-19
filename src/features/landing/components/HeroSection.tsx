@@ -17,8 +17,8 @@ const HeroSection: React.FC = () => {
       scrollTrigger: {
         trigger: sectionRef.current,
         start: 'top 80%',
-        toggleActions: 'play none none reverse'
-      }
+        toggleActions: 'play none none reverse',
+      },
     });
 
     tl.fromTo(
@@ -39,7 +39,6 @@ const HeroSection: React.FC = () => {
         '-=0.3'
       );
 
-    // Scroll hint bounce
     gsap.to(scrollHintRef.current, {
       y: 12,
       duration: 1.5,
@@ -56,7 +55,8 @@ const HeroSection: React.FC = () => {
       style={{
         position: 'relative',
         width: '100%',
-        height: '100vh',
+        minHeight: '100vh',
+        minHeight: '100svh',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -84,10 +84,12 @@ const HeroSection: React.FC = () => {
           zIndex: 2,
           textAlign: 'center',
           maxWidth: '900px',
-          padding: '0 2rem',
+          width: '100%',
+          padding: '0 1.5rem',
         }}
       >
         <div
+          className="hero-badge"
           style={{
             display: 'inline-block',
             padding: '0.5rem 1.5rem',
@@ -108,7 +110,7 @@ const HeroSection: React.FC = () => {
         <h1
           ref={titleRef}
           style={{
-            fontSize: 'clamp(2rem, 5vw, 4rem)',
+            fontSize: 'clamp(1.75rem, 5vw, 4rem)',
             fontWeight: 800,
             lineHeight: 1.15,
             color: '#fff',
@@ -133,7 +135,7 @@ const HeroSection: React.FC = () => {
         <p
           ref={subtitleRef}
           style={{
-            fontSize: 'clamp(1rem, 2vw, 1.35rem)',
+            fontSize: 'clamp(0.95rem, 2vw, 1.35rem)',
             color: 'rgba(255,255,255,0.6)',
             maxWidth: '700px',
             margin: '0 auto',
@@ -151,7 +153,7 @@ const HeroSection: React.FC = () => {
         ref={scrollHintRef}
         style={{
           position: 'absolute',
-          bottom: '3rem',
+          bottom: '2.5rem',
           zIndex: 2,
           display: 'flex',
           flexDirection: 'column',
@@ -166,7 +168,7 @@ const HeroSection: React.FC = () => {
       >
         <span
           style={{
-            fontSize: '0.8rem',
+            fontSize: '0.75rem',
             color: 'rgba(255,255,255,0.4)',
             letterSpacing: '2px',
             textTransform: 'uppercase',
@@ -188,6 +190,16 @@ const HeroSection: React.FC = () => {
           <path d="M7 6l5 5 5-5" />
         </svg>
       </div>
+
+      <style>{`
+        @media (max-width: 480px) {
+          #hero .hero-badge {
+            font-size: 0.6rem !important;
+            letter-spacing: 0.5px !important;
+            padding: 0.35rem 0.75rem !important;
+          }
+        }
+      `}</style>
     </section>
   );
 };

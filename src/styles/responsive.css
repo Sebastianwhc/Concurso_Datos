@@ -1,0 +1,262 @@
+/* =====================================================
+   ECOSALUD IA — RESPONSIVE STYLES
+   Breakpoints: xs <480px | sm <640px | md <768px | lg <1024px
+   ===================================================== */
+
+/* ── Hero Section ── */
+.hero-badge {
+  font-size: 0.75rem;
+  letter-spacing: 1px;
+  padding: 0.4rem 1rem;
+}
+
+/* ── Threat Section ── */
+.threat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 3rem;
+  align-items: center;
+}
+
+/* ── Territory Section ── */
+.territory-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  max-width: 1100px;
+  width: 100%;
+  align-items: center;
+}
+
+.territory-stats {
+  display: flex;
+  gap: 2rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ── Solution Section ── */
+.solution-chart-container {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Simulator Section ── */
+.sim-mockup {
+  max-width: 700px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sim-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+/* ── CTA Section ── */
+.cta-buttons {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* =====================================================
+   TABLET — max-width: 1024px
+   ===================================================== */
+@media (max-width: 1024px) {
+  .territory-grid {
+    gap: 2.5rem;
+  }
+}
+
+/* =====================================================
+   TABLET — max-width: 860px
+   ===================================================== */
+@media (max-width: 860px) {
+  /* Territory: stack to single column */
+  .territory-grid {
+    grid-template-columns: 1fr !important;
+    gap: 2rem !important;
+    padding: 4rem 1.5rem;
+  }
+
+  .territory-grid > div:first-child {
+    order: 1;
+  }
+
+  .territory-grid > div:last-child {
+    order: 2;
+  }
+
+  /* Threat stats gap */
+  .threat-grid {
+    gap: 2rem;
+  }
+}
+
+/* =====================================================
+   MOBILE — max-width: 768px
+   ===================================================== */
+@media (max-width: 768px) {
+  /* Hero */
+  #hero {
+    padding: 0 1.5rem;
+  }
+
+  #hero .hero-badge {
+    font-size: 0.65rem;
+    letter-spacing: 0.8px;
+    padding: 0.35rem 0.8rem;
+  }
+
+  /* Threat */
+  #threat {
+    padding: 4rem 1.5rem !important;
+  }
+
+  /* Territory */
+  #territory {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .territory-stats {
+    gap: 1.2rem;
+  }
+
+  /* Solution */
+  #solution {
+    padding: 4rem 1.5rem !important;
+  }
+
+  /* Simulator */
+  #simulator {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .sim-mockup {
+    padding: 1.5rem !important;
+  }
+
+  .sim-results-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* CTA */
+  #cta {
+    padding: 4rem 1.5rem !important;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .cta-buttons button {
+    width: 100%;
+    max-width: 360px;
+  }
+}
+
+/* =====================================================
+   SMALL MOBILE — max-width: 480px
+   ===================================================== */
+@media (max-width: 480px) {
+  /* Hero adjustments */
+  #hero {
+    height: 100svh;
+  }
+
+  /* Threat */
+  #threat {
+    padding: 3rem 1rem !important;
+  }
+
+  /* Territory map */
+  #territory {
+    padding: 3rem 1rem !important;
+  }
+
+  .territory-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  /* Solution chart scrollable */
+  #solution {
+    padding: 3rem 1rem !important;
+  }
+
+  .solution-chart-container {
+    margin: 0 -1rem;
+    padding: 0 1rem;
+  }
+
+  /* Simulator */
+  #simulator {
+    padding: 3rem 1rem !important;
+  }
+
+  .sim-mockup {
+    padding: 1.2rem !important;
+    border-radius: 18px !important;
+  }
+
+  .sim-results-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* CTA */
+  #cta {
+    padding: 3rem 1rem !important;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+  }
+}
+
+/* =====================================================
+   LEGEND & UTILITY
+   ===================================================== */
+/* Prevent horizontal overflow on all screens */
+body, #root {
+  overflow-x: hidden;
+}
+
+/* Make SVG charts scroll horizontally on small screens */
+.chart-scroll-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
+}
+
+/* Responsive legend wrap */
+.chart-legend {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Canvas maps: always fill their container */
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Threat chart panel */
+@media (max-width: 640px) {
+  #threat .chart-panel {
+    padding: 1.5rem 1rem !important;
+    border-radius: 16px !important;
+  }
+
+  #solution .chart-panel {
+    padding: 1.5rem 0.75rem !important;
+    border-radius: 16px !important;
+  }
+}

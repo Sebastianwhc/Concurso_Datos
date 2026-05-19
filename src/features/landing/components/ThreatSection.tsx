@@ -15,10 +15,8 @@ const DonutChart: React.FC<{ inView: boolean }> = ({ inView }) => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
-      <svg viewBox="0 0 200 200" width="220" height="220" style={{ filter: 'drop-shadow(0 0 20px rgba(0,240,255,0.2))' }}>
-        {/* Background ring */}
+      <svg viewBox="0 0 200 200" width="180" height="180" style={{ filter: 'drop-shadow(0 0 20px rgba(0,240,255,0.2))', maxWidth: '100%' }}>
         <circle cx="100" cy="100" r={radius} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="18" />
-        {/* Female arc */}
         <circle
           cx="100"
           cy="100"
@@ -32,7 +30,6 @@ const DonutChart: React.FC<{ inView: boolean }> = ({ inView }) => {
           transform="rotate(-90 100 100)"
           style={{ transition: 'stroke-dashoffset 1.8s cubic-bezier(0.22,1,0.36,1)' }}
         />
-        {/* Male arc */}
         <circle
           cx="100"
           cy="100"
@@ -46,7 +43,6 @@ const DonutChart: React.FC<{ inView: boolean }> = ({ inView }) => {
           transform={`rotate(${-90 + (femalePercent / 100) * 360} 100 100)`}
           style={{ transition: 'stroke-dashoffset 2s cubic-bezier(0.22,1,0.36,1) 0.3s' }}
         />
-        {/* Center label */}
         <text x="100" y="95" textAnchor="middle" fill="#fff" fontSize="22" fontWeight="700">
           9,000+
         </text>
@@ -55,14 +51,14 @@ const DonutChart: React.FC<{ inView: boolean }> = ({ inView }) => {
         </text>
       </svg>
 
-      <div style={{ display: 'flex', gap: '2rem' }}>
+      <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#00f0ff', display: 'inline-block' }} />
-          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Mujeres {femalePercent}%</span>
+          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>Mujeres {femalePercent}%</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ width: 12, height: 12, borderRadius: '50%', background: '#b300ff', display: 'inline-block' }} />
-          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem' }}>Hombres {malePercent}%</span>
+          <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.85rem' }}>Hombres {malePercent}%</span>
         </div>
       </div>
     </div>
@@ -71,7 +67,6 @@ const DonutChart: React.FC<{ inView: boolean }> = ({ inView }) => {
 
 /* ─── Age distribution area chart ─── */
 const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
-  // Stylized data points: age ranges vs intensity
   const data = [
     { age: '0-5', value: 35 },
     { age: '6-10', value: 72 },
@@ -85,9 +80,9 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
     { age: '65+', value: 15 },
   ];
 
-  const w = 500;
-  const h = 200;
-  const padding = 40;
+  const w = 480;
+  const h = 180;
+  const padding = 36;
   const chartW = w - padding * 2;
   const chartH = h - padding;
   const maxVal = 100;
@@ -97,7 +92,6 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
     y: h - padding - (d.value / maxVal) * chartH,
   }));
 
-  // Create smooth bezier curve
   const pathData = points.reduce((acc, p, i) => {
     if (i === 0) return `M ${p.x} ${p.y}`;
     const prev = points[i - 1];
@@ -109,8 +103,8 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
   const areaPath = `${pathData} L ${points[points.length - 1].x} ${h - padding} L ${points[0].x} ${h - padding} Z`;
 
   return (
-    <div style={{ width: '100%', maxWidth: '540px' }}>
-      <svg viewBox={`0 0 ${w} ${h}`} width="100%" style={{ overflow: 'visible' }}>
+    <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+      <svg viewBox={`0 0 ${w} ${h}`} style={{ overflow: 'visible', minWidth: '280px', width: '100%' }}>
         <defs>
           <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#00f0ff" stopOpacity="0.4" />
@@ -127,7 +121,6 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
           </clipPath>
         </defs>
 
-        {/* Grid lines */}
         {[0.25, 0.5, 0.75].map((frac) => (
           <line
             key={frac}
@@ -140,11 +133,9 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
           />
         ))}
 
-        {/* Area & line */}
         <g clipPath="url(#revealClip)">
           <path d={areaPath} fill="url(#areaGradient)" />
           <path d={pathData} fill="none" stroke="#00f0ff" strokeWidth="2.5" />
-          {/* Dots */}
           {points.map((p, i) => (
             <circle key={i} cx={p.x} cy={p.y} r="4" fill="#00f0ff" opacity="0.8">
               <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite" begin={`${i * 0.2}s`} />
@@ -152,7 +143,6 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
           ))}
         </g>
 
-        {/* X axis labels */}
         {data.map((d, i) => (
           <text
             key={i}
@@ -166,22 +156,10 @@ const AgeChart: React.FC<{ inView: boolean }> = ({ inView }) => {
           </text>
         ))}
 
-        {/* Y axis label */}
-        <text x={padding - 8} y={h - padding - 0.75 * chartH} textAnchor="end" fill="rgba(255,255,255,0.3)" fontSize="8">
-          Alto
-        </text>
-        <text x={padding - 8} y={h - padding} textAnchor="end" fill="rgba(255,255,255,0.3)" fontSize="8">
-          Bajo
-        </text>
+        <text x={padding - 8} y={h - padding - 0.75 * chartH} textAnchor="end" fill="rgba(255,255,255,0.3)" fontSize="8">Alto</text>
+        <text x={padding - 8} y={h - padding} textAnchor="end" fill="rgba(255,255,255,0.3)" fontSize="8">Bajo</text>
       </svg>
-      <p
-        style={{
-          textAlign: 'center',
-          fontSize: '0.8rem',
-          color: 'rgba(255,255,255,0.4)',
-          marginTop: '0.75rem',
-        }}
-      >
+      <p style={{ textAlign: 'center', fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.75rem' }}>
         Distribución por grupo etario — picos en 6 a 18 años
       </p>
     </div>
@@ -199,7 +177,6 @@ const ThreatSection: React.FC = () => {
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    // Section reveal
     gsap.fromTo(
       sectionRef.current.querySelectorAll('.threat-text'),
       { opacity: 0, y: 60 },
@@ -217,7 +194,6 @@ const ThreatSection: React.FC = () => {
       }
     );
 
-    // Charts reveal
     ScrollTrigger.create({
       trigger: statsRef.current,
       start: 'top 70%',
@@ -225,7 +201,6 @@ const ThreatSection: React.FC = () => {
       onLeaveBack: () => setInView(false),
     });
 
-    // Parallax for chart containers
     if (leftRef.current && rightRef.current) {
       gsap.fromTo(
         leftRef.current,
@@ -284,7 +259,7 @@ const ThreatSection: React.FC = () => {
       />
 
       <div style={{ maxWidth: '1100px', width: '100%', position: 'relative', zIndex: 1 }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
           <span
             className="threat-text"
             style={{
@@ -307,7 +282,7 @@ const ThreatSection: React.FC = () => {
           <h2
             className="threat-text"
             style={{
-              fontSize: 'clamp(1.8rem, 4vw, 3.2rem)',
+              fontSize: 'clamp(1.5rem, 4vw, 3.2rem)',
               fontWeight: 800,
               color: '#fff',
               lineHeight: 1.2,
@@ -322,7 +297,7 @@ const ThreatSection: React.FC = () => {
           <p
             className="threat-text"
             style={{
-              fontSize: 'clamp(0.95rem, 1.5vw, 1.2rem)',
+              fontSize: 'clamp(0.9rem, 1.5vw, 1.2rem)',
               color: 'rgba(255,255,255,0.55)',
               maxWidth: '650px',
               margin: '0 auto',
@@ -339,15 +314,17 @@ const ThreatSection: React.FC = () => {
         {/* Charts Grid */}
         <div
           ref={statsRef}
+          className="threat-grid"
           style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '3rem',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '2rem',
             alignItems: 'center',
           }}
         >
           <div
             ref={leftRef}
+            className="chart-panel"
             style={{
               background: 'rgba(16, 22, 35, 0.6)',
               backdropFilter: 'blur(20px)',
@@ -361,7 +338,7 @@ const ThreatSection: React.FC = () => {
               opacity: 0,
             }}
           >
-            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', letterSpacing: '0.5px' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', letterSpacing: '0.5px', textAlign: 'center' }}>
               Distribución por Sexo
             </h3>
             <DonutChart inView={inView} />
@@ -369,6 +346,7 @@ const ThreatSection: React.FC = () => {
 
           <div
             ref={rightRef}
+            className="chart-panel"
             style={{
               background: 'rgba(16, 22, 35, 0.6)',
               backdropFilter: 'blur(20px)',
@@ -382,7 +360,7 @@ const ThreatSection: React.FC = () => {
               opacity: 0,
             }}
           >
-            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', letterSpacing: '0.5px' }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '1.5rem', letterSpacing: '0.5px', textAlign: 'center' }}>
               Incidencia por Grupo Etario
             </h3>
             <AgeChart inView={inView} />

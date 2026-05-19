@@ -504,7 +504,7 @@ const TerritorySection: React.FC = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '6rem 2rem',
+        padding: '6rem 1.5rem',
         background: 'linear-gradient(180deg, #0d1425 0%, #060a14 50%, #0b0f19 100%)',
         overflow: 'hidden',
       }}
@@ -512,29 +512,14 @@ const TerritorySection: React.FC = () => {
       {/* Ambient glow */}
       <div
         style={{
-          position: 'absolute',
-          top: '40%',
-          left: '30%',
-          width: '40vw',
-          height: '40vw',
+          position: 'absolute', top: '40%', left: '30%',
+          width: '40vw', height: '40vw',
           background: 'radial-gradient(ellipse, rgba(0,100,255,0.06) 0%, transparent 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(40px)',
+          pointerEvents: 'none', filter: 'blur(40px)',
         }}
       />
 
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '4rem',
-          maxWidth: '1100px',
-          width: '100%',
-          alignItems: 'center',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
+      <div className="territory-grid" style={{ position: 'relative', zIndex: 1 }}>
         {/* Real GeoJSON Map */}
         <div
           className="territory-text"
@@ -548,18 +533,11 @@ const TerritorySection: React.FC = () => {
           <span
             className="territory-text"
             style={{
-              display: 'inline-block',
-              padding: '0.4rem 1.2rem',
-              borderRadius: '100px',
-              background: 'rgba(0,150,255,0.1)',
-              border: '1px solid rgba(0,150,255,0.2)',
-              color: '#00b8ff',
-              fontSize: '0.8rem',
-              fontWeight: 600,
-              letterSpacing: '1.5px',
-              textTransform: 'uppercase',
-              width: 'fit-content',
-              opacity: 0,
+              display: 'inline-block', padding: '0.4rem 1.2rem', borderRadius: '100px',
+              background: 'rgba(0,150,255,0.1)', border: '1px solid rgba(0,150,255,0.2)',
+              color: '#00b8ff', fontSize: '0.8rem', fontWeight: 600,
+              letterSpacing: '1.5px', textTransform: 'uppercase',
+              width: 'fit-content', opacity: 0,
             }}
           >
             El Territorio
@@ -568,12 +546,8 @@ const TerritorySection: React.FC = () => {
           <h2
             className="territory-text"
             style={{
-              fontSize: 'clamp(1.6rem, 3.5vw, 2.8rem)',
-              fontWeight: 800,
-              color: '#fff',
-              lineHeight: 1.2,
-              margin: 0,
-              opacity: 0,
+              fontSize: 'clamp(1.5rem, 3.5vw, 2.8rem)', fontWeight: 800,
+              color: '#fff', lineHeight: 1.2, margin: 0, opacity: 0,
             }}
           >
             La enfermedad{' '}
@@ -583,12 +557,9 @@ const TerritorySection: React.FC = () => {
           <p
             className="territory-text"
             style={{
-              fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)',
-              color: 'rgba(255,255,255,0.55)',
-              lineHeight: 1.8,
-              margin: 0,
-              maxWidth: '500px',
-              opacity: 0,
+              fontSize: 'clamp(0.9rem, 1.4vw, 1.15rem)',
+              color: 'rgba(255,255,255,0.55)', lineHeight: 1.8,
+              margin: 0, maxWidth: '500px', opacity: 0,
             }}
           >
             Sigue patrones geográficos y climáticos precisos. Nuestros datos georreferenciados
@@ -598,17 +569,14 @@ const TerritorySection: React.FC = () => {
           </p>
 
           {/* Stats */}
-          <div
-            className="territory-text"
-            style={{ display: 'flex', gap: '2rem', marginTop: '1rem', opacity: 0 }}
-          >
+          <div className="territory-text territory-stats" style={{ opacity: 0 }}>
             {[
               { value: '2,400+', label: 'Casos Bucaramanga' },
               { value: '4', label: 'Municipios AMB' },
               { value: '27%', label: 'del total deptal.' },
             ].map((stat, i) => (
               <div key={i} style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '1.6rem', fontWeight: 800, color: '#00b8ff' }}>
+                <span style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', fontWeight: 800, color: '#00b8ff' }}>
                   {stat.value}
                 </span>
                 <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>
@@ -618,15 +586,9 @@ const TerritorySection: React.FC = () => {
             ))}
           </div>
 
-          {/* Fuente */}
           <p
             className="territory-text"
-            style={{
-              fontSize: '0.7rem',
-              color: 'rgba(255,255,255,0.2)',
-              marginTop: '0.5rem',
-              opacity: 0,
-            }}
+            style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.2)', marginTop: '0.5rem', opacity: 0 }}
           >
             Fuente cartográfica: Marco Geoestadístico Nacional — DANE 2018
           </p>
@@ -634,10 +596,31 @@ const TerritorySection: React.FC = () => {
       </div>
 
       <style>{`
+        .territory-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 4rem;
+          max-width: 1100px;
+          width: 100%;
+          align-items: center;
+        }
+        .territory-stats {
+          display: flex;
+          gap: 2rem;
+          margin-top: 1rem;
+          flex-wrap: wrap;
+        }
         @media (max-width: 860px) {
-          #territory > div:nth-child(2) {
+          .territory-grid {
             grid-template-columns: 1fr !important;
-            gap: 2rem !important;
+            gap: 2.5rem !important;
+          }
+        }
+        @media (max-width: 480px) {
+          .territory-stats {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
           }
         }
       `}</style>
@@ -646,3 +629,4 @@ const TerritorySection: React.FC = () => {
 };
 
 export default TerritorySection;
+
