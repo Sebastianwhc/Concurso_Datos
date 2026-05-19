@@ -102,6 +102,86 @@ const CTASection: React.FC = () => {
             Repositorio del Código
           </button>
         </div>
+
+        {/* Sección de Contacto */}
+        <div className="cta-el" style={{ marginTop: '4rem', opacity: 0 }}>
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: 'rgba(255,255,255,0.8)', marginBottom: '1.5rem', letterSpacing: '1px', textTransform: 'uppercase' }}>
+            Contacto de los Desarrolladores
+          </h3>
+          <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap', maxWidth: '600px', margin: '0 auto' }}>
+            {/* Tarjeta Daniela */}
+            <div style={{
+              flex: '1 1 240px',
+              padding: '1.5rem',
+              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              textAlign: 'center',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-5px)';
+              e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.3)';
+              e.currentTarget.style.background = 'rgba(0, 240, 255, 0.03)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+            }}
+            >
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>👩‍💻</div>
+              <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', fontWeight: 600 }}>
+                <a href="mailto:daalreba@gmail.com" style={{ color: '#00f0ff', textDecoration: 'none', transition: 'color 0.2s' }}
+                   onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                   onMouseLeave={(e) => e.currentTarget.style.color = '#00f0ff'}>
+                  Daniela Reyes
+                </a>
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                daalreba@gmail.com
+              </p>
+            </div>
+
+            {/* Tarjeta Sebastián */}
+            <div style={{
+              flex: '1 1 240px',
+              padding: '1.5rem',
+              borderRadius: '16px',
+              background: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.05)',
+              backdropFilter: 'blur(10px)',
+              WebkitBackdropFilter: 'blur(10px)',
+              textAlign: 'center',
+              transition: 'all 0.3s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-5px)';
+              e.currentTarget.style.borderColor = 'rgba(179, 0, 255, 0.3)';
+              e.currentTarget.style.background = 'rgba(179, 0, 255, 0.03)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.03)';
+            }}
+            >
+              <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>👨‍💻</div>
+              <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1.1rem', fontWeight: 600 }}>
+                <a href="mailto:sebastian00735@gmail.com" style={{ color: '#b300ff', textDecoration: 'none', transition: 'color 0.2s' }}
+                   onMouseEnter={(e) => e.currentTarget.style.color = '#fff'}
+                   onMouseLeave={(e) => e.currentTarget.style.color = '#b300ff'}>
+                  Sebastián Díaz
+                </a>
+              </h4>
+              <p style={{ margin: 0, fontSize: '0.85rem', color: 'rgba(255, 255, 255, 0.4)' }}>
+                sebastian00735@gmail.com
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

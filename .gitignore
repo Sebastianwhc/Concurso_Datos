@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local portable Node.js
+.node/
+.node_temp/
+
