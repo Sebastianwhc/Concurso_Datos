@@ -106,11 +106,26 @@ const GeoMaps: React.FC = () => {
     const pts = yearM === 'all'
       ? metro.points
       : metro.points.filter((p) => metro.meta.years[p[2]] === yearM);
+
+    // Agrega casos por ubicación única (la geocodificación es a nivel de calle,
+    // así que muchas direcciones comparten coordenada). Cada burbuja = un punto,
+    // con tamaño proporcional al número de casos allí.
+    const agg = new Map<string, { lon: number; lat: number; mi: number; n: number }>();
+    for (const p of pts) {
+      const key = `${p[0]},${p[1]},${p[3]}`;
+      const e = agg.get(key);
+      if (e) e.n++;
+      else agg.set(key, { lon: p[0], lat: p[1], mi: p[3], n: 1 });
+    }
+    const groups = [...agg.values()];
+
     return {
-      tooltip: { trigger: 'item', ...baseTooltip,
+      tooltip: {
+        trigger: 'item', ...baseTooltip,
         formatter: (p: unknown) => {
-          const d = p as { seriesName?: string };
-          return d.seriesName ? `Caso de dengue<br/><b>${d.seriesName}</b>` : '';
+          const d = p as { seriesName?: string; value?: number[] };
+          const n = d.value?.[2] ?? 0;
+          return `<b>${d.seriesName}</b><br/>${n} caso${n === 1 ? '' : 's'} en esta ubicación`;
         },
       },
       legend: {
@@ -120,8 +135,8 @@ const GeoMaps: React.FC = () => {
       },
       geo: {
         map: 'amb_comunas', nameProperty: 'id', roam: true, aspectScale: 1,
-        layoutCenter: ['50%', '52%'], layoutSize: '112%',
-        scaleLimit: { min: 1, max: 10 },
+        layoutCenter: ['50%', '52%'], layoutSize: '115%',
+        scaleLimit: { min: 1, max: 12 },
         itemStyle: { areaColor: '#0f1626', borderColor: 'rgba(255,255,255,0.18)', borderWidth: 0.6 },
         regions: comunaFeats.map((f) => ({
           name: f.id, itemStyle: { areaColor: CITY_TINT[f.municipio] ?? '#0f1626' },
@@ -133,9 +148,13 @@ const GeoMaps: React.FC = () => {
         name: city,
         type: 'scatter' as const,
         coordinateSystem: 'geo' as const,
-        data: pts.filter((p) => p[3] === mi).map((p) => [p[0], p[1]]),
-        symbolSize: 3.5,
-        itemStyle: { color: CITY_COLORS[mi % CITY_COLORS.length], opacity: 0.7 },
+        data: groups.filter((g) => g.mi === mi).map((g) => ({ value: [g.lon, g.lat, g.n] })),
+        symbolSize: (v: number[]) => Math.min(5 + Math.sqrt(v[2]) * 2.6, 30),
+        itemStyle: {
+          color: CITY_COLORS[mi % CITY_COLORS.length], opacity: 0.55,
+          borderColor: 'rgba(0,0,0,0.35)', borderWidth: 0.4,
+        },
+        emphasis: { itemStyle: { opacity: 0.9 } },
       })),
     };
   }, [metro, comunaFeats, yearM]);
