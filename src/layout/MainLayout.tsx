@@ -4,10 +4,18 @@ import { Activity, Map as MapIcon, Menu, Cpu } from 'lucide-react';
 import styles from './MainLayout.module.css';
 
 const MainLayout: React.FC = () => {
-  const [isSidebarOpen, setSidebarOpen] = useState(true);
+  // En móvil arranca colapsado (off-canvas) para no tapar el contenido.
+  const [isSidebarOpen, setSidebarOpen] = useState(
+    () => typeof window === 'undefined' || window.innerWidth > 768
+  );
 
   return (
     <div className={styles.appContainer}>
+      {/* Backdrop para cerrar el sidebar en móvil */}
+      {isSidebarOpen && (
+        <div className={styles.backdrop} onClick={() => setSidebarOpen(false)} />
+      )}
+
       {/* SIDEBAR: Navegación con efecto Glassmorphism */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
         <div className={styles.brand}>
@@ -16,16 +24,18 @@ const MainLayout: React.FC = () => {
         </div>
         
         <nav className={styles.navMenu}>
-          <NavLink 
-            to="/dashboard" 
+          <NavLink
+            to="/dashboard"
+            onClick={() => { if (window.innerWidth <= 768) setSidebarOpen(false); }}
             className={({ isActive }) => isActive ? `${styles.navItem} ${styles.active}` : styles.navItem}
           >
             <Activity className={styles.icon} />
             {isSidebarOpen && <span>SIVIGILA Actual</span>}
           </NavLink>
           
-          <NavLink 
-            to="/simulador" 
+          <NavLink
+            to="/simulador"
+            onClick={() => { if (window.innerWidth <= 768) setSidebarOpen(false); }}
             className={({ isActive }) => isActive ? `${styles.navItem} ${styles.active}` : styles.navItem}
           >
             <MapIcon className={styles.icon} />
