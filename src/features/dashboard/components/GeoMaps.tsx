@@ -19,9 +19,15 @@ interface MetroPuntos {
   meta: { total_direcciones: number; geocodificados: number; municipios: string[]; years: string[] };
   points: [number, number, number, number][]; // [lon, lat, añoIdx, municipioIdx]
 }
+interface ComunaFeat { id: string; municipio: string; comuna: string; }
 
 const DENGUE_COLORS = ['#16243d', '#1d4ed8', '#eab308', '#f97316', '#ef4444'];
 const CITY_COLORS = ['#00f0ff', '#ff6600', '#b300ff']; // Bucaramanga, Floridablanca, Girón
+const CITY_TINT: Record<string, string> = {
+  Bucaramanga: 'rgba(0,240,255,0.06)',
+  Floridablanca: 'rgba(255,102,0,0.07)',
+  'Girón': 'rgba(179,0,255,0.07)',
+};
 
 const baseTooltip = {
   backgroundColor: 'rgba(16,22,35,0.95)',
@@ -31,11 +37,12 @@ const baseTooltip = {
 
 /** Dos vistas geoespaciales:
  *  - Santander (archivo nacional, 2007–2022) — contexto regional
- *  - Área Metropolitana por ubicación — casos geocodificados (puntos), 2023–2025 */
+ *  - Área Metropolitana por comunas — casos geocodificados (puntos), 2023–2025 */
 const GeoMaps: React.FC = () => {
   const [ready, setReady] = useState(false);
   const [sData, setSData] = useState<SantanderData | null>(null);
   const [metro, setMetro] = useState<MetroPuntos | null>(null);
+  const [comunaFeats, setComunaFeats] = useState<ComunaFeat[] | null>(null);
   const [yearS, setYearS] = useState<number | 'all'>('all');
   const [yearM, setYearM] = useState<string | 'all'>('all');
   const [error, setError] = useState<string | null>(null);
@@ -45,14 +52,15 @@ const GeoMaps: React.FC = () => {
     const base = import.meta.env.BASE_URL;
     Promise.all([
       fetch(`${base}santander_municipios.geojson`).then((r) => r.json()),
-      fetch(`${base}amb_metropolitana.geojson`).then((r) => r.json()),
+      fetch(`${base}amb_comunas.geojson`).then((r) => r.json()),
       fetch(`${base}data/santander_dengue.json`).then((r) => r.json()),
       fetch(`${base}data/metro_puntos.json`).then((r) => r.json()),
     ])
-      .then(([sGeo, mGeo, dd, mp]: [unknown, unknown, SantanderData, MetroPuntos]) => {
+      .then(([sGeo, cGeo, dd, mp]: [unknown, { features: { properties: ComunaFeat }[] }, SantanderData, MetroPuntos]) => {
         if (!active) return;
         echarts.registerMap('santander', sGeo as never);
-        echarts.registerMap('metro', mGeo as never);
+        echarts.registerMap('amb_comunas', cGeo as never);
+        setComunaFeats(cGeo.features.map((f) => f.properties));
         setSData(dd);
         setMetro(mp);
         setReady(true);
@@ -93,14 +101,13 @@ const GeoMaps: React.FC = () => {
   }, [sData, yearS]);
 
   const metroOption = useMemo<EChartsOption | null>(() => {
-    if (!metro) return null;
+    if (!metro || !comunaFeats) return null;
     const cities = metro.meta.municipios;
     const pts = yearM === 'all'
       ? metro.points
       : metro.points.filter((p) => metro.meta.years[p[2]] === yearM);
     return {
-      tooltip: {
-        trigger: 'item', ...baseTooltip,
+      tooltip: { trigger: 'item', ...baseTooltip,
         formatter: (p: unknown) => {
           const d = p as { seriesName?: string };
           return d.seriesName ? `Caso de dengue<br/><b>${d.seriesName}</b>` : '';
@@ -112,10 +119,14 @@ const GeoMaps: React.FC = () => {
         inactiveColor: 'rgba(255,255,255,0.2)',
       },
       geo: {
-        map: 'metro', roam: true, aspectScale: 1,
-        layoutCenter: ['50%', '52%'], layoutSize: '96%',
-        itemStyle: { areaColor: '#0f1626', borderColor: 'rgba(255,255,255,0.25)', borderWidth: 0.8 },
-        emphasis: { itemStyle: { areaColor: '#13203a' }, label: { show: false } },
+        map: 'amb_comunas', nameProperty: 'id', roam: true, aspectScale: 1,
+        layoutCenter: ['50%', '52%'], layoutSize: '112%',
+        scaleLimit: { min: 1, max: 10 },
+        itemStyle: { areaColor: '#0f1626', borderColor: 'rgba(255,255,255,0.18)', borderWidth: 0.6 },
+        regions: comunaFeats.map((f) => ({
+          name: f.id, itemStyle: { areaColor: CITY_TINT[f.municipio] ?? '#0f1626' },
+        })),
+        emphasis: { itemStyle: { areaColor: 'rgba(0,240,255,0.16)' }, label: { show: false } },
         label: { show: false },
       },
       series: cities.map((city, mi) => ({
@@ -123,21 +134,21 @@ const GeoMaps: React.FC = () => {
         type: 'scatter' as const,
         coordinateSystem: 'geo' as const,
         data: pts.filter((p) => p[3] === mi).map((p) => [p[0], p[1]]),
-        symbolSize: 4,
-        itemStyle: { color: CITY_COLORS[mi % CITY_COLORS.length], opacity: 0.55 },
+        symbolSize: 3.5,
+        itemStyle: { color: CITY_COLORS[mi % CITY_COLORS.length], opacity: 0.7 },
       })),
     };
-  }, [metro, yearM]);
+  }, [metro, comunaFeats, yearM]);
 
   if (error) return <div className={styles.state}>No se pudieron cargar los mapas: {error}</div>;
-  if (!ready || !sData || !metro || !santanderOption || !metroOption)
+  if (!ready || !sData || !metro || !comunaFeats || !santanderOption || !metroOption)
     return <div className={styles.mapLoading}>Cargando mapas geoespaciales…</div>;
 
   return (
     <div className={styles.geoSection}>
       <div className={styles.geoHeader}>
         <h3>Distribución geoespacial del dengue</h3>
-        <span>Contexto regional y ubicación de casos en el Área Metropolitana</span>
+        <span>Contexto regional y ubicación de casos por comuna en el Área Metropolitana</span>
       </div>
 
       <div className={styles.geoGrid}>
@@ -155,16 +166,16 @@ const GeoMaps: React.FC = () => {
 
         <div className={styles.mapCard}>
           <div className={styles.mapCardHead}>
-            <div className={styles.mapCardTitle}>Área Metropolitana · ubicación de casos</div>
+            <div className={styles.mapCardTitle}>Área Metropolitana · casos por comuna</div>
             <select className={styles.mapSelect} value={yearM} onChange={(e) => setYearM(e.target.value)}>
               <option value="all">Acumulado</option>
               {metro.meta.years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </div>
-          <EChart option={metroOption} height={430} />
+          <EChart option={metroOption} height={470} />
           <div className={styles.mapNote}>
-            {metro.meta.geocodificados.toLocaleString('es-CO')} casos geocodificados desde
-            direcciones (Reporte Salud Pública, 2023–2025) · Bucaramanga, Floridablanca y Girón.
+            {metro.meta.geocodificados.toLocaleString('es-CO')} casos geocodificados (Reporte Salud Pública,
+            2023–2025) sobre las comunas de Bucaramanga (17), Floridablanca (8) y Girón.
           </div>
         </div>
       </div>
