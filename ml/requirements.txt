@@ -1,0 +1,7 @@
+# Pipeline de ML (offline). Python 3.12
+pandas
+numpy
+scikit-learn
+skl2onnx
+onnx
+onnxruntime

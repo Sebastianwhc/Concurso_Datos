@@ -1,0 +1,229 @@
+{
+  "comunas": [
+    {
+      "id": "B1",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Norte",
+      "pob": 66710,
+      "incidencia_base": 0.24,
+      "share": 0.0244
+    },
+    {
+      "id": "B2",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Nororiental",
+      "pob": 27515,
+      "incidencia_base": 0.182,
+      "share": 0.0076
+    },
+    {
+      "id": "B4",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Occidental",
+      "pob": 36023,
+      "incidencia_base": 0.167,
+      "share": 0.0091
+    },
+    {
+      "id": "B3",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna San Francisco",
+      "pob": 41488,
+      "incidencia_base": 1.133,
+      "share": 0.0716
+    },
+    {
+      "id": "B13",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Oriental",
+      "pob": 54093,
+      "incidencia_base": 1.313,
+      "share": 0.1082
+    },
+    {
+      "id": "B14",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Morrorico",
+      "pob": 18227,
+      "incidencia_base": 1.042,
+      "share": 0.029
+    },
+    {
+      "id": "B12",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Cabecera del Llano",
+      "pob": 32825,
+      "incidencia_base": 1.31,
+      "share": 0.0655
+    },
+    {
+      "id": "B15",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Centro",
+      "pob": 6396,
+      "incidencia_base": 3.752,
+      "share": 0.0366
+    },
+    {
+      "id": "B5",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Garcia Rovira",
+      "pob": 34438,
+      "incidencia_base": 0.842,
+      "share": 0.0442
+    },
+    {
+      "id": "B6",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna La Concordia",
+      "pob": 22850,
+      "incidencia_base": 2.101,
+      "share": 0.0732
+    },
+    {
+      "id": "B16",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Tejar",
+      "pob": 17641,
+      "incidencia_base": 6.632,
+      "share": 0.1784
+    },
+    {
+      "id": "B7",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Ciudadela Real de Minas",
+      "pob": 25189,
+      "incidencia_base": 0.715,
+      "share": 0.0274
+    },
+    {
+      "id": "B17",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Mutis",
+      "pob": 24874,
+      "incidencia_base": 0.322,
+      "share": 0.0122
+    },
+    {
+      "id": "B9",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna La Pedregosa",
+      "pob": 14183,
+      "incidencia_base": 5.288,
+      "share": 0.1143
+    },
+    {
+      "id": "B8",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Suroccidente",
+      "pob": 16129,
+      "incidencia_base": 0.992,
+      "share": 0.0244
+    },
+    {
+      "id": "B10",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Provenza",
+      "pob": 39108,
+      "incidencia_base": 2.25,
+      "share": 0.1341
+    },
+    {
+      "id": "B11",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Sur",
+      "pob": 36068,
+      "incidencia_base": 0.721,
+      "share": 0.0396
+    },
+    {
+      "id": "F5",
+      "municipio": "Floridablanca",
+      "nombre": "Bosque / Molinos",
+      "pob": 19749,
+      "incidencia_base": 48.002,
+      "share": 0
+    },
+    {
+      "id": "F7",
+      "municipio": "Floridablanca",
+      "nombre": "Villabel / Santana",
+      "pob": 31950,
+      "incidencia_base": 34.773,
+      "share": 0
+    },
+    {
+      "id": "F4",
+      "municipio": "Floridablanca",
+      "nombre": "Caldas / Reposo",
+      "pob": 64552,
+      "incidencia_base": 19.891,
+      "share": 0
+    },
+    {
+      "id": "F1",
+      "municipio": "Floridablanca",
+      "nombre": "Florida / Casco Antiguo",
+      "pob": 26831,
+      "incidencia_base": 26.797,
+      "share": 0
+    },
+    {
+      "id": "F2",
+      "municipio": "Floridablanca",
+      "nombre": "Canaveral / Versalles",
+      "pob": 37799,
+      "incidencia_base": 11.588,
+      "share": 0
+    },
+    {
+      "id": "F6",
+      "municipio": "Floridablanca",
+      "nombre": "Lagos / Bellavista",
+      "pob": 20626,
+      "incidencia_base": 17.793,
+      "share": 0
+    },
+    {
+      "id": "F8",
+      "municipio": "Floridablanca",
+      "nombre": "LaCumbre / ElCarmen",
+      "pob": 46328,
+      "incidencia_base": 7.166,
+      "share": 0
+    },
+    {
+      "id": "F3",
+      "municipio": "Floridablanca",
+      "nombre": "Bucarica / Caracoli",
+      "pob": 11375,
+      "incidencia_base": 6.681,
+      "share": 0
+    }
+  ],
+  "feature_cols": [
+    "anio",
+    "semana",
+    "pob",
+    "log_pob",
+    "incidencia_base",
+    "es_floridablanca",
+    "sin52",
+    "cos52",
+    "precip",
+    "temp",
+    "humedad",
+    "precip_l2",
+    "precip_l4",
+    "precip_l6",
+    "precip_l8",
+    "temp_l4",
+    "temp_l8",
+    "humedad_l4",
+    "precip_acum4",
+    "precip_acum8",
+    "precip_acum12",
+    "temp_mean8",
+    "humedad_mean8"
+  ]
+}
