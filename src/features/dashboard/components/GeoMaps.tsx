@@ -118,12 +118,17 @@ const GeoMaps: React.FC = () => {
       else agg.set(key, { lon: p[0], lat: p[1], mi: p[3], n: 1 });
     }
     const groups = [...agg.values()];
+    const featMap = Object.fromEntries(comunaFeats.map((f) => [f.id, f]));
 
     return {
       tooltip: {
         trigger: 'item', ...baseTooltip,
         formatter: (p: unknown) => {
-          const d = p as { seriesName?: string; value?: number[] };
+          const d = p as { componentType?: string; name?: string; seriesName?: string; value?: number[] };
+          if (d.componentType === 'geo') {
+            const f = featMap[d.name ?? ''];
+            return f ? `<b>${f.comuna}</b><br/><span style="color:rgba(255,255,255,0.55)">${f.municipio}</span>` : '';
+          }
           const n = d.value?.[2] ?? 0;
           return `<b>${d.seriesName}</b><br/>${n} caso${n === 1 ? '' : 's'} en esta ubicación`;
         },
@@ -135,7 +140,7 @@ const GeoMaps: React.FC = () => {
       },
       geo: {
         map: 'amb_comunas', nameProperty: 'id', roam: true, aspectScale: 1,
-        layoutCenter: ['50%', '52%'], layoutSize: '115%',
+        layoutCenter: ['50%', '50%'], layoutSize: '104%',
         scaleLimit: { min: 1, max: 12 },
         itemStyle: { areaColor: '#0f1626', borderColor: 'rgba(255,255,255,0.18)', borderWidth: 0.6 },
         regions: comunaFeats.map((f) => ({
@@ -194,7 +199,8 @@ const GeoMaps: React.FC = () => {
           <EChart option={metroOption} height={470} />
           <div className={styles.mapNote}>
             {metro.meta.geocodificados.toLocaleString('es-CO')} casos geocodificados (Reporte Salud Pública,
-            2023–2025) sobre las comunas de Bucaramanga (17), Floridablanca (8) y Girón.
+            2023–2025) sobre las comunas de Bucaramanga (17) y Floridablanca (8). Girón se muestra como
+            casos (burbujas) — no tiene comunas oficiales abiertas. Pasa el cursor sobre una comuna para ver su nombre.
           </div>
         </div>
       </div>
