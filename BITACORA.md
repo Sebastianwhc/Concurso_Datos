@@ -26,6 +26,7 @@
 - **`build_dashboard_data.py`** → `dengue.json`: decodifica el SIVIGILA individual de Bucaramanga (**28.626 registros, 76 variables, 2015–2025**) a formato columnar (códigos SIVIGILA, mojibake, 21 síntomas en bitmask). ~820 KB.
 - **`build_geo_data.py`** → `santander_dengue.json`: agrega el archivo nacional (2.46M filas) a dengue por municipio de Santander (**87 municipios, 2007–2022**).
 - **`geocode_metro.py`** → `metro_puntos.json` + `comunas_casos.json`: geocodifica direcciones (Nominatim + caché + fallbacks) y asigna comuna por point-in-polygon. **6.703 / 8.365 casos geocodificados (80%)**: Bucaramanga 475, Floridablanca 5.500, Girón 728 (2023–2025).
+- **`build_climate_data.py`** → `clima_semanal.json`: unifica IDEAM (precip/humedad diarios, temp mensual) + CDMB (horario 2025) en **serie semanal 2007–2026** (precip, temp, humedad, PM2.5). Temp del valle = Palonegro 2007–2019 + Mogotes corregido por altitud (+2.2°C) 2020–2026. Incluye climatología por semana.
 - **Geojson de comunas** (fuentes GIS oficiales, en `public/`): Bucaramanga 17 (AMB GIS) + Floridablanca 8 (geoportal Floridablanca) → `amb_comunas.geojson`. Girón: no publica comunas abiertas.
 
 ### Dashboard (`src/features/dashboard/`)
@@ -35,6 +36,7 @@
 - **Sección geoespacial** (al final):
   - **Santander** — coropleto por municipio (2007–2022) con bordes nítidos y nombre al hover.
   - **Área Metropolitana** — comunas de Bga (17) y Florida (8) como base tintada por ciudad + **burbujas de casos** (agregadas por ubicación, tamaño ∝ nº de casos), filtro de año, tooltip con nombre de comuna. Girón como burbujas.
+- **Panel Clima vs Dengue** — casos semanales vs. lluvia y temperatura (doble eje), reacciona a los filtros. Integración multicausal visible.
 - **Responsive** (móvil): sidebar off-canvas, grillas y filtros adaptados.
 
 ### Landing
@@ -44,17 +46,13 @@
 
 ## ⏳ Lo que falta
 
-### 1. Clima (motor del modelo) — *siguiente paso*
-- Procesar **CDMB** (`temp_bga_1/2.csv`, horario 2025: T, HR, lluvia, PM2.5/PM10, etc.) + **IDEAM** (`precipitacion` diaria 2007–2026, `temp` mensual, `humedad` a 2024).
-- Generar **series semanales alineadas** con dengue + variables rezagadas (4–10 semanas).
-
-### 2. Modelo de IA (core)
-- Tabla de entrenamiento **comuna × semana × clima + features** (población, estrato, incidencia previa).
+### 1. Modelo de IA (core) — *siguiente paso*
+- Tabla de entrenamiento **comuna × semana × clima + features** (clima rezagado 4–10 semanas, población, estrato, incidencia previa). El clima semanal ya está listo (`clima_semanal.json`).
 - Bucaramanga: desagregar su curva histórica entre comunas con la huella geocodificada. Floridablanca: serie comuna×semana 2023–2025 directa.
 - Entrenar **ensamblaje (LightGBM/XGBoost)** → exportar a **ONNX**.
 - (Opcional "wow": pequeña red espaciotemporal.)
 
-### 3. Simulador (`SimulatorView` hoy es un stub)
+### 2. Simulador (`SimulatorView` hoy es un stub)
 - Heatmap por comuna alimentado por el modelo.
 - **Sliders de clima** + inferencia ONNX en el navegador.
 - Animación semana a semana (play) = propagación.
@@ -81,7 +79,7 @@
 | +10.000 filas | ✅ 28.626 (solo Bucaramanga) |
 | +20 variables | ✅ 76 columnas |
 | Datos abiertos (datos.gov.co / IDEAM / CDMB / GIS oficiales) | ✅ |
-| Integración clima + salud | ⏳ datos listos, integración pendiente |
+| Integración clima + salud | ✅ clima semanal procesado + panel Clima vs Dengue |
 | IA predictiva avanzada | ⏳ pendiente (core) |
 | Código abierto / repo público | ✅ |
 
@@ -93,6 +91,7 @@ npm install && npm run dev      # dashboard en http://localhost:5173
 # Regenerar artefactos (requiere los CSV crudos en data/, NO versionados):
 python scripts/build_dashboard_data.py
 python scripts/build_geo_data.py
+python scripts/build_climate_data.py
 python scripts/geocode_metro.py   # usa caché; primera vez ~2-3 h
 ```
 > Los CSV crudos y el caché de geocodificación viven en `data/` y **no** se versionan (ver `.gitignore`). Los artefactos procesados sí están en `public/data/`.

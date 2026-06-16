@@ -9,6 +9,7 @@ import EChart from './components/EChart';
 import KpiCards from './components/KpiCards';
 import FilterBar from './components/FilterBar';
 import GeoMaps from './components/GeoMaps';
+import ClimatePanel from './components/ClimatePanel';
 import styles from './DashboardView.module.css';
 
 const AXIS = 'rgba(255,255,255,0.35)';
@@ -166,6 +167,10 @@ const DashboardView: React.FC = () => {
       <div className={styles.chartGrid}>
         <Panel title="Canal endémico semanal" subtitle="Casos del año vs. bandas históricas (éxito / seguridad / epidemia)" span={2}>
           <EChart option={options.endemic} height={360} />
+        </Panel>
+
+        <Panel title="Clima vs Dengue" subtitle="Casos semanales frente a lluvia y temperatura · integración multicausal" span={2}>
+          <ClimatePanel rows={rows} />
         </Panel>
 
         <Panel title="Tendencia anual" subtitle="Casos confirmados por año">
