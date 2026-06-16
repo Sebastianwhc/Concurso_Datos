@@ -72,6 +72,7 @@ const GeoMaps: React.FC = () => {
   const santanderOption = useMemo<EChartsOption | null>(() => {
     if (!sData) return null;
     const max = yearS === 'all' ? sData.meta.max_total : sData.meta.max_by_year[String(yearS)] ?? 0;
+    const codeToName = Object.fromEntries(sData.municipios.map((m) => [m.code, m.name]));
     const seriesData = sData.municipios
       .filter((m) => m.code !== '000')
       .map((m) => ({ name: m.code, value: yearS === 'all' ? m.total : m.byYear[String(yearS)] ?? 0, mpio: m.name }));
@@ -94,8 +95,14 @@ const GeoMaps: React.FC = () => {
         roam: true, aspectScale: 1, scaleLimit: { min: 1, max: 12 },
         layoutCenter: ['50%', '50%'], layoutSize: '100%',
         data: seriesData, label: { show: false },
-        itemStyle: { borderColor: 'rgba(255,255,255,0.12)', borderWidth: 0.5, areaColor: '#0f1626' },
-        emphasis: { label: { show: true, color: '#fff', fontSize: 11 }, itemStyle: { areaColor: '#00f0ff', borderColor: '#fff' } },
+        itemStyle: { borderColor: 'rgba(255,255,255,0.22)', borderWidth: 0.8, areaColor: '#0f1626' },
+        emphasis: {
+          label: {
+            show: true, color: '#fff', fontSize: 11, fontWeight: 'bold' as const,
+            formatter: (p: unknown) => codeToName[(p as { name: string }).name] ?? '',
+          },
+          itemStyle: { areaColor: '#00f0ff', borderColor: '#fff' },
+        },
       }],
     };
   }, [sData, yearS]);
