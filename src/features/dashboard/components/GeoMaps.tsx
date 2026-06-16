@@ -118,19 +118,21 @@ const GeoMaps: React.FC = () => {
       else agg.set(key, { lon: p[0], lat: p[1], mi: p[3], n: 1 });
     }
     const groups = [...agg.values()];
-    const featMap = Object.fromEntries(comunaFeats.map((f) => [f.id, f]));
+    const featMap = Object.fromEntries(comunaFeats.map((f) => [f.comuna, f]));
 
     return {
       tooltip: {
         trigger: 'item', ...baseTooltip,
         formatter: (p: unknown) => {
-          const d = p as { componentType?: string; name?: string; seriesName?: string; value?: number[] };
-          if (d.componentType === 'geo') {
-            const f = featMap[d.name ?? ''];
-            return f ? `<b>${f.comuna}</b><br/><span style="color:rgba(255,255,255,0.55)">${f.municipio}</span>` : '';
+          const d = p as { name?: string; seriesName?: string; value?: number[] };
+          if (Array.isArray(d.value)) { // burbuja (caso geocodificado)
+            const n = d.value[2] ?? 0;
+            return `<b>${d.seriesName}</b><br/>${n} caso${n === 1 ? '' : 's'} en esta ubicación`;
           }
-          const n = d.value?.[2] ?? 0;
-          return `<b>${d.seriesName}</b><br/>${n} caso${n === 1 ? '' : 's'} en esta ubicación`;
+          const f = featMap[d.name ?? '']; // región (comuna)
+          return f
+            ? `<b>${f.comuna}</b><br/><span style="color:rgba(255,255,255,0.55)">${f.municipio}</span>`
+            : `<b>${d.name ?? ''}</b>`;
         },
       },
       legend: {
@@ -139,12 +141,12 @@ const GeoMaps: React.FC = () => {
         inactiveColor: 'rgba(255,255,255,0.2)',
       },
       geo: {
-        map: 'amb_comunas', nameProperty: 'id', roam: true, aspectScale: 1,
+        map: 'amb_comunas', nameProperty: 'comuna', roam: true, aspectScale: 1,
         layoutCenter: ['50%', '50%'], layoutSize: '104%',
         scaleLimit: { min: 1, max: 12 },
         itemStyle: { areaColor: '#0f1626', borderColor: 'rgba(255,255,255,0.18)', borderWidth: 0.6 },
         regions: comunaFeats.map((f) => ({
-          name: f.id, itemStyle: { areaColor: CITY_TINT[f.municipio] ?? '#0f1626' },
+          name: f.comuna, itemStyle: { areaColor: CITY_TINT[f.municipio] ?? '#0f1626' },
         })),
         emphasis: { itemStyle: { areaColor: 'rgba(0,240,255,0.16)' }, label: { show: false } },
         label: { show: false },
