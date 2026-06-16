@@ -1,0 +1,80 @@
+{
+  "baseline": {
+    "set": "baseline (climatologia)",
+    "MAE": 7.361,
+    "RMSE": 12.008,
+    "R2": -0.36
+  },
+  "modelo": {
+    "set": "histgbm (pronostico AR+clima)",
+    "MAE": 2.989,
+    "RMSE": 6.744,
+    "R2": 0.571
+  },
+  "importancia": [
+    {
+      "feature": "casos_l1",
+      "valor": 0.3642
+    },
+    {
+      "feature": "casos_ma4",
+      "valor": 0.3119
+    },
+    {
+      "feature": "casos_l2",
+      "valor": 0.0495
+    },
+    {
+      "feature": "casos_l3",
+      "valor": 0.036
+    },
+    {
+      "feature": "humedad_mean8",
+      "valor": 0.0045
+    },
+    {
+      "feature": "cos52",
+      "valor": 0.0023
+    },
+    {
+      "feature": "temp",
+      "valor": 0.0018
+    },
+    {
+      "feature": "humedad",
+      "valor": 0.0014
+    },
+    {
+      "feature": "sin52",
+      "valor": 0.0013
+    },
+    {
+      "feature": "incidencia_base",
+      "valor": 0.001
+    },
+    {
+      "feature": "log_pob",
+      "valor": 0.0
+    },
+    {
+      "feature": "temp_mean8",
+      "valor": -0.0005
+    },
+    {
+      "feature": "semana",
+      "valor": -0.0007
+    },
+    {
+      "feature": "precip",
+      "valor": -0.0016
+    },
+    {
+      "feature": "precip_acum8",
+      "valor": -0.0021
+    },
+    {
+      "feature": "es_floridablanca",
+      "valor": -0.0026
+    }
+  ]
+}

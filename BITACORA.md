@@ -39,6 +39,14 @@
 - **Panel Clima vs Dengue** — casos semanales vs. lluvia y temperatura (doble eje), reacciona a los filtros. Integración multicausal visible.
 - **Responsive** (móvil): sidebar off-canvas, grillas y filtros adaptados.
 
+### Modelo de IA (`ml/`)
+- **`build_training_table.py`** → `training_table.csv`: tabla **comuna × semana × clima + features** (10.267 filas). Bga desagregada por share espacial; Florida geocodificada real; clima rezagado/acumulado, estacionalidad, población, incidencia base.
+- **`train_model.py`** → `public/data/model.onnx` + `model_meta.json`: **GradientBoosting (sklearn)** — *pronóstico autoregresivo + clima modulador*. Target `log1p(casos)` (frontend aplica `expm1`).
+  - **Validación temporal (test 2024-2025, año epidémico): R²=+0.571, MAE 2.99** vs baseline R²=−0.36. Generaliza al brote.
+  - Exporta semilla (últimos 4 casos por comuna) y rangos de clima para los sliders.
+  - **ONNX verificado fiel** al modelo (diff 1e-6); ~372 KB → corre en el navegador.
+- **Hallazgo clave (honesto):** el clima por sí solo NO predice el dengue (R²=−0.49); la inercia epidémica (casos recientes) sí. El clima es modulador, no motor — así funcionan los sistemas reales de alerta.
+
 ### Landing
 - Construida previamente (scrollytelling: Hero, Threat, Territory, Solution, Simulator, CTA).
 
@@ -46,17 +54,12 @@
 
 ## ⏳ Lo que falta
 
-### 1. Modelo de IA (core) — *siguiente paso*
-- Tabla de entrenamiento **comuna × semana × clima + features** (clima rezagado 4–10 semanas, población, estrato, incidencia previa). El clima semanal ya está listo (`clima_semanal.json`).
-- Bucaramanga: desagregar su curva histórica entre comunas con la huella geocodificada. Floridablanca: serie comuna×semana 2023–2025 directa.
-- Entrenar **ensamblaje (LightGBM/XGBoost)** → exportar a **ONNX**.
-- (Opcional "wow": pequeña red espaciotemporal.)
-
-### 2. Simulador (`SimulatorView` hoy es un stub)
-- Heatmap por comuna alimentado por el modelo.
-- **Sliders de clima** + inferencia ONNX en el navegador.
-- Animación semana a semana (play) = propagación.
-- Zonas de riesgo (verde/amarillo/rojo).
+### 1. Simulador (`SimulatorView` hoy es un stub) — *siguiente paso*
+- Cargar `model.onnx` con `onnxruntime-web` (aplicar `expm1` a la salida).
+- **Pronóstico recursivo**: predecir semana t+1 por comuna, realimentar como `casos_l1` y avanzar → animar propagación.
+- **Sliders de clima** que fijan el escenario de las semanas proyectadas (modulador).
+- Heatmap por comuna (sobre `amb_comunas.geojson`) + zonas de riesgo + play semana a semana.
+- Semilla inicial y rangos en `model_meta.json`.
 
 ### 4. Pendientes menores / mejoras
 - Santander: opción de nombres siempre visibles.
@@ -80,7 +83,7 @@
 | +20 variables | ✅ 76 columnas |
 | Datos abiertos (datos.gov.co / IDEAM / CDMB / GIS oficiales) | ✅ |
 | Integración clima + salud | ✅ clima semanal procesado + panel Clima vs Dengue |
-| IA predictiva avanzada | ⏳ pendiente (core) |
+| IA predictiva avanzada | ✅ GradientBoosting (R²=0.57 en brote) → ONNX; falta el simulador (UI) |
 | Código abierto / repo público | ✅ |
 
 ---
@@ -93,5 +96,9 @@ python scripts/build_dashboard_data.py
 python scripts/build_geo_data.py
 python scripts/build_climate_data.py
 python scripts/geocode_metro.py   # usa caché; primera vez ~2-3 h
+# Modelo de IA:
+pip install -r ml/requirements.txt
+python ml/build_training_table.py
+python ml/train_model.py          # entrena + exporta public/data/model.onnx
 ```
 > Los CSV crudos y el caché de geocodificación viven en `data/` y **no** se versionan (ver `.gitignore`). Los artefactos procesados sí están en `public/data/`.

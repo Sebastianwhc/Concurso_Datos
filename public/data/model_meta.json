@@ -1,0 +1,545 @@
+{
+  "feature_order": [
+    "semana",
+    "sin52",
+    "cos52",
+    "incidencia_base",
+    "log_pob",
+    "es_floridablanca",
+    "precip",
+    "temp",
+    "humedad",
+    "precip_acum8",
+    "temp_mean8",
+    "humedad_mean8",
+    "casos_l1",
+    "casos_l2",
+    "casos_l3",
+    "casos_ma4"
+  ],
+  "target_transform": "log1p",
+  "static_features": [
+    "semana",
+    "sin52",
+    "cos52",
+    "incidencia_base",
+    "log_pob",
+    "es_floridablanca"
+  ],
+  "clima_features": [
+    "precip",
+    "temp",
+    "humedad",
+    "precip_acum8",
+    "temp_mean8",
+    "humedad_mean8"
+  ],
+  "ar_features": [
+    "casos_l1",
+    "casos_l2",
+    "casos_l3",
+    "casos_ma4"
+  ],
+  "medians": {
+    "semana": 25.0,
+    "sin52": 0.12,
+    "cos52": 0.0,
+    "incidencia_base": 1.133,
+    "log_pob": 10.223,
+    "es_floridablanca": 0.0,
+    "precip": 34.2,
+    "temp": 21.9,
+    "humedad": 85.2,
+    "precip_acum8": 312.7,
+    "temp_mean8": 21.9,
+    "humedad_mean8": 84.61
+  },
+  "clima_ranges": {
+    "precip": {
+      "min": 1.1,
+      "max": 89.9,
+      "med": 34.2
+    },
+    "temp": {
+      "min": 21.0,
+      "max": 23.0,
+      "med": 21.9
+    },
+    "humedad": {
+      "min": 50.0,
+      "max": 100.0,
+      "med": 85.2
+    }
+  },
+  "comunas": [
+    {
+      "id": "B1",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Norte",
+      "pob": 66710,
+      "incidencia_base": 0.24,
+      "share": 0.0244
+    },
+    {
+      "id": "B2",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Nororiental",
+      "pob": 27515,
+      "incidencia_base": 0.182,
+      "share": 0.0076
+    },
+    {
+      "id": "B4",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Occidental",
+      "pob": 36023,
+      "incidencia_base": 0.167,
+      "share": 0.0091
+    },
+    {
+      "id": "B3",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna San Francisco",
+      "pob": 41488,
+      "incidencia_base": 1.133,
+      "share": 0.0716
+    },
+    {
+      "id": "B13",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Oriental",
+      "pob": 54093,
+      "incidencia_base": 1.313,
+      "share": 0.1082
+    },
+    {
+      "id": "B14",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Morrorico",
+      "pob": 18227,
+      "incidencia_base": 1.042,
+      "share": 0.029
+    },
+    {
+      "id": "B12",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Cabecera del Llano",
+      "pob": 32825,
+      "incidencia_base": 1.31,
+      "share": 0.0655
+    },
+    {
+      "id": "B15",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Centro",
+      "pob": 6396,
+      "incidencia_base": 3.752,
+      "share": 0.0366
+    },
+    {
+      "id": "B5",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Garcia Rovira",
+      "pob": 34438,
+      "incidencia_base": 0.842,
+      "share": 0.0442
+    },
+    {
+      "id": "B6",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna La Concordia",
+      "pob": 22850,
+      "incidencia_base": 2.101,
+      "share": 0.0732
+    },
+    {
+      "id": "B16",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Tejar",
+      "pob": 17641,
+      "incidencia_base": 6.632,
+      "share": 0.1784
+    },
+    {
+      "id": "B7",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Ciudadela Real de Minas",
+      "pob": 25189,
+      "incidencia_base": 0.715,
+      "share": 0.0274
+    },
+    {
+      "id": "B17",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Mutis",
+      "pob": 24874,
+      "incidencia_base": 0.322,
+      "share": 0.0122
+    },
+    {
+      "id": "B9",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna La Pedregosa",
+      "pob": 14183,
+      "incidencia_base": 5.288,
+      "share": 0.1143
+    },
+    {
+      "id": "B8",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Suroccidente",
+      "pob": 16129,
+      "incidencia_base": 0.992,
+      "share": 0.0244
+    },
+    {
+      "id": "B10",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Provenza",
+      "pob": 39108,
+      "incidencia_base": 2.25,
+      "share": 0.1341
+    },
+    {
+      "id": "B11",
+      "municipio": "Bucaramanga",
+      "nombre": "Comuna Sur",
+      "pob": 36068,
+      "incidencia_base": 0.721,
+      "share": 0.0396
+    },
+    {
+      "id": "F5",
+      "municipio": "Floridablanca",
+      "nombre": "Bosque / Molinos",
+      "pob": 19749,
+      "incidencia_base": 48.002,
+      "share": 0
+    },
+    {
+      "id": "F7",
+      "municipio": "Floridablanca",
+      "nombre": "Villabel / Santana",
+      "pob": 31950,
+      "incidencia_base": 34.773,
+      "share": 0
+    },
+    {
+      "id": "F4",
+      "municipio": "Floridablanca",
+      "nombre": "Caldas / Reposo",
+      "pob": 64552,
+      "incidencia_base": 19.891,
+      "share": 0
+    },
+    {
+      "id": "F1",
+      "municipio": "Floridablanca",
+      "nombre": "Florida / Casco Antiguo",
+      "pob": 26831,
+      "incidencia_base": 26.797,
+      "share": 0
+    },
+    {
+      "id": "F2",
+      "municipio": "Floridablanca",
+      "nombre": "Canaveral / Versalles",
+      "pob": 37799,
+      "incidencia_base": 11.588,
+      "share": 0
+    },
+    {
+      "id": "F6",
+      "municipio": "Floridablanca",
+      "nombre": "Lagos / Bellavista",
+      "pob": 20626,
+      "incidencia_base": 17.793,
+      "share": 0
+    },
+    {
+      "id": "F8",
+      "municipio": "Floridablanca",
+      "nombre": "LaCumbre / ElCarmen",
+      "pob": 46328,
+      "incidencia_base": 7.166,
+      "share": 0
+    },
+    {
+      "id": "F3",
+      "municipio": "Floridablanca",
+      "nombre": "Bucarica / Caracoli",
+      "pob": 11375,
+      "incidencia_base": 6.681,
+      "share": 0
+    }
+  ],
+  "seed": {
+    "B1": [
+      0.81,
+      1.05,
+      1.37,
+      0.73
+    ],
+    "B10": [
+      4.43,
+      5.77,
+      7.51,
+      4.02
+    ],
+    "B11": [
+      1.31,
+      1.7,
+      2.22,
+      1.19
+    ],
+    "B12": [
+      2.16,
+      2.82,
+      3.67,
+      1.97
+    ],
+    "B13": [
+      3.57,
+      4.65,
+      6.06,
+      3.25
+    ],
+    "B14": [
+      0.96,
+      1.25,
+      1.62,
+      0.87
+    ],
+    "B15": [
+      1.21,
+      1.57,
+      2.05,
+      1.1
+    ],
+    "B16": [
+      5.89,
+      7.67,
+      9.99,
+      5.35
+    ],
+    "B17": [
+      0.4,
+      0.52,
+      0.68,
+      0.37
+    ],
+    "B2": [
+      0.25,
+      0.33,
+      0.43,
+      0.23
+    ],
+    "B3": [
+      2.36,
+      3.08,
+      4.01,
+      2.15
+    ],
+    "B4": [
+      0.3,
+      0.39,
+      0.51,
+      0.27
+    ],
+    "B5": [
+      1.46,
+      1.9,
+      2.48,
+      1.33
+    ],
+    "B6": [
+      2.42,
+      3.15,
+      4.1,
+      2.19
+    ],
+    "B7": [
+      0.91,
+      1.18,
+      1.54,
+      0.82
+    ],
+    "B8": [
+      0.81,
+      1.05,
+      1.37,
+      0.73
+    ],
+    "B9": [
+      3.77,
+      4.92,
+      6.4,
+      3.43
+    ],
+    "F1": [
+      8.0,
+      4.0,
+      2.0,
+      6.0
+    ],
+    "F2": [
+      4.0,
+      0.0,
+      1.0,
+      3.0
+    ],
+    "F3": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "F4": [
+      5.0,
+      1.0,
+      3.0,
+      4.0
+    ],
+    "F5": [
+      5.0,
+      3.0,
+      2.0,
+      8.0
+    ],
+    "F6": [
+      2.0,
+      1.0,
+      0.0,
+      4.0
+    ],
+    "F7": [
+      13.0,
+      4.0,
+      3.0,
+      6.0
+    ],
+    "F8": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "last_week": {
+    "B1": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B10": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B11": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B12": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B13": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B14": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B15": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B16": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B17": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B2": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B3": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B4": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B5": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B6": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B7": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B8": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "B9": {
+      "anio": 2025,
+      "semana": 35
+    },
+    "F1": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F2": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F3": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F4": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F5": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F6": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F7": {
+      "anio": 2025,
+      "semana": 49
+    },
+    "F8": {
+      "anio": 2025,
+      "semana": 49
+    }
+  },
+  "metrics": {
+    "baseline": {
+      "set": "baseline (climatologia)",
+      "MAE": 7.361,
+      "RMSE": 12.008,
+      "R2": -0.36
+    },
+    "modelo": {
+      "set": "histgbm (pronostico AR+clima)",
+      "MAE": 2.989,
+      "RMSE": 6.744,
+      "R2": 0.571
+    }
+  },
+  "nota": "HistGradientBoosting; pronóstico autoregresivo (casos recientes) + clima modulador. Salida en log1p -> aplicar expm1. El simulador realimenta la predicción para proyectar semana a semana."
+}
