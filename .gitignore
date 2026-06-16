@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Datos crudos (no versionar — el de 218MB rompe el repo).
+# El artefacto procesado vive en public/data/ y SÍ se versiona.
+/data/
+*.pdf
