@@ -62,6 +62,12 @@ REGIMEN = {
 TIPO_CASO = {"1": "Sospechoso", "2": "Probable", "3": "Confirmado por laboratorio",
              "4": "Confirmado por clínica", "5": "Confirmado por nexo"}
 
+# Municipios del área metropolitana (código DANE de 3 dígitos -> nombre).
+# Coincide con MPIO_CCDGO de public/amb_metropolitana.geojson.
+MUNICIPIOS = {"001": "Bucaramanga", "276": "Floridablanca",
+              "307": "Girón", "547": "Piedecuesta"}
+MUNI_ORDER = ["Bucaramanga", "Floridablanca", "Girón", "Piedecuesta", "Otro"]
+
 # Orden canónico de diccionarios de salida (índice = valor codificado)
 SEX_ORDER = ["F", "M"]
 SEV_ORDER = ["Sin signos de alarma", "Con signos de alarma", "Grave", "Sin clasificar"]
@@ -129,6 +135,7 @@ def main():
     i_tipc = col("tip_cas_", "tipcas")
     i_hosp = col("pac_hos_", "pachos")
     i_def = col("con_fin_", "confin")
+    i_mun = col("cod_mun_r", "codmunr")
 
     # Resuelve columnas de síntomas (algunos con mojibake)
     sym_idx = []
@@ -193,8 +200,13 @@ def main():
                 if ci is not None and ci < len(r) and r[ci].strip() == "1":
                     mask |= (1 << bit)
 
+            mun_raw = (r[i_mun].strip() if i_mun is not None else "")
+            mun_code = mun_raw.zfill(3) if mun_raw.isdigit() else mun_raw
+            mun = MUNICIPIOS.get(mun_code, "Otro")
+            mun_i = MUNI_ORDER.index(mun)
+
             rows.append([anio, semana, sexo_i, edad, estr_i, reg_i,
-                         sev_i, tipo_i, hosp, fall, mask])
+                         sev_i, tipo_i, hosp, fall, mask, mun_i])
 
     # Diccionario de edad ordenado y reemplazo de etiqueta por índice
     edad_order = sorted(edad_set, key=edad_sort_key)
@@ -217,11 +229,13 @@ def main():
                 "regimen": REGIMEN_ORDER,
                 "severidad": SEV_ORDER,
                 "tipo_caso": TIPO_ORDER,
+                "municipio": MUNI_ORDER,
             },
             "symptoms": [label for _, label in SYMPTOMS],
+            "municipio_codigos": MUNICIPIOS,
         },
         "columns": ["anio", "semana", "sexo", "edad", "estrato", "regimen",
-                    "severidad", "tipo_caso", "hosp", "fallecido", "sintomas"],
+                    "severidad", "tipo_caso", "hosp", "fallecido", "sintomas", "municipio"],
         "rows": rows,
     }
 

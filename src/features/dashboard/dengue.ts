@@ -16,6 +16,7 @@ export interface DengueMeta {
     regimen: string[];
     severidad: string[];
     tipo_caso: string[];
+    municipio: string[];
   };
   symptoms: string[];
 }
@@ -29,7 +30,7 @@ export interface DengueRaw {
 // Índices de columna (deben coincidir con el orden en el pipeline)
 export const COL = {
   anio: 0, semana: 1, sexo: 2, edad: 3, estrato: 4, regimen: 5,
-  severidad: 6, tipo_caso: 7, hosp: 8, fallecido: 9, sintomas: 10,
+  severidad: 6, tipo_caso: 7, hosp: 8, fallecido: 9, sintomas: 10, municipio: 11,
 } as const;
 
 export type Row = number[];
@@ -46,33 +47,32 @@ export async function loadDengueData(): Promise<DengueData> {
   return { meta: raw.meta, rows: raw.rows };
 }
 
-// --- Filtros ---
+// --- Filtros (todos multi-selección; Set vacío = todos) ---
 export interface Filters {
-  anio: number | 'all';
-  sexo: Set<number>;       // índices vacíos = todos
+  anio: Set<number>;       // años seleccionados
+  sexo: Set<number>;       // índices del diccionario
   severidad: Set<number>;
   estrato: Set<number>;
-  hosp: 'all' | 'yes' | 'no';
+  hosp: Set<number>;       // 1 = hospitalizado, 0 = ambulatorio
 }
 
 export const emptyFilters = (): Filters => ({
-  anio: 'all',
+  anio: new Set(),
   sexo: new Set(),
   severidad: new Set(),
   estrato: new Set(),
-  hosp: 'all',
+  hosp: new Set(),
 });
 
 /** Aplica filtros transversales. `includeYear=false` ignora el filtro de año
  *  (lo usa el canal endémico, que necesita el histórico completo). */
 export function applyFilters(rows: Row[], f: Filters, includeYear = true): Row[] {
   return rows.filter((r) => {
-    if (includeYear && f.anio !== 'all' && r[COL.anio] !== f.anio) return false;
+    if (includeYear && f.anio.size && !f.anio.has(r[COL.anio])) return false;
     if (f.sexo.size && !f.sexo.has(r[COL.sexo])) return false;
     if (f.severidad.size && !f.severidad.has(r[COL.severidad])) return false;
     if (f.estrato.size && !f.estrato.has(r[COL.estrato])) return false;
-    if (f.hosp === 'yes' && r[COL.hosp] !== 1) return false;
-    if (f.hosp === 'no' && r[COL.hosp] !== 0) return false;
+    if (f.hosp.size && !f.hosp.has(r[COL.hosp])) return false;
     return true;
   });
 }

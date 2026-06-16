@@ -8,6 +8,7 @@ import {
 import EChart from './components/EChart';
 import KpiCards from './components/KpiCards';
 import FilterBar from './components/FilterBar';
+import GeoMaps from './components/GeoMaps';
 import styles from './DashboardView.module.css';
 
 const AXIS = 'rgba(255,255,255,0.35)';
@@ -49,7 +50,7 @@ const DashboardView: React.FC = () => {
     const kpis = computeKpis(rows, gravesIdx);
 
     // --- Canal endémico ---
-    const focusYear = filters.anio === 'all' ? meta.years[meta.years.length - 1] : filters.anio;
+    const focusYear = filters.anio.size ? Math.max(...filters.anio) : meta.years[meta.years.length - 1];
     const ec = endemicChannel(rowsNoYear, meta.years, focusYear);
     const ceil = Math.max(...ec.p75, ...ec.focus, 1) * 1.2;
     const endemic: EChartsOption = {
@@ -84,10 +85,10 @@ const DashboardView: React.FC = () => {
       xAxis: { type: 'category', data: meta.years, ...axisCommon },
       yAxis: { type: 'value', ...axisCommon },
       series: [{
-        type: 'bar', data: yearly.map((v, i) => ({
-          value: v,
-          itemStyle: { color: meta.years[i] === focusYear ? CYAN : 'rgba(0,240,255,0.3)', borderRadius: [4, 4, 0, 0] },
-        })),
+        type: 'bar', data: yearly.map((v, i) => {
+          const sel = filters.anio.size ? filters.anio.has(meta.years[i]) : meta.years[i] === focusYear;
+          return { value: v, itemStyle: { color: sel ? CYAN : 'rgba(0,240,255,0.3)', borderRadius: [4, 4, 0, 0] } };
+        }),
         barWidth: '55%',
       }],
     };
@@ -187,6 +188,8 @@ const DashboardView: React.FC = () => {
           <EChart option={options.symptoms} height={360} />
         </Panel>
       </div>
+
+      <GeoMaps />
     </div>
   );
 };
