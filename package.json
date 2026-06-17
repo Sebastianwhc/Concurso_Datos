@@ -18,6 +18,7 @@
     "gsap": "^3.15.0",
     "lucide-react": "^1.16.0",
     "mapbox-gl": "^3.23.1",
+    "onnxruntime-web": "^1.20.1",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "react-map-gl": "^8.1.1",

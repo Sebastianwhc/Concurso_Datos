@@ -47,19 +47,18 @@
   - **ONNX verificado fiel** al modelo (diff 1e-6); ~372 KB → corre en el navegador.
 - **Hallazgo clave (honesto):** el clima por sí solo NO predice el dengue (R²=−0.49); la inercia epidémica (casos recientes) sí. El clima es modulador, no motor — así funcionan los sistemas reales de alerta.
 
+### Simulador (`src/features/simulator/`) ✅ *core funcional*
+- **`forecast.ts`** — motor de pronóstico 100% en navegador con `onnxruntime-web` (subpath `/wasm`, CPU, `numThreads=1`; wasm servido local desde `public/ort/` → **demo offline sin headers COOP/COEP**). Replica fielmente el feature-engineering del pipeline Python (orden de 16 features, `log1p`/`expm1`).
+- **Pronóstico autoregresivo recursivo**: por comuna mantiene un historial sembrado con `seed` (últimos 4 casos); cada semana calcula `l1/l2/l3/ma4`, predice, realimenta y avanza el horizonte (16 semanas). 1 inferencia ONNX por semana (batch de 25 comunas).
+- **`SimulatorView.tsx`** — mapa coroplético de riesgo por comuna (ECharts `amb_comunas`), sliders de clima (precip/temp/humedad como escenario sostenido: `precip_acum8≈precip·8`, `*_mean8≈valor`), reproducción play/pause + slider semana a semana, panel de resumen (total AMB, pico proyectado, ranking de comunas en riesgo), trayectoria metropolitana y nota honesta "clima = modulador".
+- **Validado numéricamente** contra el mismo ONNX en Python: curva continua y plausible (~60–84 casos/sem AMB); los sliders mueven el resultado de forma realista (≈779–1514 casos acum. en 16 sem según el escenario de lluvia).
+
 ### Landing
 - Construida previamente (scrollytelling: Hero, Threat, Territory, Solution, Simulator, CTA).
 
 ---
 
 ## ⏳ Lo que falta
-
-### 1. Simulador (`SimulatorView` hoy es un stub) — *siguiente paso*
-- Cargar `model.onnx` con `onnxruntime-web` (aplicar `expm1` a la salida).
-- **Pronóstico recursivo**: predecir semana t+1 por comuna, realimentar como `casos_l1` y avanzar → animar propagación.
-- **Sliders de clima** que fijan el escenario de las semanas proyectadas (modulador).
-- Heatmap por comuna (sobre `amb_comunas.geojson`) + zonas de riesgo + play semana a semana.
-- Semilla inicial y rangos en `model_meta.json`.
 
 ## 🌿 Ramas del equipo (pendientes de integrar)
 - **`origin/daniela`** — rediseño de `ThreatSection` (landing) con gráficos de datos reales de Bucaramanga (edad + tendencia anual, 2024/brote en rojo). ⚠️ Tiene 2 errores que rompen el build: import sin usar (línea 4) y propiedad duplicada en objeto (línea 666, TS1117). **Revisar enfoque:** debe ser *storytelling*, no un segundo dashboard.
@@ -88,7 +87,7 @@
 | +20 variables | ✅ 76 columnas |
 | Datos abiertos (datos.gov.co / IDEAM / CDMB / GIS oficiales) | ✅ |
 | Integración clima + salud | ✅ clima semanal procesado + panel Clima vs Dengue |
-| IA predictiva avanzada | ✅ GradientBoosting (R²=0.57 en brote) → ONNX; falta el simulador (UI) |
+| IA predictiva avanzada | ✅ GradientBoosting (R²=0.57 en brote) → ONNX + **simulador interactivo en navegador** |
 | Código abierto / repo público | ✅ |
 
 ---

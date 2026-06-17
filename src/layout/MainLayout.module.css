@@ -31,7 +31,12 @@
   margin-bottom: 3rem;
   gap: 1rem;
   white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
 }
+
+.brand:hover { opacity: 0.8; }
 
 .brand h2 {
   margin: 0;

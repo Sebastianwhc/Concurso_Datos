@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-import { Activity, Map as MapIcon, Menu, Cpu } from 'lucide-react';
+import { Outlet, NavLink, Link } from 'react-router-dom';
+import { Activity, Map as MapIcon, Menu, Cpu, Home } from 'lucide-react';
 import styles from './MainLayout.module.css';
 
 const MainLayout: React.FC = () => {
@@ -18,12 +18,26 @@ const MainLayout: React.FC = () => {
 
       {/* SIDEBAR: Navegación con efecto Glassmorphism */}
       <aside className={`${styles.sidebar} ${isSidebarOpen ? styles.open : styles.closed}`}>
-        <div className={styles.brand}>
+        <Link
+          to="/"
+          className={styles.brand}
+          onClick={() => { if (window.innerWidth <= 768) setSidebarOpen(false); }}
+        >
           <div className={styles.logoGlow}></div>
           {isSidebarOpen && <h2>EcoSalud IA</h2>}
-        </div>
-        
+        </Link>
+
         <nav className={styles.navMenu}>
+          <NavLink
+            to="/"
+            end
+            onClick={() => { if (window.innerWidth <= 768) setSidebarOpen(false); }}
+            className={({ isActive }) => isActive ? `${styles.navItem} ${styles.active}` : styles.navItem}
+          >
+            <Home className={styles.icon} />
+            {isSidebarOpen && <span>Volver al inicio</span>}
+          </NavLink>
+
           <NavLink
             to="/dashboard"
             onClick={() => { if (window.innerWidth <= 768) setSidebarOpen(false); }}
