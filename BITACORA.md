@@ -2,7 +2,7 @@
 
 **Concurso:** Datos al Ecosistema 2026 · Categoría Avanzado · Reto Salud y Bienestar
 **Repo:** https://github.com/Sebastianwhc/Concurso_Datos · **Deploy:** https://concursodatos.vercel.app
-**Última actualización:** 2026-06-16
+**Última actualización:** 2026-06-17
 
 ---
 
@@ -60,6 +60,11 @@
 - **Sliders de clima** que fijan el escenario de las semanas proyectadas (modulador).
 - Heatmap por comuna (sobre `amb_comunas.geojson`) + zonas de riesgo + play semana a semana.
 - Semilla inicial y rangos en `model_meta.json`.
+
+## 🌿 Ramas del equipo (pendientes de integrar)
+- **`origin/daniela`** — rediseño de `ThreatSection` (landing) con gráficos de datos reales de Bucaramanga (edad + tendencia anual, 2024/brote en rojo). ⚠️ Tiene 2 errores que rompen el build: import sin usar (línea 4) y propiedad duplicada en objeto (línea 666, TS1117). **Revisar enfoque:** debe ser *storytelling*, no un segundo dashboard.
+- **`origin/feat/seccion-contacto`** — sección "Contacto de los Desarrolladores" en `CTASection` + footer global en `MainLayout`. ⚠️ Conflicto con `MainLayout` (mi sidebar móvil off-canvas): al integrar, conservar la lógica móvil y añadir solo el footer.
+- *Decisión actual:* se quedan en sus ramas; se integran más adelante con revisión.
 
 ### 4. Pendientes menores / mejoras
 - Santander: opción de nombres siempre visibles.
