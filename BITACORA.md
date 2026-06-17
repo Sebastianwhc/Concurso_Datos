@@ -13,10 +13,10 @@
 
 ## 🏗️ Decisiones de arquitectura
 - **Sin backend.** Todo corre en el navegador; deploy estático en Vercel.
-- **Modelo de IA en el navegador (ONNX).** Se entrena offline en Python y se exporta a ONNX → inferencia con `onnxruntime-web`. Elegido por robustez en demo en vivo (no depende de servidor ni WiFi).
+- **Modelo de IA en el navegador (ONNX).** Se entrena offline en Python y se exporta a ONNX → inferencia con `onnxruntime-web` (backend **wasm CPU**, `numThreads=1` → sin headers COOP/COEP). El binario `.wasm` y su glue `.mjs` viven en `src/features/simulator/ortwasm/` y se cargan con `?url` (Vite los emite como assets; no se puede importar desde `node_modules/.../dist` por el campo `exports`, ni desde `/public` porque el dev server rechaza el `import()` dinámico de `.mjs`). Robustez en demo en vivo: no depende de servidor ni WiFi.
 - **Pipelines offline en Python** → artefactos compactos en `public/data/`. El CSV nacional de 218 MB **nunca** llega al navegador.
 - **Escala metropolitana:** Bucaramanga ancla (dataset profundo), Floridablanca y Girón se suman para la capa espacial.
-- Stack: React + Vite + TS, ECharts (gráficos y mapas), Zustand, deck.gl/mapbox (reservado para el simulador).
+- Stack: React + Vite + TS, ECharts (gráficos y **mapas**, también en el simulador), `onnxruntime-web`, Zustand. (deck.gl/mapbox quedaron como dependencias sin uso final.)
 
 ---
 
@@ -28,6 +28,7 @@
 - **`geocode_metro.py`** → `metro_puntos.json` + `comunas_casos.json`: geocodifica direcciones (Nominatim + caché + fallbacks) y asigna comuna por point-in-polygon. **6.703 / 8.365 casos geocodificados (80%)**: Bucaramanga 475, Floridablanca 5.500, Girón 728 (2023–2025).
 - **`build_climate_data.py`** → `clima_semanal.json`: unifica IDEAM (precip/humedad diarios, temp mensual) + CDMB (horario 2025) en **serie semanal 2007–2026** (precip, temp, humedad, PM2.5). Temp del valle = Palonegro 2007–2019 + Mogotes corregido por altitud (+2.2°C) 2020–2026. Incluye climatología por semana.
 - **Geojson de comunas** (fuentes GIS oficiales, en `public/`): Bucaramanga 17 (AMB GIS) + Floridablanca 8 (geoportal Floridablanca) → `amb_comunas.geojson`. Girón: no publica comunas abiertas.
+- **`build_municipios_outline.py`** → `amb_municipios.geojson`: disuelve las comunas en un polígono por municipio (shapely `unary_union`) para dibujar el **contorno de cada ciudad** en el simulador sin las líneas internas de comuna.
 
 ### Dashboard (`src/features/dashboard/`)
 - **Filtros** como tarjetas desplegables con **multi-selección** (año, sexo, severidad, estrato, hospitalización). Filtrado 100% en cliente.
@@ -48,10 +49,14 @@
 - **Hallazgo clave (honesto):** el clima por sí solo NO predice el dengue (R²=−0.49); la inercia epidémica (casos recientes) sí. El clima es modulador, no motor — así funcionan los sistemas reales de alerta.
 
 ### Simulador (`src/features/simulator/`) ✅ *core funcional*
-- **`forecast.ts`** — motor de pronóstico 100% en navegador con `onnxruntime-web` (subpath `/wasm`, CPU, `numThreads=1`; wasm servido local desde `public/ort/` → **demo offline sin headers COOP/COEP**). Replica fielmente el feature-engineering del pipeline Python (orden de 16 features, `log1p`/`expm1`).
+- **`forecast.ts`** — motor de pronóstico 100% en navegador con `onnxruntime-web` (backend wasm CPU, `numThreads=1`; wasm+glue cargados con `?url` desde `src/.../ortwasm/` → **demo offline sin headers COOP/COEP**). Replica fielmente el feature-engineering del pipeline Python (orden de 16 features, `log1p`/`expm1`).
 - **Pronóstico autoregresivo recursivo**: por comuna mantiene un historial sembrado con `seed` (últimos 4 casos); cada semana calcula `l1/l2/l3/ma4`, predice, realimenta y avanza el horizonte (16 semanas). 1 inferencia ONNX por semana (batch de 25 comunas).
-- **`SimulatorView.tsx`** — mapa coroplético de riesgo por comuna (ECharts `amb_comunas`), sliders de clima (precip/temp/humedad como escenario sostenido: `precip_acum8≈precip·8`, `*_mean8≈valor`), reproducción play/pause + slider semana a semana, panel de resumen (total AMB, pico proyectado, ranking de comunas en riesgo), trayectoria metropolitana y nota honesta "clima = modulador".
+- **`SimulatorView.tsx`** — sliders de clima (precip/temp/humedad como escenario sostenido: `precip_acum8≈precip·8`, `*_mean8≈valor`), reproducción play/pause + slider semana a semana, panel de resumen (total AMB, pico proyectado, ranking de comunas en riesgo), trayectoria metropolitana y nota honesta "clima = modulador".
+- **Mapa de riesgo (ECharts):** **una sola serie** sobre un mapa combinado (relleno de comunas coloreado por `visualMap` + contorno de municipios disuelto) para que relleno y contorno compartan **una transformación de roam** (zoom/arrastre sin delay). Orden de dibujo: Bucaramanga al fondo (solo asoma su borde exterior, blanco), comunas en medio (reciben el hover), **Floridablanca encima** (borde morado, se ve también su frontera interna; su dato es `silent` para no bloquear el hover). El estilo por región va en `data[].itemStyle` (en serie `map` `regions` no aplica). `RiskMap` usa `notMerge:false` para conservar el zoom al avanzar de semana.
 - **Validado numéricamente** contra el mismo ONNX en Python: curva continua y plausible (~60–84 casos/sem AMB); los sliders mueven el resultado de forma realista (≈779–1514 casos acum. en 16 sem según el escenario de lluvia).
+
+### Navegación / layout (`src/layout/MainLayout.tsx`)
+- Sidebar glass con enlaces a **Inicio (landing)**, Dashboard y Simulador. El logo "EcoSalud IA" también vuelve al landing. (Antes no había forma de regresar al landing desde el panel.)
 
 ### Landing
 - Construida previamente (scrollytelling: Hero, Threat, Territory, Solution, Simulator, CTA).
@@ -59,6 +64,8 @@
 ---
 
 ## ⏳ Lo que falta
+- El **core ya está completo** (dashboard + modelo + simulador interactivo). Queda integrar las ramas del equipo, pulir la landing y mejoras menores.
+- Verificar el simulador en **producción** (Vercel) tras el deploy: que el wasm cargue offline en el entorno real.
 
 ## 🌿 Ramas del equipo (pendientes de integrar)
 - **`origin/daniela`** — rediseño de `ThreatSection` (landing) con gráficos de datos reales de Bucaramanga (edad + tendencia anual, 2024/brote en rojo). ⚠️ Tiene 2 errores que rompen el build: import sin usar (línea 4) y propiedad duplicada en objeto (línea 666, TS1117). **Revisar enfoque:** debe ser *storytelling*, no un segundo dashboard.
@@ -100,9 +107,11 @@ python scripts/build_dashboard_data.py
 python scripts/build_geo_data.py
 python scripts/build_climate_data.py
 python scripts/geocode_metro.py   # usa caché; primera vez ~2-3 h
+python scripts/build_municipios_outline.py  # requiere shapely; -> amb_municipios.geojson
 # Modelo de IA:
 pip install -r ml/requirements.txt
 python ml/build_training_table.py
 python ml/train_model.py          # entrena + exporta public/data/model.onnx
 ```
 > Los CSV crudos y el caché de geocodificación viven en `data/` y **no** se versionan (ver `.gitignore`). Los artefactos procesados sí están en `public/data/`.
+> El wasm de `onnxruntime-web` (`src/features/simulator/ortwasm/`, ~11 MB) **sí** se versiona para que el build funcione offline. Si se actualiza `onnxruntime-web`, recopiar `ort-wasm-simd-threaded.{wasm,mjs}` desde `node_modules/onnxruntime-web/dist/`.
