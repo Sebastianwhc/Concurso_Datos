@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import type { EChartsOption } from 'echarts';
 import ReactECharts from 'echarts-for-react';
-import { Play, Pause, RotateCcw, CloudRain, Thermometer, Droplets, Cpu, TriangleAlert } from 'lucide-react';
+import { Play, Pause, RotateCcw, CloudRain, Thermometer, Droplets, Cpu, TriangleAlert,
+  ShieldAlert, TrendingUp, TrendingDown, Minus, Radio } from 'lucide-react';
 import EChart from '../dashboard/components/EChart';
 import {
   getSession,
@@ -11,10 +12,17 @@ import {
   type ClimaEscenario,
   type ForecastResult,
 } from './forecast';
+import { fetchLiveClima, type LiveClima } from './liveWeather';
 import styles from './SimulatorView.module.css';
 
 const HORIZONTE = 16; // semanas a proyectar
 const ANCHOR = { anio: 2025, semana: 35 }; // última semana observada (ancla Bucaramanga)
+// Costo directo medio ponderado por caso de dengue en COP (ver docs/06_IMPACTO_ECONOMICO.md:
+// 68,4% ambulatorio + 31% hospitalizado + 0,57% grave, estudios Colombia, TRM 4.000).
+const COSTO_CASO_COP = 1_388_831;
+const PCT_EVITABLE = 0.20; // % de casos evitables con acción temprana (escenario moderado)
+/** Formatea pesos colombianos en millones: 1_570_000_000 -> "$1.570 M". */
+const fmtMillones = (cop: number) => `$${Math.round(cop / 1e6).toLocaleString('es-CO')} M`;
 const DENGUE_COLORS = ['#16243d', '#1d4ed8', '#22d3ee', '#eab308', '#f97316', '#ef4444'];
 // Contorno por municipio. Tonos fuera de la rampa de relleno (azul→rojo) para
 // que el borde no se confunda con el color de riesgo de las comunas.
@@ -30,6 +38,24 @@ const baseTooltip = {
 };
 
 interface ComunaFeat { id: string; municipio: string; comuna: string; }
+
+/** Niveles de alerta por incidencia semanal (casos por 10.000 hab), calibrados
+ *  sobre la distribución del pronóstico (p90≈3.1, p80≈2.0, p50≈0.66). */
+interface NivelAlerta { id: 'alto' | 'medio' | 'vigilancia' | 'bajo'; min: number; label: string; color: string; accion: string; }
+const NIVELES: NivelAlerta[] = [
+  { id: 'alto', min: 3.0, label: 'Riesgo alto', color: '#ef4444',
+    accion: 'Intervención inmediata: fumigación focalizada (control adulticida), eliminación de criaderos casa a casa y búsqueda activa de febriles.' },
+  { id: 'medio', min: 1.5, label: 'Riesgo medio', color: '#f97316',
+    accion: 'Intensificar el control vectorial y campañas de eliminación de criaderos; alertar a las IPS de la zona.' },
+  { id: 'vigilancia', min: 0.7, label: 'Vigilancia', color: '#eab308',
+    accion: 'Monitoreo reforzado y prevención comunitaria (lavado de tanques, recipientes y llantas).' },
+  { id: 'bajo', min: 0, label: 'Bajo', color: '#22c55e',
+    accion: 'Vigilancia epidemiológica rutinaria.' },
+];
+const nivelDe = (inc: number): NivelAlerta => NIVELES.find((n) => inc >= n.min) ?? NIVELES[NIVELES.length - 1];
+
+const clamp = (v: number, min: number, max: number) => Math.min(max, Math.max(min, v));
+const REFRESCO_VIVO_MS = 10 * 60 * 1000; // 10 minutos
 
 /** Etiqueta de semana epidemiológica a partir del ancla + k. */
 function etiquetaSemana(k: number): string {
@@ -48,6 +74,11 @@ const SimulatorView: React.FC = () => {
   // Escenario climático (sliders) — se inicializa con la mediana del modelo.
   const [clima, setClima] = useState<ClimaEscenario | null>(null);
   const [forecast, setForecast] = useState<ForecastResult | null>(null);
+
+  // Modo "en vivo": consume clima real de Bucaramanga (Open-Meteo) cada 10 min.
+  const [liveMode, setLiveMode] = useState(false);
+  const [live, setLive] = useState<LiveClima | null>(null);
+  const [liveError, setLiveError] = useState<string | null>(null);
 
   // Reproducción semana a semana
   const [week, setWeek] = useState(0); // índice 0..HORIZONTE-1
@@ -110,6 +141,32 @@ const SimulatorView: React.FC = () => {
     return () => { active = false; window.clearTimeout(t); };
   }, [meta, clima]);
 
+  // --- Modo en vivo: trae clima real y lo fija como escenario (cada 10 min) ---
+  useEffect(() => {
+    if (!liveMode || !meta) return;
+    let active = true;
+    const r = meta.clima_ranges;
+    const apply = async () => {
+      try {
+        const lc = await fetchLiveClima();
+        if (!active) return;
+        setLive(lc);
+        setLiveError(null);
+        // Acotamos al rango del modelo para no extrapolar fuera de lo entrenado.
+        setClima({
+          precip: clamp(lc.precip, r.precip.min, r.precip.max),
+          temp: clamp(lc.temp, r.temp.min, r.temp.max),
+          humedad: clamp(lc.humedad, r.humedad.min, r.humedad.max),
+        });
+      } catch (e) {
+        if (active) setLiveError(String(e));
+      }
+    };
+    apply();
+    const id = window.setInterval(apply, REFRESCO_VIVO_MS);
+    return () => { active = false; window.clearInterval(id); };
+  }, [liveMode, meta]);
+
   // --- Bucle de reproducción ---
   useEffect(() => {
     if (!playing) return;
@@ -145,9 +202,33 @@ const SimulatorView: React.FC = () => {
       .sort((a, b) => b.casos - a.casos);
   }, [forecast, week, comunaById]);
 
+  // Capa de alerta temprana: clasifica cada comuna por incidencia y sugiere acción.
+  const alerta = useMemo(() => {
+    if (!forecast || !meta) return null;
+    const items = meta.comunas.map((c) => {
+      const serie = forecast.porComuna[c.id] ?? [];
+      const casos = serie[week] ?? 0;
+      const inc = (casos / c.pob) * 10000; // por 10.000 hab/semana
+      const prev = week > 0 ? serie[week - 1] ?? casos : meta.seed[c.id]?.[3] ?? casos;
+      const tend = casos > prev * 1.05 ? 'subiendo' : casos < prev * 0.95 ? 'bajando' : 'estable';
+      return { id: c.id, nombre: c.nombre, municipio: c.municipio, casos, inc, nivel: nivelDe(inc), tend };
+    });
+    const conteo = { alto: 0, medio: 0, vigilancia: 0, bajo: 0 } as Record<NivelAlerta['id'], number>;
+    for (const i of items) conteo[i.nivel.id]++;
+    const prioridad = items
+      .filter((i) => i.nivel.id === 'alto' || i.nivel.id === 'medio')
+      .sort((a, b) => b.inc - a.inc);
+    return { items, conteo, prioridad };
+  }, [forecast, meta, week]);
+
   const totalActual = forecast ? forecast.totalSemana[week] ?? 0 : 0;
   const totalPico = forecast ? Math.max(...forecast.totalSemana) : 0;
   const semanaPico = forecast ? forecast.totalSemana.indexOf(totalPico) : 0;
+
+  // Traducción a pesos: casos proyectados en el horizonte × costo medio por caso.
+  const casosHorizonte = forecast ? forecast.totalSemana.reduce((a, b) => a + b, 0) : 0;
+  const costoHorizonte = casosHorizonte * COSTO_CASO_COP;
+  const ahorroHorizonte = costoHorizonte * PCT_EVITABLE;
 
   // --- Opción del mapa coroplético (riesgo por comuna en la semana actual) ---
   const mapOption = useMemo<EChartsOption | null>(() => {
@@ -312,14 +393,45 @@ const SimulatorView: React.FC = () => {
           <div className={styles.panel}>
             <div className={styles.panelHead}>
               <h3>Escenario climático</h3>
-              <button className={styles.resetClima} onClick={resetClima}>Restablecer</button>
+              <button
+                className={`${styles.liveToggle} ${liveMode ? styles.liveOn : ''}`}
+                onClick={() => setLiveMode((v) => !v)}
+                title="Consume clima real de Bucaramanga (Open-Meteo) cada 10 min"
+              >
+                <Radio size={13} /> {liveMode ? 'En vivo' : 'Tiempo real'}
+              </button>
             </div>
-            <Slider icon={<CloudRain size={15} />} label="Precipitación" unit="mm/sem"
+
+            {liveMode && (
+              <div className={styles.liveBar}>
+                {liveError ? (
+                  <span className={styles.liveErr}>⚠ Sin conexión al servicio de clima · usando último escenario</span>
+                ) : live ? (
+                  <span>
+                    <span className={styles.liveDot} /> En vivo · Bucaramanga · ahora <b>{live.currentTemp?.toFixed(0)}°C</b>
+                    {' · act. '}{new Date(live.updated).toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                ) : (
+                  <span>Conectando al clima en vivo…</span>
+                )}
+              </div>
+            )}
+
+            <Slider icon={<CloudRain size={15} />} label="Precipitación" unit="mm/sem" disabled={liveMode}
               value={clima.precip} range={meta.clima_ranges.precip} step={0.5} onChange={setC('precip')} />
-            <Slider icon={<Thermometer size={15} />} label="Temperatura" unit="°C"
+            <Slider icon={<Thermometer size={15} />} label="Temperatura" unit="°C" disabled={liveMode}
               value={clima.temp} range={meta.clima_ranges.temp} step={0.1} onChange={setC('temp')} />
-            <Slider icon={<Droplets size={15} />} label="Humedad" unit="%"
+            <Slider icon={<Droplets size={15} />} label="Humedad" unit="%" disabled={liveMode}
               value={clima.humedad} range={meta.clima_ranges.humedad} step={1} onChange={setC('humedad')} />
+
+            {liveMode ? (
+              <div className={styles.moneyNote}>
+                Escenario fijado con clima real (Open-Meteo): suma de lluvia y media de temp/humedad de los
+                últimos 7 días. Desactiva «En vivo» para ajustar a mano.
+              </div>
+            ) : (
+              <button className={styles.resetClima} onClick={resetClima}>Restablecer a la mediana</button>
+            )}
             {computing && <div className={styles.computing}>Recalculando pronóstico…</div>}
           </div>
 
@@ -336,6 +448,21 @@ const SimulatorView: React.FC = () => {
               </div>
             </div>
             {trendOption && <EChart option={trendOption} height={150} />}
+
+            {/* Traducción económica del escenario (el "tamaño del premio") */}
+            <div className={styles.moneyStrip}>
+              <div className={styles.moneyItem}>
+                <span className={styles.moneyVal}>{fmtMillones(costoHorizonte)}</span>
+                <span className={styles.moneyLbl}>costo proyectado · {HORIZONTE} sem (AMB)</span>
+              </div>
+              <div className={styles.moneyItem}>
+                <span className={`${styles.moneyVal} ${styles.moneySave}`}>{fmtMillones(ahorroHorizonte)}</span>
+                <span className={styles.moneyLbl}>ahorro potencial con acción temprana (−20%)</span>
+              </div>
+            </div>
+            <div className={styles.moneyNote}>
+              ≈ ${(COSTO_CASO_COP / 1e6).toFixed(2).replace('.', ',')} millones COP por caso (costo directo de atención; ver documentación económica).
+            </div>
           </div>
 
           {/* Top comunas en riesgo */}
@@ -360,6 +487,76 @@ const SimulatorView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Sistema de alerta temprana y recomendaciones accionables */}
+      {alerta && (
+        <div className={styles.alertaSection}>
+          <div className={styles.alertaHead}>
+            <div className={styles.alertaTitle}>
+              <ShieldAlert size={18} />
+              <h3>Sistema de alerta temprana · recomendaciones</h3>
+            </div>
+            <span className={styles.weekTag}>{etiquetaSemana(week + 1)} · +{week + 1} sem</span>
+          </div>
+
+          {/* Mensaje titular (cambia con la semana y el escenario) */}
+          <div
+            className={styles.alertaBanner}
+            style={{ borderColor: alerta.conteo.alto ? '#ef4444' : alerta.conteo.medio ? '#f97316' : '#22c55e' }}
+          >
+            {alerta.conteo.alto > 0 ? (
+              <>🔴 <b>{alerta.conteo.alto} comuna{alerta.conteo.alto > 1 ? 's' : ''} en riesgo alto</b> esta semana.
+                Prioriza el control vectorial en <b>{alerta.prioridad.slice(0, 3).map((p) => p.nombre).join(', ')}</b>.</>
+            ) : alerta.conteo.medio > 0 ? (
+              <>🟠 <b>{alerta.conteo.medio} comuna{alerta.conteo.medio > 1 ? 's' : ''} en riesgo medio</b>.
+                Refuerza prevención en <b>{alerta.prioridad.slice(0, 3).map((p) => p.nombre).join(', ')}</b>.</>
+            ) : (
+              <>🟢 Sin comunas en riesgo alto esta semana. Mantener vigilancia epidemiológica rutinaria.</>
+            )}
+          </div>
+
+          {/* Conteo por nivel */}
+          <div className={styles.nivelChips}>
+            {NIVELES.map((n) => (
+              <span key={n.id} className={styles.nivelChip}>
+                <i style={{ background: n.color }} /> {n.label}: <b>{alerta.conteo[n.id]}</b>
+              </span>
+            ))}
+          </div>
+
+          {/* Tarjetas de acción priorizadas */}
+          {alerta.prioridad.length > 0 ? (
+            <div className={styles.accionGrid}>
+              {alerta.prioridad.slice(0, 6).map((p) => {
+                const Trend = p.tend === 'subiendo' ? TrendingUp : p.tend === 'bajando' ? TrendingDown : Minus;
+                return (
+                  <div key={p.id} className={styles.accionCard} style={{ borderLeftColor: p.nivel.color }}>
+                    <div className={styles.accionTop}>
+                      <span className={styles.accionNombre}>{p.nombre} <em>{p.municipio}</em></span>
+                      <span className={styles.accionNivel} style={{ color: p.nivel.color }}>{p.nivel.label}</span>
+                    </div>
+                    <div className={styles.accionMetrics}>
+                      <span>{p.casos.toFixed(1)} casos/sem</span>
+                      <span>{p.inc.toFixed(1)} /10k hab</span>
+                      <span className={styles.accionTend}><Trend size={13} /> {p.tend}</span>
+                    </div>
+                    <div className={styles.accionTexto}>{p.nivel.accion}</div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className={styles.accionVacio}>
+              Ninguna comuna supera el umbral de riesgo medio en esta semana proyectada.
+            </div>
+          )}
+
+          <div className={styles.mapNote}>
+            Nivel por <b>incidencia semanal</b> (casos por 10.000 hab): alto ≥ 3 · medio ≥ 1,5 · vigilancia ≥ 0,7.
+            Las acciones son sugerencias de control vectorial estándar; la decisión final es de la autoridad sanitaria.
+          </div>
+        </div>
+      )}
 
       {/* Nota honesta sobre el rol del clima */}
       <div className={styles.disclaimer}>
@@ -396,14 +593,15 @@ const Slider: React.FC<{
   icon: React.ReactNode; label: string; unit: string;
   value: number; range: { min: number; max: number; med: number };
   step: number; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({ icon, label, unit, value, range, step, onChange }) => (
-  <div className={styles.sliderRow}>
+  disabled?: boolean;
+}> = ({ icon, label, unit, value, range, step, onChange, disabled }) => (
+  <div className={`${styles.sliderRow} ${disabled ? styles.sliderDisabled : ''}`}>
     <div className={styles.sliderTop}>
       <span className={styles.sliderLabel}>{icon} {label}</span>
       <span className={styles.sliderValue}>{value.toFixed(step < 1 ? 1 : 0)} <em>{unit}</em></span>
     </div>
     <input type="range" min={range.min} max={range.max} step={step} value={value}
-      onChange={onChange} className={styles.climaSlider} />
+      onChange={onChange} className={styles.climaSlider} disabled={disabled} />
   </div>
 );
 

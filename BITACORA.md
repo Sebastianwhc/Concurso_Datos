@@ -54,6 +54,9 @@
 - **`SimulatorView.tsx`** — sliders de clima (precip/temp/humedad como escenario sostenido: `precip_acum8≈precip·8`, `*_mean8≈valor`), reproducción play/pause + slider semana a semana, panel de resumen (total AMB, pico proyectado, ranking de comunas en riesgo), trayectoria metropolitana y nota honesta "clima = modulador".
 - **Mapa de riesgo (ECharts):** **una sola serie** sobre un mapa combinado (relleno de comunas coloreado por `visualMap` + contorno de municipios disuelto) para que relleno y contorno compartan **una transformación de roam** (zoom/arrastre sin delay). Orden de dibujo: Bucaramanga al fondo (solo asoma su borde exterior, blanco), comunas en medio (reciben el hover), **Floridablanca encima** (borde morado, se ve también su frontera interna; su dato es `silent` para no bloquear el hover). El estilo por región va en `data[].itemStyle` (en serie `map` `regions` no aplica). `RiskMap` usa `notMerge:false` para conservar el zoom al avanzar de semana.
 - **Validado numéricamente** contra el mismo ONNX en Python: curva continua y plausible (~60–84 casos/sem AMB); los sliders mueven el resultado de forma realista (≈779–1514 casos acum. en 16 sem según el escenario de lluvia).
+- **Capa de alerta temprana + recomendaciones** — clasifica cada comuna por **incidencia semanal** (casos/10.000 hab; umbrales alto≥3 / medio≥1,5 / vigilancia≥0,7, calibrados con la distribución del pronóstico) y genera **acciones de control vectorial** priorizadas (fumigación focalizada, eliminación de criaderos, alerta a IPS), con tendencia (↑/↓/–) y un mensaje titular dinámico. Cierra el ciclo *predicción → acción* (como el proyecto ganador 2025).
+- **Traducción a pesos** — franja económica que multiplica los casos proyectados por el **costo medio por caso (≈$1,39 M COP**, ponderado con nuestras proporciones reales 68% ambulatorio / 31% hosp / 0,57% grave; ver `docs/06_IMPACTO_ECONOMICO.md`): muestra costo proyectado del horizonte y **ahorro potencial con acción temprana (−20%)**. Reactivo al escenario.
+- **Modo "Tiempo real"** (`liveWeather.ts`) — toggle que consume el **clima real de Bucaramanga vía Open-Meteo** (API abierta, sin key, CORS; agrega los últimos 7 días → features semanales), lo fija como escenario (acotado al rango del modelo), refresca cada 10 min y cae a sliders manuales si falla. Cierra el requisito de **fuentes en tiempo real** del nivel Avanzado. *(Honesto: Open-Meteo es abierto pero no datos.gov.co; el histórico de entrenamiento sí usa IDEAM/CDMB oficiales. El clima sigue siendo modulador.)*
 
 ### Navegación / layout (`src/layout/MainLayout.tsx`)
 - Sidebar glass con enlaces a **Inicio (landing)**, Dashboard y Simulador. El logo "EcoSalud IA" también vuelve al landing. (Antes no había forma de regresar al landing desde el panel.)
@@ -64,8 +67,27 @@
 ---
 
 ## ⏳ Lo que falta
-- El **core ya está completo** (dashboard + modelo + simulador interactivo). Queda integrar las ramas del equipo, pulir la landing y mejoras menores.
+
+### Documentación técnica del concurso (criterios de evaluación)
+Ya creados en `docs/`: **`INFORME_SIMULADOR.md`** (cómo funciona el código), **`INFORME_MATEMATICO.md`** (todo el proceso con fórmulas: datasets → features → modelo → validación → pronóstico) y **`06_IMPACTO_ECONOMICO.md`** (cuánto cuesta el dengue y cuánto ahorra la herramienta, con fuentes citadas).
+
+Pendiente por redactar/estructurar:
+- **Metodología CRISP-ML** — enmarcar el trabajo en las fases (se sugiere en las reglas).
+- **Arquitectura de la solución** — consolidar lo disperso + diagrama.
+- **Análisis de datos (EDA)** — documento con cifras y gráficos.
+- **Diagramas de flujo** (Mermaid): datos, entrenamiento, inferencia.
+- **Evidencia de datos abiertos** — tabla de fuentes con enlaces y licencias.
+- **Actualizar `README.md`** — hoy menciona Mapbox/Canvas/DANE que ya no aplican.
+
+### Obligatorio para concursar (puerta de elegibilidad)
+- **Publicar el "Uso" en datos.gov.co/usos** (`https://herramientas.datos.gov.co/usos`) — sin esto la propuesta **no se evalúa**.
+- Inscripción dentro del cronograma; final presencial 1.ª semana de agosto (GovCamp 2026).
+
+### Otros
+- El **core ya está completo** (dashboard + modelo + simulador interactivo + alerta + economía + tiempo real). Queda integrar las ramas del equipo y pulir la landing.
 - Verificar el simulador en **producción** (Vercel) tras el deploy: que el wasm cargue offline en el entorno real.
+
+> **Autoevaluación rúbrica (pesos oficiales):** Innovación 15 · Datos abiertos 20 · Rigor 15 · IA 20 · Impacto 20 · Diseño 10. Estimación actual ≈ **80/100**; con la documentación + registro ≈ **86–90** (perfil de finalista). Topes estructurales: IA (GBM es "intermedio" en su taxonomía; nos apoyamos en el *modelo de simulación* + despliegue) e Impacto (el 5/5 exige piloto operativo real).
 
 ## 🌿 Ramas del equipo (pendientes de integrar)
 - **`origin/daniela`** — rediseño de `ThreatSection` (landing) con gráficos de datos reales de Bucaramanga (edad + tendencia anual, 2024/brote en rojo). ⚠️ Tiene 2 errores que rompen el build: import sin usar (línea 4) y propiedad duplicada en objeto (línea 666, TS1117). **Revisar enfoque:** debe ser *storytelling*, no un segundo dashboard.
