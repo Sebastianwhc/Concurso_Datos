@@ -2,7 +2,7 @@
 
 **Concurso:** Datos al Ecosistema 2026 · Categoría Avanzado · Reto Salud y Bienestar
 **Repo:** https://github.com/Sebastianwhc/Concurso_Datos · **Deploy:** https://concursodatos.vercel.app
-**Última actualización:** 2026-06-17
+**Última actualización:** 2026-06-18
 
 ---
 
@@ -61,8 +61,11 @@
 ### Navegación / layout (`src/layout/MainLayout.tsx`)
 - Sidebar glass con enlaces a **Inicio (landing)**, Dashboard y Simulador. El logo "EcoSalud IA" también vuelve al landing. (Antes no había forma de regresar al landing desde el panel.)
 
-### Landing
-- Construida previamente (scrollytelling: Hero, Threat, Territory, Solution, Simulator, CTA).
+### Landing (`src/features/landing/`) — *ramas del equipo ya integradas*
+- Scrollytelling: **Hero → Threat → Transition → Territory → Solution → Simulator → CTA**.
+- **Aporte de Daniela (rama `daniela`, integrado):** storytelling actos 1–5; `ThreatSection` y `TerritorySection` alimentadas con **datos reales SIVIGILA** (`LandingView` carga `loadDengueData` y pasa `stats`); nueva `TransitionSection`.
+- **Sección de contacto + footer global (rama `feat/seccion-contacto`, integrado):** "Contacto de los Desarrolladores" en `CTASection` + footer en `MainLayout`. Al integrar se **conservó la lógica móvil off-canvas** del sidebar (solo se sumó el footer); resueltos a mano los conflictos en `MainLayout.tsx/.module.css` y `.gitignore`.
+- **Pendiente narrativo (brief listo):** falta el **acto económico** ("el dinero es casi todo en salud") — ver [`docs/07_BRIEF_NARRATIVA_ECONOMICA.md`](docs/07_BRIEF_NARRATIVA_ECONOMICA.md): contador de costo en `ThreatSection` (stakes) + nueva sección de **retorno/ahorro** antes del CTA (payoff).
 
 ---
 
@@ -84,15 +87,15 @@ Pendiente por redactar/estructurar:
 - Inscripción dentro del cronograma; final presencial 1.ª semana de agosto (GovCamp 2026).
 
 ### Otros
-- El **core ya está completo** (dashboard + modelo + simulador interactivo + alerta + economía + tiempo real). Queda integrar las ramas del equipo y pulir la landing.
+- El **core ya está completo** (dashboard + modelo + simulador interactivo + alerta + economía + tiempo real). **Ramas del equipo ya integradas a `main`** (landing de Daniela + sección de contacto); build verde (`tsc -b && vite build`). Queda pulir la landing y sumar el acto económico (brief listo).
 - Verificar el simulador en **producción** (Vercel) tras el deploy: que el wasm cargue offline en el entorno real.
 
 > **Autoevaluación rúbrica (pesos oficiales):** Innovación 15 · Datos abiertos 20 · Rigor 15 · IA 20 · Impacto 20 · Diseño 10. Estimación actual ≈ **80/100**; con la documentación + registro ≈ **86–90** (perfil de finalista). Topes estructurales: IA (GBM es "intermedio" en su taxonomía; nos apoyamos en el *modelo de simulación* + despliegue) e Impacto (el 5/5 exige piloto operativo real).
 
-## 🌿 Ramas del equipo (pendientes de integrar)
-- **`origin/daniela`** — rediseño de `ThreatSection` (landing) con gráficos de datos reales de Bucaramanga (edad + tendencia anual, 2024/brote en rojo). ⚠️ Tiene 2 errores que rompen el build: import sin usar (línea 4) y propiedad duplicada en objeto (línea 666, TS1117). **Revisar enfoque:** debe ser *storytelling*, no un segundo dashboard.
-- **`origin/feat/seccion-contacto`** — sección "Contacto de los Desarrolladores" en `CTASection` + footer global en `MainLayout`. ⚠️ Conflicto con `MainLayout` (mi sidebar móvil off-canvas): al integrar, conservar la lógica móvil y añadir solo el footer.
-- *Decisión actual:* se quedan en sus ramas; se integran más adelante con revisión.
+## 🌿 Ramas del equipo (✅ integradas a `main` — 2026-06-18)
+- **`origin/daniela`** — landing storytelling (actos 1–5) + `ThreatSection`/`TerritorySection` con datos reales SIVIGILA + `TransitionSection`. Merge limpio. *(Los 2 errores de build que tenía la rama ya estaban resueltos por su commit `fc4dd7c` "revert ThreatSection".)*
+- **`origin/feat/seccion-contacto`** — sección de contacto en `CTASection` + footer global en `MainLayout`. Conflictos resueltos a mano (`MainLayout.tsx/.module.css`, `.gitignore`) **conservando el sidebar móvil off-canvas**; se quitó un marcador "DANIELA" colado en el `<title>`.
+- *Estado:* merges hechos en local, **sin `push`** todavía; build verde verificado.
 
 ### 4. Pendientes menores / mejoras
 - Santander: opción de nombres siempre visibles.
