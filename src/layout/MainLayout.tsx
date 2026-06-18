@@ -46,7 +46,7 @@ const MainLayout: React.FC = () => {
             <Activity className={styles.icon} />
             {isSidebarOpen && <span>SIVIGILA Actual</span>}
           </NavLink>
-          
+
           <NavLink
             to="/simulador"
             onClick={() => { if (window.innerWidth <= 768) setSidebarOpen(false); }}
@@ -56,16 +56,16 @@ const MainLayout: React.FC = () => {
             {isSidebarOpen && <span>Simulador Predictivo</span>}
           </NavLink>
         </nav>
-        
+
         {/* Indicador de Estado para inmersión UX */}
         <div className={styles.systemStatus}>
-           <Cpu className={styles.statusIcon} />
-           {isSidebarOpen && (
-             <div className={styles.statusText}>
-               <span>Motor Predictivo</span>
-               <span className={styles.onlineBadge}>Online</span>
-             </div>
-           )}
+          <Cpu className={styles.statusIcon} />
+          {isSidebarOpen && (
+            <div className={styles.statusText}>
+              <span>Motor Predictivo</span>
+              <span className={styles.onlineBadge}>Online</span>
+            </div>
+          )}
         </div>
       </aside>
 
@@ -80,11 +80,19 @@ const MainLayout: React.FC = () => {
             <p className={styles.subtitle}>Reto: Salud y Bienestar | Inteligencia Artificial</p>
           </div>
         </header>
-        
+
         <div className={styles.pageContent}>
           {/* Aquí se renderiza dinámicamente DashboardView o SimulatorView */}
-          <Outlet /> 
+          <Outlet />
         </div>
+
+        {/* FOOTER GENERAL DE CONTACTO */}
+        <footer className={styles.appFooter}>
+          <span>Desarrollado por: </span>
+          <a href="mailto:daalreba@gmail.com" className={styles.footerLink}>Daniela Reyes</a>
+          <span className={styles.separator}>|</span>
+          <a href="mailto:sebastian00735@gmail.com" className={styles.footerLink}>Sebastián Díaz</a>
+        </footer>
       </main>
     </div>
   );

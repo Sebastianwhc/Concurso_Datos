@@ -27,3 +27,7 @@ dist-ssr
 # El artefacto procesado vive en public/data/ y SÍ se versiona.
 /data/
 *.pdf
+
+# Local portable Node.js
+.node/
+.node_temp/

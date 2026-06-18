@@ -234,3 +234,36 @@
   .headerInfo h1 { font-size: 0.95rem; }
   .pageContent { padding: 0.75rem; }
 }
+
+/* Footer global de contacto */
+.appFooter {
+  padding: 1rem 2rem;
+  background: rgba(16, 22, 35, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  z-index: 5;
+}
+
+.footerLink {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.footerLink:hover {
+  color: var(--text-primary);
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+.separator {
+  color: rgba(255, 255, 255, 0.15);
+  margin: 0 0.5rem;
+}
