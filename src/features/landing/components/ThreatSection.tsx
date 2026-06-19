@@ -25,6 +25,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
   const [inViewAct2, setInViewAct2] = useState(false);
   const [inViewAct3, setInViewAct3] = useState(false);
   const [inViewAct4, setInViewAct4] = useState(false);
+  const [costBrote2024, setCostBrote2024] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 16000 : 0
+  );
 
   useEffect(() => {
     if (loading || !data) return;
@@ -56,6 +59,30 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
         '-=0.95'
       )
       .fromTo(
+        '.scroll-reveal-econ-title',
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out' },
+        '-=0.95'
+      )
+      .fromTo(
+        '.scroll-reveal-econ-kpi',
+        { opacity: 0, y: 25 },
+        { opacity: 1, y: 0, duration: 1.1, ease: 'power3.out' },
+        '-=0.85'
+      )
+      .fromTo(
+        '.scroll-reveal-econ-sub',
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 1, ease: 'power3.out' },
+        '-=0.85'
+      )
+      .fromTo(
+        '.scroll-reveal-econ-methodology',
+        { opacity: 0 },
+        { opacity: 1, duration: 1, ease: 'power2.out' },
+        '-=0.75'
+      )
+      .fromTo(
         '.scroll-reveal-text',
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 1.2, ease: 'power3.out' },
@@ -67,6 +94,19 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
         { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: 'power2.out' },
         '-=0.8'
       );
+
+    // Animación de conteo del brote 2024 en Acto 1 (con soporte de accesibilidad)
+    if (typeof window !== 'undefined' && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const econCountObj = { val: 0 };
+      act1Tl.to(econCountObj, {
+        val: 16000,
+        duration: 2.2,
+        ease: 'power2.out',
+        onUpdate: () => {
+          setCostBrote2024(Math.round(econCountObj.val));
+        }
+      }, '-=3.2'); // Se ejecuta en paralelo durante la animación del bloque
+    }
 
     // Acto 2: Trigger de Visibilidad del Gráfico
     ScrollTrigger.create({
@@ -295,28 +335,12 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
         alignItems: 'center',
         justifyContent: 'center',
         padding: '6rem 2rem 0 2rem',
-        background: 'linear-gradient(180deg, #050810 0%, #0b0f19 30%, #0d1425 100%)',
+        background: 'linear-gradient(180deg, #050810 0%, #0b0f19 30%, #0d1222 100%)',
         overflow: 'hidden',
       }}
     >
-      {/* Dynamic Red Accent Glow behind KPI (Multicapa) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '22%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: 'min(750px, 95vw)',
-          height: 'min(750px, 95vw)',
-          background: 'radial-gradient(circle, rgba(255,77,77,0.06) 0%, rgba(255,107,107,0.02) 45%, rgba(255,122,122,0.005) 70%, transparent 100%)',
-          pointerEvents: 'none',
-          zIndex: 0,
-          filter: 'blur(70px)',
-        }}
-      />
-
       <div style={{ maxWidth: '1100px', width: '100%', position: 'relative', zIndex: 1 }}>
-        
+
         {/* ─── ACTO 1: LA AMENAZA (DISEÑO PREMIUM HERO) ─── */}
         <div
           ref={act1Ref}
@@ -331,6 +355,74 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             position: 'relative',
           }}
         >
+          {/* Ambient Narrative Halos (Rojo Epidemiológico) */}
+          {/* Halo Central (Detrás del KPI 2.418) */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '46%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(600px, 85vw)',
+              height: 'min(600px, 85vw)',
+              background: 'radial-gradient(circle, #ff3b4d 0%, rgba(255, 59, 77, 0.4) 50%, transparent 80%)',
+              opacity: 0.28,
+              filter: 'blur(80px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Superior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '15%',
+              left: '-10%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(800px, 100vw)',
+              height: 'min(800px, 100vw)',
+              background: 'radial-gradient(circle, #ff5b6b 0%, rgba(255, 91, 107, 0.3) 50%, transparent 80%)',
+              opacity: 0.18,
+              filter: 'blur(110px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Derecho Medio */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '-12%',
+              transform: 'translate(50%, -50%)',
+              width: 'min(850px, 110vw)',
+              height: 'min(850px, 110vw)',
+              background: 'radial-gradient(circle, #ff4d5a 0%, rgba(255, 77, 90, 0.3) 50%, transparent 80%)',
+              opacity: 0.24,
+              filter: 'blur(120px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Inferior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '80%',
+              left: '-8%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(700px, 95vw)',
+              height: 'min(700px, 95vw)',
+              background: 'radial-gradient(circle, #ff3b4d 0%, rgba(255, 59, 77, 0.3) 50%, transparent 80%)',
+              opacity: 0.15,
+              filter: 'blur(100px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
           {/* Upper Badge */}
           <span
             className="scroll-reveal-badge"
@@ -450,6 +542,106 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             </span>
           </div>
 
+          {/* Nuevo Bloque Narrativo: Impacto Económico en Acto 1 */}
+          <div
+            className="scroll-reveal-econ"
+            style={{
+              marginTop: '1.5rem',
+              marginBottom: '3.5rem',
+              position: 'relative',
+              zIndex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '0.75rem',
+            }}
+          >
+            {/* Ambient diffuse lighting behind the economic beat */}
+            <div style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: '180px',
+              height: '180px',
+              background: 'radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, transparent 75%)',
+              filter: 'blur(30px)',
+              zIndex: -1,
+              pointerEvents: 'none',
+            }} />
+
+            <h4
+              className="scroll-reveal-econ-title"
+              style={{
+                fontSize: '0.9rem',
+                fontWeight: 700,
+                color: '#ff5c5c',
+                letterSpacing: '1.5px',
+                textTransform: 'uppercase',
+                margin: 0,
+                opacity: 0,
+              }}
+            >
+              EL DENGUE NO SOLO ENFERMA
+            </h4>
+
+            <p
+              className="scroll-reveal-econ-kpi"
+              style={{
+                fontSize: 'clamp(1.1rem, 2.5vw, 1.6rem)',
+                color: 'rgba(255,255,255,0.9)',
+                fontWeight: 500,
+                maxWidth: '650px',
+                margin: 0,
+                lineHeight: 1.4,
+                opacity: 0,
+              }}
+            >
+              En el brote epidemiológico de 2024, el dengue le costó a Bucaramanga aproximadamente{' '}
+              <strong style={{
+                color: '#ef4444',
+                fontWeight: 900,
+                display: 'block',
+                fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
+                letterSpacing: '-1.5px',
+                marginTop: '0.5rem',
+                textShadow: '0 0 25px rgba(239,68,68,0.3)',
+              }}>
+                ≈ ${costBrote2024.toLocaleString('de-DE')} millones
+              </strong>
+            </p>
+
+            <p
+              className="scroll-reveal-econ-sub"
+              style={{
+                fontSize: '0.82rem',
+                color: 'rgba(255,255,255,0.45)',
+                maxWidth: '520px',
+                margin: '0 auto',
+                lineHeight: 1.5,
+                opacity: 0,
+              }}
+            >
+              Recursos destinados a atención médica, hospitalizaciones y respuesta sanitaria durante uno de los años más críticos del brote.
+            </p>
+
+            {/* Nota Metodológica Académica */}
+            <div
+              className="scroll-reveal-econ-methodology"
+              style={{
+                fontSize: '0.68rem',
+                color: 'rgba(255,255,255,0.25)',
+                maxWidth: '550px',
+                margin: '0.5rem auto 0 auto',
+                lineHeight: 1.4,
+                fontStyle: 'italic',
+                opacity: 0,
+              }}
+            >
+              Fuente: estimación económica del brote de dengue en Bucaramanga 2024 basada en costos directos de atención reportados en estudios colombianos y escenarios documentados del proyecto.
+            </div>
+          </div>
+
           {/* Narrative Paragraph */}
           <p
             className="scroll-reveal-text"
@@ -518,22 +710,74 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             alignItems: 'center',
             textAlign: 'center',
             position: 'relative',
-            overflow: 'hidden',
           }}
         >
-          {/* Ambient Cian Glow behind historical chart */}
+          {/* Ambient Narrative Halos (Cian) */}
+          {/* Halo Central (Detrás del Gráfico Histórico) */}
           <div
             style={{
               position: 'absolute',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: 'min(800px, 100vw)',
-              height: 'min(600px, 80vh)',
-              background: 'radial-gradient(circle, rgba(0,229,255,0.05) 0%, rgba(0,207,255,0.02) 50%, rgba(0,157,255,0.005) 75%, transparent 100%)',
+              width: 'min(600px, 85vw)',
+              height: 'min(600px, 85vw)',
+              background: 'radial-gradient(circle, #00f0ff 0%, rgba(0, 240, 255, 0.4) 50%, transparent 80%)',
+              opacity: 0.22,
+              filter: 'blur(80px)',
               pointerEvents: 'none',
               zIndex: 0,
-              filter: 'blur(80px)',
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Superior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '15%',
+              left: '-10%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(800px, 100vw)',
+              height: 'min(800px, 100vw)',
+              background: 'radial-gradient(circle, #00e5ff 0%, rgba(0, 229, 255, 0.3) 50%, transparent 80%)',
+              opacity: 0.14,
+              filter: 'blur(110px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Derecho Medio */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '-12%',
+              transform: 'translate(50%, -50%)',
+              width: 'min(850px, 110vw)',
+              height: 'min(850px, 110vw)',
+              background: 'radial-gradient(circle, #00b8ff 0%, rgba(0, 184, 255, 0.3) 50%, transparent 80%)',
+              opacity: 0.18,
+              filter: 'blur(120px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Inferior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '80%',
+              left: '-8%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(700px, 95vw)',
+              height: 'min(700px, 95vw)',
+              background: 'radial-gradient(circle, #00f0ff 0%, rgba(0, 240, 255, 0.3) 50%, transparent 80%)',
+              opacity: 0.12,
+              filter: 'blur(100px)',
+              pointerEvents: 'none',
+              zIndex: 0,
             }}
           />
           {/* Upper Badge */}
@@ -620,7 +864,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
           >
             <div style={{ position: 'relative', width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
               <div style={{ position: 'relative', width: '100%', minWidth: '780px', height: `${histH}px` }}>
-                
+
                 {/* Floating Peak Card */}
                 <div style={{
                   position: 'absolute',
@@ -741,7 +985,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 </svg>
               </div>
             </div>
-            
+
             <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', marginTop: '1.5rem', margin: '0', letterSpacing: '0.5px' }}>
               Curva Histórica de Casos Totales Anuales — Visualización basada exclusivamente en los registros epidemiológicos reales.
             </p>
@@ -858,9 +1102,77 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             alignItems: 'center',
             textAlign: 'center',
             position: 'relative',
-            overflow: 'hidden',
           }}
         >
+          {/* Ambient Narrative Halos (Violeta) */}
+          {/* Halo Central (Detrás de los Paneles) */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(600px, 85vw)',
+              height: 'min(600px, 85vw)',
+              background: 'radial-gradient(circle, #b300ff 0%, rgba(179, 0, 255, 0.4) 50%, transparent 80%)',
+              opacity: 0.22,
+              filter: 'blur(80px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Superior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '15%',
+              left: '-10%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(800px, 100vw)',
+              height: 'min(800px, 100vw)',
+              background: 'radial-gradient(circle, #b300ff 0%, rgba(179, 0, 255, 0.3) 50%, transparent 80%)',
+              opacity: 0.14,
+              filter: 'blur(110px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Derecho Medio */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '-12%',
+              transform: 'translate(50%, -50%)',
+              width: 'min(850px, 110vw)',
+              height: 'min(850px, 110vw)',
+              background: 'radial-gradient(circle, #b300ff 0%, rgba(179, 0, 255, 0.3) 50%, transparent 80%)',
+              opacity: 0.18,
+              filter: 'blur(120px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Inferior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '80%',
+              left: '-8%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(700px, 95vw)',
+              height: 'min(700px, 95vw)',
+              background: 'radial-gradient(circle, #b300ff 0%, rgba(179, 0, 255, 0.3) 50%, transparent 80%)',
+              opacity: 0.12,
+              filter: 'blur(100px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
           {/* Upper Badge */}
           <span
             className="scroll-reveal-badge-act3"
@@ -868,15 +1180,15 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               display: 'inline-block',
               padding: '0.45rem 1.3rem',
               borderRadius: '100px',
-              background: 'rgba(0, 229, 255, 0.05)',
-              border: '1px solid rgba(0, 229, 255, 0.2)',
-              color: '#00e5ff',
+              background: 'rgba(179, 0, 255, 0.05)',
+              border: '1px solid rgba(179, 0, 255, 0.2)',
+              color: '#b300ff',
               fontSize: '0.8rem',
               fontWeight: 600,
               letterSpacing: '2px',
               textTransform: 'uppercase',
               marginBottom: '2rem',
-              boxShadow: '0 0 15px rgba(0, 229, 255, 0.12)',
+              boxShadow: '0 0 15px rgba(179, 0, 255, 0.12)',
               opacity: 0,
             }}
           >
@@ -900,7 +1212,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             <br />
             <span
               style={{
-                background: 'linear-gradient(90deg, #00f0ff, #00b8ff, #0055ff)',
+                background: 'linear-gradient(90deg, #df80ff, #b300ff, #7300a3)',
                 WebkitBackgroundClip: 'text',
                 backgroundClip: 'text',
                 color: 'transparent',
@@ -940,10 +1252,10 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               className="scroll-reveal-panel-left-act3"
               style={{
                 background: 'rgba(10,15,30,0.65)',
-                border: '1px solid rgba(0,229,255,0.12)',
+                border: '1px solid rgba(179,0,255,0.12)',
                 backdropFilter: 'blur(18px)',
                 WebkitBackdropFilter: 'blur(18px)',
-                boxShadow: '0 0 30px rgba(0,229,255,0.05)',
+                boxShadow: '0 0 30px rgba(179,0,255,0.05)',
                 borderRadius: '24px',
                 padding: '2.5rem 2rem',
                 display: 'flex',
@@ -964,7 +1276,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                   transform: 'translate(-50%, -50%)',
                   width: '320px',
                   height: '320px',
-                  background: 'radial-gradient(circle, rgba(168,85,247,0.05) 0%, rgba(124,58,237,0.02) 45%, rgba(0,229,255,0.005) 75%, transparent 100%)',
+                  background: 'radial-gradient(circle, rgba(168,85,247,0.05) 0%, rgba(124,58,237,0.02) 45%, rgba(179,0,255,0.005) 75%, transparent 100%)',
                   pointerEvents: 'none',
                   zIndex: 0,
                   filter: 'blur(70px)',
@@ -975,20 +1287,20 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               </h3>
 
               <div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap', flex: 1 }}>
-                
+
                 {/* Mujeres Legend Block */}
                 <div style={{
                   flex: 1,
                   minWidth: '125px',
                   padding: '1.2rem',
-                  background: 'rgba(0, 240, 255, 0.02)',
-                  border: '1px solid rgba(0, 240, 255, 0.1)',
+                  background: 'rgba(179, 0, 255, 0.02)',
+                  border: '1px solid rgba(179, 0, 255, 0.1)',
                   borderRadius: '16px',
                   textAlign: 'center',
-                  boxShadow: '0 0 20px rgba(0, 240, 255, 0.02)',
+                  boxShadow: '0 0 20px rgba(179, 0, 255, 0.02)',
                 }}>
                   <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>MUJERES</span>
-                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#00f0ff', textShadow: '0 0 10px rgba(0,240,255,0.3)', margin: '0.3rem 0' }}>
+                  <div style={{ fontSize: '1.8rem', fontWeight: 800, color: '#b300ff', textShadow: '0 0 10px rgba(179,0,255,0.3)', margin: '0.3rem 0' }}>
                     {data.femalePercent}%
                   </div>
                   <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
@@ -1004,16 +1316,16 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                   const maleLen = (data.malePercent / 100) * circumference;
                   return (
                     <div style={{ position: 'relative', width: '240px', height: '240px' }}>
-                      <svg viewBox="0 0 280 280" width="240" height="240" style={{ filter: 'drop-shadow(0 0 20px rgba(0,240,255,0.15))', maxWidth: '100%', transform: 'rotate(-90deg)' }}>
+                      <svg viewBox="0 0 280 280" width="240" height="240" style={{ filter: 'drop-shadow(0 0 20px rgba(179,0,255,0.15))', maxWidth: '100%', transform: 'rotate(-90deg)' }}>
                         <circle cx="140" cy="140" r={radius} fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="20" />
-                        
-                        {/* Mujeres (Cyan) Segment */}
+
+                        {/* Mujeres (Violet) Segment */}
                         <circle
                           cx="140"
                           cy="140"
                           r={radius}
                           fill="none"
-                          stroke="#00f0ff"
+                          stroke="#d470ffff"
                           strokeWidth="20"
                           strokeDasharray={`${femaleLen} ${circumference}`}
                           strokeDashoffset={inViewAct3 ? 0 : circumference}
@@ -1057,7 +1369,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                         <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.2rem' }}>
                           CASOS ANALIZADOS
                         </span>
-                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#00f0ff', marginTop: '0.15rem' }}>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#b300ff', marginTop: '0.15rem' }}>
                           Año 2025
                         </span>
                       </div>
@@ -1093,10 +1405,10 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               className="scroll-reveal-panel-right-act3"
               style={{
                 background: 'rgba(10,15,30,0.65)',
-                border: '1px solid rgba(0,229,255,0.12)',
+                border: '1px solid rgba(179,0,255,0.12)',
                 backdropFilter: 'blur(18px)',
                 WebkitBackdropFilter: 'blur(18px)',
-                boxShadow: '0 0 30px rgba(0,229,255,0.05)',
+                boxShadow: '0 0 30px rgba(179,0,255,0.05)',
                 borderRadius: '24px',
                 padding: '2.5rem 2rem',
                 display: 'flex',
@@ -1107,7 +1419,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 overflow: 'hidden',
               }}
             >
-              {/* Cian Glow behind age histogram */}
+              {/* Violet Glow behind age histogram */}
               <div
                 style={{
                   position: 'absolute',
@@ -1116,7 +1428,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                   transform: 'translate(-50%, -50%)',
                   width: '320px',
                   height: '320px',
-                  background: 'radial-gradient(circle, rgba(0,229,255,0.05) 0%, rgba(0,207,255,0.015) 55%, transparent 75%)',
+                  background: 'radial-gradient(circle, rgba(179,0,255,0.05) 0%, rgba(179,0,255,0.015) 55%, transparent 75%)',
                   pointerEvents: 'none',
                   zIndex: 0,
                   filter: 'blur(70px)',
@@ -1137,24 +1449,24 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 const chartH = h - padB - padT;
 
                 const maxVal = Math.max(...data.ageDistribution.map(d => d.cases), 1);
-                
+
                 return (
                   <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                    
+
                     {/* SVG Bar Chart Wrapper with scroll on mobile */}
                     <div style={{ width: '100%', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
                       <div style={{ minWidth: '480px', width: '100%', height: `${h}px` }}>
                         <svg viewBox={`0 0 ${w} ${h}`} style={{ display: 'block', overflow: 'visible', width: '100%', height: '100%' }}>
-                          
+
                           <defs>
                             <linearGradient id="barGradAct3" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="#00f0ff" />
-                              <stop offset="100%" stopColor="#0055ff" />
+                              <stop offset="0%" stopColor="#b300ff" />
+                              <stop offset="100%" stopColor="#4d0080" />
                             </linearGradient>
-                            
+
                             <linearGradient id="barGradDominant" x1="0" y1="0" x2="0" y2="1">
-                              <stop offset="0%" stopColor="#00f0ff" />
-                              <stop offset="100%" stopColor="#00c8ff" />
+                              <stop offset="0%" stopColor="#e066ff" />
+                              <stop offset="100%" stopColor="#b300ff" />
                             </linearGradient>
 
                             <clipPath id="barRevealClip">
@@ -1200,10 +1512,10 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                                     height={barH}
                                     rx="5"
                                     fill={isDominant ? 'url(#barGradDominant)' : 'url(#barGradAct3)'}
-                                    stroke={isDominant ? '#00f0ff' : 'none'}
+                                    stroke={isDominant ? '#b300ff' : 'none'}
                                     strokeWidth={isDominant ? 2 : 0}
                                     style={{
-                                      filter: isDominant ? 'drop-shadow(0 0 10px rgba(0,240,255,0.4))' : 'drop-shadow(0 0 4px rgba(0,85,255,0.15))',
+                                      filter: isDominant ? 'drop-shadow(0 0 10px rgba(179,0,255,0.4))' : 'drop-shadow(0 0 4px rgba(179,0,255,0.15))',
                                     }}
                                   />
 
@@ -1212,7 +1524,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                                     x={x + barW / 2}
                                     y={y - 8}
                                     textAnchor="middle"
-                                    fill={isDominant ? '#00f0ff' : 'rgba(255,255,255,0.5)'}
+                                    fill={isDominant ? '#b300ff' : 'rgba(255,255,255,0.5)'}
                                     fontSize="10"
                                     fontWeight={isDominant ? '800' : '600'}
                                   >
@@ -1224,7 +1536,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                                     x={x + barW / 2}
                                     y={h - 12}
                                     textAnchor="middle"
-                                    fill={isDominant ? '#00f0ff' : 'rgba(255,255,255,0.4)'}
+                                    fill={isDominant ? '#b300ff' : 'rgba(255,255,255,0.4)'}
                                     fontSize="9.5"
                                     fontWeight={isDominant ? '700' : '400'}
                                   >
@@ -1242,14 +1554,14 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                                         height="16"
                                         rx="8"
                                         fill="rgba(10, 15, 30, 0.85)"
-                                        stroke="#00f0ff"
+                                        stroke="#b300ff"
                                         strokeWidth="1.2"
                                       />
                                       <text
                                         x={x + barW / 2}
                                         y={y - 27}
                                         textAnchor="middle"
-                                        fill="#00f0ff"
+                                        fill="#b300ff"
                                         fontSize="7.5"
                                         fontWeight="900"
                                         letterSpacing="0.5px"
@@ -1268,8 +1580,8 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
 
                     {/* Insight Card */}
                     <div style={{
-                      background: 'rgba(0, 240, 255, 0.02)',
-                      border: '1px solid rgba(0, 240, 255, 0.08)',
+                      background: 'rgba(179, 0, 255, 0.02)',
+                      border: '1px solid rgba(179, 0, 255, 0.08)',
                       borderRadius: '16px',
                       padding: '1.2rem',
                       textAlign: 'left',
@@ -1277,7 +1589,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                       lineHeight: '1.5',
                       color: 'rgba(255,255,255,0.7)',
                     }}>
-                      El grupo etario con mayor incidencia corresponde a <strong style={{ color: '#00f0ff' }}>{data.mostAffectedAgeGroup}</strong>, concentrando <strong style={{ color: '#00f0ff' }}>{data.mostAffectedCases.toLocaleString()} registros</strong> durante el periodo analizado.
+                      El grupo etario con mayor incidencia corresponde a <strong style={{ color: '#b300ff' }}>{data.mostAffectedAgeGroup}</strong>, concentrando <strong style={{ color: '#b300ff' }}>{data.mostAffectedCases.toLocaleString()} registros</strong> durante el periodo analizado.
                     </div>
 
                   </div>
@@ -1292,10 +1604,10 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             style={{
               width: '100%',
               background: 'rgba(10,15,30,0.65)',
-              border: '1px solid rgba(0,229,255,0.12)',
+              border: '1px solid rgba(179,0,255,0.12)',
               backdropFilter: 'blur(18px)',
               WebkitBackdropFilter: 'blur(18px)',
-              boxShadow: '0 0 30px rgba(0,229,255,0.05)',
+              boxShadow: '0 0 30px rgba(179,0,255,0.05)',
               borderRadius: '24px',
               padding: '2rem 2.5rem',
               textAlign: 'left',
@@ -1305,7 +1617,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#00f0ff', letterSpacing: '1.5px', textTransform: 'uppercase', margin: 0 }}>
+            <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#b300ff', letterSpacing: '1.5px', textTransform: 'uppercase', margin: 0 }}>
               HALLAZGO EPIDEMIOLÓGICO
             </h4>
             <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0 }}>
@@ -1326,22 +1638,74 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             alignItems: 'center',
             textAlign: 'center',
             position: 'relative',
-            overflow: 'hidden',
           }}
         >
-          {/* Warm Clinical Glow behind severity bar and cards */}
+          {/* Ambient Narrative Halos (Amarillo) */}
+          {/* Halo Central (Detrás del Contenido Clínico) */}
           <div
             style={{
               position: 'absolute',
               top: '45%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: 'min(850px, 100vw)',
-              height: 'min(650px, 85vh)',
-              background: 'radial-gradient(circle, rgba(250,204,21,0.04) 0%, rgba(251,146,60,0.02) 40%, rgba(239,68,68,0.005) 75%, transparent 100%)',
+              width: 'min(600px, 85vw)',
+              height: 'min(600px, 85vw)',
+              background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.4) 50%, transparent 80%)',
+              opacity: 0.22,
+              filter: 'blur(80px)',
               pointerEvents: 'none',
               zIndex: 0,
-              filter: 'blur(80px)',
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Superior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '15%',
+              left: '-10%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(800px, 100vw)',
+              height: 'min(800px, 100vw)',
+              background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.3) 50%, transparent 80%)',
+              opacity: 0.14,
+              filter: 'blur(110px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Derecho Medio */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '-12%',
+              transform: 'translate(50%, -50%)',
+              width: 'min(850px, 110vw)',
+              height: 'min(850px, 110vw)',
+              background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.3) 50%, transparent 80%)',
+              opacity: 0.18,
+              filter: 'blur(120px)',
+              pointerEvents: 'none',
+              zIndex: 0,
+            }}
+          />
+
+          {/* Halo Lateral Izquierdo Inferior */}
+          <div
+            style={{
+              position: 'absolute',
+              top: '80%',
+              left: '-8%',
+              transform: 'translate(-50%, -50%)',
+              width: 'min(700px, 95vw)',
+              height: 'min(700px, 95vw)',
+              background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.3) 50%, transparent 80%)',
+              opacity: 0.12,
+              filter: 'blur(100px)',
+              pointerEvents: 'none',
+              zIndex: 0,
             }}
           />
           {/* Upper Badge */}
@@ -1439,15 +1803,15 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               {/* Sin signos label */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.15rem' }}>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Sin signos de alarma</span>
-                <span style={{ color: '#00e5ff', fontSize: '1.1rem', fontWeight: 800 }}>
+                <span style={{ color: '#facc15', fontSize: '1.1rem', fontWeight: 800 }}>
                   {data.sinSignosCases.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>({data.sinSignosPercent}%)</span>
                 </span>
               </div>
-              
+
               {/* Con signos label */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem' }}>
                 <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Con signos de alarma</span>
-                <span style={{ color: '#facc15', fontSize: '1.1rem', fontWeight: 800 }}>
+                <span style={{ color: '#fb923c', fontSize: '1.1rem', fontWeight: 800 }}>
                   {data.conSignosCases.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>({data.conSignosPercent}%)</span>
                 </span>
               </div>
@@ -1472,21 +1836,21 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               display: 'flex',
               border: '1px solid rgba(255,255,255,0.05)',
             }}>
-              {/* Segment 1: Sin Signos (Cyan) */}
+              {/* Segment 1: Sin Signos (Yellow) */}
               <div style={{
                 height: '100%',
                 width: inViewAct4 ? `${data.sinSignosPercent}%` : '0%',
-                background: '#00e5ff',
-                boxShadow: 'inset 0 0 10px rgba(0,229,255,0.4), 0 0 10px rgba(0,229,255,0.2)',
+                background: '#facc15',
+                boxShadow: 'inset 0 0 10px rgba(250,204,21,0.4), 0 0 10px rgba(250,204,21,0.2)',
                 transition: 'width 2s cubic-bezier(0.16, 1, 0.3, 1)',
               }} />
 
-              {/* Segment 2: Con Signos (Yellow) */}
+              {/* Segment 2: Con Signos (Orange) */}
               <div style={{
                 height: '100%',
                 width: inViewAct4 ? `${data.conSignosPercent}%` : '0%',
-                background: '#facc15',
-                boxShadow: 'inset 0 0 10px rgba(250,204,21,0.4), 0 0 10px rgba(250,204,21,0.2)',
+                background: '#fb923c',
+                boxShadow: 'inset 0 0 10px rgba(251,146,60,0.4), 0 0 10px rgba(251,146,60,0.2)',
                 transition: 'width 2s cubic-bezier(0.16, 1, 0.3, 1) 0.15s',
               }} />
 
@@ -1532,13 +1896,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                background: 'rgba(0, 229, 255, 0.08)',
+                background: 'rgba(250, 204, 21, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#00e5ff',
+                color: '#facc15',
                 marginBottom: '0.4rem',
-                border: '1px solid rgba(0, 229, 255, 0.15)',
+                border: '1px solid rgba(250, 204, 21, 0.15)',
               }}>
                 <ShieldCheck size={22} />
               </div>
@@ -1548,7 +1912,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               <span style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                 {data.sinSignosCases.toLocaleString()}
               </span>
-              <span style={{ fontSize: '0.85rem', color: '#00e5ff', fontWeight: 600, marginTop: '-0.3rem' }}>
+              <span style={{ fontSize: '0.85rem', color: '#facc15', fontWeight: 600, marginTop: '-0.3rem' }}>
                 {data.sinSignosPercent}% de los casos
               </span>
               <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', margin: '0.4rem 0 0 0', lineHeight: 1.4 }}>
@@ -1579,13 +1943,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 width: '44px',
                 height: '44px',
                 borderRadius: '50%',
-                background: 'rgba(250, 204, 21, 0.08)',
+                background: 'rgba(251, 146, 60, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#facc15',
+                color: '#fb923c',
                 marginBottom: '0.4rem',
-                border: '1px solid rgba(250, 204, 21, 0.15)',
+                border: '1px solid rgba(251, 146, 60, 0.15)',
               }}>
                 <TriangleAlert size={22} />
               </div>
@@ -1595,7 +1959,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               <span style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                 {data.conSignosCases.toLocaleString()}
               </span>
-              <span style={{ fontSize: '0.85rem', color: '#facc15', fontWeight: 600, marginTop: '-0.3rem' }}>
+              <span style={{ fontSize: '0.85rem', color: '#fb923c', fontWeight: 600, marginTop: '-0.3rem' }}>
                 {data.conSignosPercent}% de los casos
               </span>
               <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', margin: '0.4rem 0 0 0', lineHeight: 1.4 }}>
@@ -1805,7 +2169,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               HALLAZGO CLÍNICO
             </h4>
             <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0 }}>
-              Aunque la mayoría de los pacientes presentaron cuadros sin signos de alarma (<strong style={{ color: '#00e5ff' }}>{data.sinSignosPercent}%</strong>), una proporción importante (<strong style={{ color: '#facc15' }}>{data.conSignosPercent}%</strong>) requirió seguimiento clínico especializado y atención hospitalaria.
+              Aunque la mayoría de los pacientes presentaron cuadros sin signos de alarma (<strong style={{ color: '#facc15' }}>{data.sinSignosPercent}%</strong>), una proporción importante (<strong style={{ color: '#fb923c' }}>{data.conSignosPercent}%</strong>) requirió seguimiento clínico especializado y atención hospitalaria.
             </p>
           </div>
 
@@ -1814,6 +2178,35 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
         </div>
 
       </div>
+
+      {/* Capas Atmosféricas de Transición en la Base */}
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '150px',
+          background: 'linear-gradient(to bottom, transparent, #0d1222)',
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '-80px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: '800px',
+          height: '160px',
+          background: 'radial-gradient(circle, rgba(250, 204, 21, 0.04) 0%, rgba(239, 68, 68, 0.02) 50%, transparent 80%)',
+          filter: 'blur(40px)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
     </section>
   );
 };

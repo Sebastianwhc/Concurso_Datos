@@ -625,23 +625,88 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCases202
         alignItems: 'center',
         justifyContent: 'center',
         padding: '6rem 1.5rem',
-        background: 'linear-gradient(180deg, #060a14 0%, #070d18 40%, #0b0f19 100%)',
-        overflow: 'hidden',
+        background: 'linear-gradient(180deg, #060913 0%, #070d18 40%, #0b0f19 100%)',
       }}
     >
-      {/* Ambient radial glow consistent with Act 2/3 */}
+      {/* Capas Atmosféricas de Transición en el Tope */}
       <div
         style={{
           position: 'absolute',
-          top: '10%',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '150px',
+          background: 'linear-gradient(to bottom, #060913, transparent)',
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+      {/* Ambient Narrative Halos (Cian) */}
+      {/* Halo Central (Detrás del Contenido) */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '45%',
           left: '50%',
-          transform: 'translateX(-50%)',
-          width: 'min(900px, 95vw)',
-          height: 'min(900px, 95vw)',
-          background: 'radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, rgba(0, 140, 255, 0.015) 45%, rgba(0, 140, 255, 0.005) 70%, transparent 100%)',
+          transform: 'translate(-50%, -50%)',
+          width: 'min(600px, 85vw)',
+          height: 'min(600px, 85vw)',
+          background: 'radial-gradient(circle, #00e5ff 0%, rgba(0, 229, 255, 0.4) 50%, transparent 80%)',
+          opacity: 0.22,
+          filter: 'blur(80px)',
           pointerEvents: 'none',
           zIndex: 0,
-          filter: 'blur(70px)',
+        }}
+      />
+
+      {/* Halo Lateral Izquierdo Superior */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '15%',
+          left: '-10%',
+          transform: 'translate(-50%, -50%)',
+          width: 'min(800px, 100vw)',
+          height: 'min(800px, 100vw)',
+          background: 'radial-gradient(circle, #00e5ff 0%, rgba(0, 229, 255, 0.3) 50%, transparent 80%)',
+          opacity: 0.14,
+          filter: 'blur(110px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Halo Lateral Derecho Medio */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '50%',
+          right: '-12%',
+          transform: 'translate(50%, -50%)',
+          width: 'min(850px, 110vw)',
+          height: 'min(850px, 110vw)',
+          background: 'radial-gradient(circle, #00e5ff 0%, rgba(0, 229, 255, 0.3) 50%, transparent 80%)',
+          opacity: 0.18,
+          filter: 'blur(120px)',
+          pointerEvents: 'none',
+          zIndex: 0,
+        }}
+      />
+
+      {/* Halo Lateral Izquierdo Inferior */}
+      <div
+        style={{
+          position: 'absolute',
+          top: '80%',
+          left: '-8%',
+          transform: 'translate(-50%, -50%)',
+          width: 'min(700px, 95vw)',
+          height: 'min(700px, 95vw)',
+          background: 'radial-gradient(circle, #00e5ff 0%, rgba(0, 229, 255, 0.3) 50%, transparent 80%)',
+          opacity: 0.12,
+          filter: 'blur(100px)',
+          pointerEvents: 'none',
+          zIndex: 0,
         }}
       />
 

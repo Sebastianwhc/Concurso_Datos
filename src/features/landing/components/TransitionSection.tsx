@@ -57,13 +57,51 @@ const TransitionSection: React.FC = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(180deg, #0d1425 0%, #060a14 100%)',
+        background: 'linear-gradient(180deg, #0d1222 0%, #060913 100%)',
         overflow: 'hidden',
         padding: '6rem 2rem 4rem 2rem',
-        //borderTop: '1px solid rgba(0,229,255,0.04)',
-        //borderBottom: '1px solid rgba(255,255,255,0.015)',
       }}
     >
+      {/* Capas Atmosféricas de Transición (Entrada y Salida) */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '150px',
+          background: 'linear-gradient(to bottom, #0d1222, transparent)',
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: '150px',
+          background: 'linear-gradient(to bottom, transparent, #060913)',
+          pointerEvents: 'none',
+          zIndex: 2,
+        }}
+      />
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '-80px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '100%',
+          maxWidth: '800px',
+          height: '160px',
+          background: 'radial-gradient(circle, rgba(0, 229, 255, 0.05) 0%, rgba(0, 184, 255, 0.01) 50%, transparent 80%)',
+          filter: 'blur(40px)',
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      />
       {/* Background Vector Topographic / Spatial Network Layer */}
       <svg
         className="transition-reveal-bg"

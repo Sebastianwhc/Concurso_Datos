@@ -5,8 +5,8 @@ import HeroSection from './components/HeroSection';
 import ThreatSection from './components/ThreatSection';
 import TransitionSection from './components/TransitionSection';
 import TerritorySection from './components/TerritorySection';
-import SolutionSection from './components/SolutionSection';
 import SimulatorSection from './components/SimulatorSection';
+import CostSection from './components/CostSection';
 import CTASection from './components/CTASection';
 import { loadDengueData, COL, type DengueData } from '../dashboard/dengue';
 
@@ -185,8 +185,8 @@ const LandingView: React.FC = () => {
       {/* Sección 3: El Territorio (El Mapa de Casos) */}
       <TerritorySection bucaramangaCases2025={stats?.bga2025 ?? 0} />
 
-      {/* Sección 4: La Solución Tradicional vs Nuestra IA */}
-      <SolutionSection />
+      {/* Acto 6: Impacto Económico */}
+      <CostSection />
 
       {/* Sección 5: El Simulador Predictivo (La Solución Avanzada) */}
       <SimulatorSection />
