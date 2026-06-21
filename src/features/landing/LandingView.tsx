@@ -44,9 +44,6 @@ const LandingView: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    // Refresh ScrollTrigger when all content is loaded
-    ScrollTrigger.refresh();
-
     loadDengueData()
       .then((data) => {
         setDengueData(data);
@@ -62,6 +59,16 @@ const LandingView: React.FC = () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
     };
   }, []);
+
+  // Refresh ScrollTrigger once data is loaded and DOM height has expanded
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 150);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   const stats = useMemo<ThreatData | null>(() => {
     if (!dengueData) return null;

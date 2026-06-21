@@ -44,6 +44,21 @@ const TransitionSection: React.FC = () => {
         },
       }
     );
+
+    // GSAP Scroll Parallax effect on the background graphics
+    gsap.fromTo(
+      el.querySelector('.transition-reveal-bg'),
+      { y: -45 },
+      {
+        y: 45,
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 1, // smooth scrub
+        }
+      }
+    );
   }, []);
 
   return (
@@ -102,6 +117,7 @@ const TransitionSection: React.FC = () => {
           zIndex: 1,
         }}
       />
+      
       {/* Background Vector Topographic / Spatial Network Layer */}
       <svg
         className="transition-reveal-bg"
@@ -110,81 +126,78 @@ const TransitionSection: React.FC = () => {
           top: 0,
           left: 0,
           width: '100%',
-          height: '100%',
+          height: '140%', // slightly taller to accommodate vertical parallax drift
           pointerEvents: 'none',
           zIndex: 0,
           opacity: 0,
         }}
-        viewBox="0 0 1440 350"
+        viewBox="0 0 1440 400"
         preserveAspectRatio="xMidYMid slice"
       >
-        {/* Topographic Contour Curves */}
+        {/* Topographic Contour Curves (Animated current flows) */}
         <path
+          className="contour-line-1"
           d="M -100 130 C 250 180, 350 40, 750 190 C 1050 280, 1150 90, 1550 160"
           fill="none"
-          stroke="rgba(0, 229, 255, 0.05)"
+          stroke="rgba(0, 229, 255, 0.09)"
           strokeWidth="1.2"
-          strokeDasharray="4 6"
+          strokeDasharray="6 8"
         />
         <path
+          className="contour-line-2"
           d="M -100 170 C 200 220, 400 100, 700 240 C 980 340, 1180 130, 1550 210"
           fill="none"
-          stroke="rgba(0, 184, 255, 0.035)"
+          stroke="rgba(0, 184, 255, 0.065)"
           strokeWidth="1"
+          strokeDasharray="8 10"
         />
         <path
+          className="contour-line-3"
           d="M -100 210 C 150 260, 450 150, 650 290 C 920 380, 1220 180, 1550 260"
           fill="none"
-          stroke="rgba(0, 229, 255, 0.03)"
+          stroke="rgba(0, 229, 255, 0.055)"
           strokeWidth="1.2"
+          strokeDasharray="5 7"
         />
 
-        {/* Transmission Network Connections */}
-        <line x1="280" y1="90" x2="420" y2="210" stroke="rgba(0, 229, 255, 0.04)" strokeWidth="0.8" strokeDasharray="3 3" />
-        <line x1="420" y1="210" x2="680" y2="150" stroke="rgba(0, 229, 255, 0.045)" strokeWidth="0.8" />
-        <line x1="680" y1="150" x2="890" y2="250" stroke="rgba(0, 229, 255, 0.035)" strokeWidth="0.8" strokeDasharray="3 3" />
-        <line x1="890" y1="250" x2="1140" y2="120" stroke="rgba(0, 229, 255, 0.045)" strokeWidth="0.8" />
-        <line x1="420" y1="210" x2="890" y2="250" stroke="rgba(0, 229, 255, 0.025)" strokeWidth="0.8" />
+        {/* Transmission Network Connections (Pulsating) */}
+        <line x1="280" y1="90" x2="420" y2="210" className="network-line" stroke="rgba(0, 229, 255, 0.06)" strokeWidth="0.8" strokeDasharray="3 3" />
+        <line x1="420" y1="210" x2="680" y2="150" className="network-line" stroke="rgba(0, 229, 255, 0.07)" strokeWidth="0.8" />
+        <line x1="680" y1="150" x2="890" y2="250" className="network-line" stroke="rgba(0, 229, 255, 0.05)" strokeWidth="0.8" strokeDasharray="3 3" />
+        <line x1="890" y1="250" x2="1140" y2="120" className="network-line" stroke="rgba(0, 229, 255, 0.07)" strokeWidth="0.8" />
+        <line x1="420" y1="210" x2="890" y2="250" className="network-line" stroke="rgba(0, 229, 255, 0.045)" strokeWidth="0.8" />
 
         {/* Scattered Luminous Nodes with Pulse Animations */}
         <g>
           {/* Node 1 */}
-          <circle cx="280" cy="90" r="3" fill="#00e5ff" opacity="0.45" />
-          <circle cx="280" cy="90" r="8" fill="none" stroke="#00e5ff" strokeWidth="0.5" opacity="0.2">
-            <animate attributeName="r" values="3;10;3" dur="4s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.35;0;0.35" dur="4s" repeatCount="indefinite" />
-          </circle>
+          <circle cx="280" cy="90" r="3" fill="#00e5ff" className="glow-dot" />
+          <circle cx="280" cy="90" r="8" fill="none" stroke="#00e5ff" strokeWidth="0.5" className="glow-circle-1" />
 
           {/* Node 2 */}
-          <circle cx="420" cy="210" r="3.5" fill="#00b8ff" opacity="0.5" />
-          <circle cx="420" cy="210" r="10" fill="none" stroke="#00b8ff" strokeWidth="0.5" opacity="0.25">
-            <animate attributeName="r" values="3.5;13;3.5" dur="5s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.45;0;0.45" dur="5s" repeatCount="indefinite" />
-          </circle>
+          <circle cx="420" cy="210" r="3.5" fill="#00b8ff" className="glow-dot" />
+          <circle cx="420" cy="210" r="10" fill="none" stroke="#00b8ff" strokeWidth="0.5" className="glow-circle-2" />
 
           {/* Node 3 */}
-          <circle cx="680" cy="150" r="2.5" fill="#00e5ff" opacity="0.35" />
+          <circle cx="680" cy="150" r="2.5" fill="#00e5ff" className="glow-dot" />
 
           {/* Node 4 */}
-          <circle cx="890" cy="250" r="4" fill="#00b8ff" opacity="0.5" />
-          <circle cx="890" cy="250" r="12" fill="none" stroke="#00b8ff" strokeWidth="0.5" opacity="0.2">
-            <animate attributeName="r" values="4;15;4" dur="6s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.45;0;0.45" dur="6s" repeatCount="indefinite" />
-          </circle>
+          <circle cx="890" cy="250" r="4" fill="#00b8ff" className="glow-dot" />
+          <circle cx="890" cy="250" r="12" fill="none" stroke="#00b8ff" strokeWidth="0.5" className="glow-circle-3" />
 
           {/* Node 5 */}
-          <circle cx="1140" cy="120" r="3" fill="#00e5ff" opacity="0.4" />
+          <circle cx="1140" cy="120" r="3" fill="#00e5ff" className="glow-dot" />
         </g>
 
-        {/* Faint Geographic Coordinate Labels */}
-        <text x="295" y="93" fill="rgba(0, 229, 255, 0.14)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">7.1253° N / 73.1198° W</text>
-        <text x="435" y="213" fill="rgba(0, 229, 255, 0.14)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">SIVIGILA GEO-REF: 68001</text>
-        <text x="905" y="253" fill="rgba(0, 229, 255, 0.14)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">7.0988° N / 73.0845° W</text>
-        <text x="1155" y="123" fill="rgba(0, 229, 255, 0.11)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">CLUSTER_DENSITY: HIGH</text>
+        {/* Faint Geographic Coordinate Labels (Satellite Tracker Flicker) */}
+        <text x="295" y="93" className="coord-text-1" fill="rgba(0, 229, 255, 0.25)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">7.1253° N / 73.1198° W</text>
+        <text x="435" y="213" className="coord-text-2" fill="rgba(0, 229, 255, 0.25)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">SIVIGILA GEO-REF: 68001</text>
+        <text x="905" y="253" className="coord-text-3" fill="rgba(0, 229, 255, 0.25)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">7.0988° N / 73.0845° W</text>
+        <text x="1155" y="123" className="coord-text-4" fill="rgba(0, 229, 255, 0.2)" fontSize="8.5" fontFamily="SFMono-Regular, Consolas, monospace" letterSpacing="0.5">CLUSTER_DENSITY: HIGH</text>
       </svg>
 
       {/* Glow Ambient cian y azul consistente con Acto 5 */}
       <div
+        className="transition-glow"
         style={{
           position: 'absolute',
           top: '50%',
@@ -248,6 +261,61 @@ const TransitionSection: React.FC = () => {
           Comprender el impacto clínico es solo una parte de la historia. Cada caso ocurre en un territorio específico y, cuando los datos se observan en conjunto, comienzan a aparecer patrones espaciales que revelan dónde se concentra el riesgo.
         </p>
       </div>
+
+      <style>{`
+        .contour-line-1 { animation: flowLine1 15s linear infinite; }
+        .contour-line-2 { animation: flowLine2 22s linear infinite reverse; }
+        .contour-line-3 { animation: flowLine3 18s linear infinite; }
+        
+        .network-line { animation: netPulse 4s ease-in-out infinite alternate; }
+        
+        .glow-dot { animation: dotGlow 2.5s ease-in-out infinite alternate; }
+        .glow-circle-1 { animation: circlePulse1 3.5s linear infinite; }
+        .glow-circle-2 { animation: circlePulse2 4.2s linear infinite; }
+        .glow-circle-3 { animation: circlePulse3 4.8s linear infinite; }
+        
+        .coord-text-1 { animation: textFlicker 3s infinite 0.2s alternate; }
+        .coord-text-2 { animation: textFlicker 4s infinite 1.2s alternate; }
+        .coord-text-3 { animation: textFlicker 3.5s infinite 0.7s alternate; }
+        .coord-text-4 { animation: textFlicker 5s infinite 2.2s alternate; }
+
+        @keyframes flowLine1 { to { stroke-dashoffset: -100; } }
+        @keyframes flowLine2 { to { stroke-dashoffset: -120; } }
+        @keyframes flowLine3 { to { stroke-dashoffset: -90; } }
+
+        @keyframes netPulse {
+          0% { stroke-opacity: 0.35; stroke-dashoffset: 0; }
+          100% { stroke-opacity: 0.95; stroke-dashoffset: 15; }
+        }
+
+        @keyframes dotGlow {
+          0% { fill-opacity: 0.55; filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.4)); }
+          100% { fill-opacity: 1; filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.95)); }
+        }
+
+        @keyframes circlePulse1 {
+          0% { r: 3px; stroke-opacity: 0.65; }
+          100% { r: 16px; stroke-opacity: 0; }
+        }
+        @keyframes circlePulse2 {
+          0% { r: 3.5px; stroke-opacity: 0.65; }
+          100% { r: 20px; stroke-opacity: 0; }
+        }
+        @keyframes circlePulse3 {
+          0% { r: 4px; stroke-opacity: 0.65; }
+          100% { r: 24px; stroke-opacity: 0; }
+        }
+
+        @keyframes textFlicker {
+          0% { fill-opacity: 0.25; }
+          40% { fill-opacity: 0.18; }
+          43% { fill-opacity: 0.65; }
+          45% { fill-opacity: 0.18; }
+          70% { fill-opacity: 0.65; }
+          72% { fill-opacity: 0.22; }
+          100% { fill-opacity: 0.7; }
+        }
+      `}</style>
     </section>
   );
 };
