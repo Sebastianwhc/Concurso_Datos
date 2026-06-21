@@ -140,3 +140,296 @@ python ml/train_model.py          # entrena + exporta public/data/model.onnx
 ```
 > Los CSV crudos y el caché de geocodificación viven en `data/` y **no** se versionan (ver `.gitignore`). Los artefactos procesados sí están en `public/data/`.
 > El wasm de `onnxruntime-web` (`src/features/simulator/ortwasm/`, ~11 MB) **sí** se versiona para que el build funcione offline. Si se actualiza `onnxruntime-web`, recopiar `ort-wasm-simd-threaded.{wasm,mjs}` desde `node_modules/onnxruntime-web/dist/`.
+>
+> 
+---
+# 🎨 Actualización Landing Storytelling — Daniela Reyes (18/06/2026)
+
+## 🎯 Objetivo de la Iteración
+
+Transformar la landing principal del proyecto en una experiencia narrativa inmersiva para los jurados, guiándolos progresivamente desde la comprensión del problema epidemiológico hasta la propuesta de solución basada en Inteligencia Artificial.
+
+La landing fue reorganizada bajo una estructura de storytelling compuesta por ocho actos conectados entre sí mediante una narrativa continua.
+
+---
+
+# 🔴 ACTO 1 — LA AMENAZA
+### Componente: ThreatSection
+
+## Objetivo
+
+Presentar la situación actual del dengue en Bucaramanga utilizando datos reales de vigilancia epidemiológica.
+
+## Mejoras implementadas
+
+✅ Actualización de indicadores con datos reales SIVIGILA 2025.
+
+✅ Integración de métricas clave:
+
+- Casos notificados.
+- Hospitalizaciones.
+- Fallecidos.
+- Tasa de letalidad.
+
+✅ Rediseño visual utilizando identidad roja para transmitir sensación de alerta epidemiológica.
+
+## Resultado
+
+El usuario comprende inmediatamente que el dengue continúa siendo una amenaza activa para la ciudad.
+
+---
+
+# 🔥 ACTO 2 — LA HISTORIA DEL BROTE
+### Componente: ThreatSection
+
+## Objetivo
+
+Mostrar la evolución del brote y evidenciar que detrás de los números existe una emergencia en desarrollo.
+
+## Mejoras implementadas
+
+✅ Construcción de narrativa basada en el comportamiento reciente de los casos.
+
+✅ Incorporación de mensajes orientados a generar contexto antes de presentar los análisis posteriores.
+
+✅ Refuerzo visual de la sensación de urgencia.
+
+## Resultado
+
+El usuario deja de ver únicamente cifras aisladas y comienza a entender la dimensión del brote.
+
+---
+
+# 👥 ACTO 3 — LAS PERSONAS DETRÁS DE LOS DATOS
+### Componente: ThreatSection
+
+## Objetivo
+
+Humanizar los datos epidemiológicos.
+
+## Mejoras implementadas
+
+✅ Reestructuración del discurso para recordar que cada caso representa personas, familias y comunidades.
+
+✅ Énfasis en el impacto social del dengue.
+
+✅ Integración visual coherente con la narrativa del brote.
+
+## Resultado
+
+Se genera una conexión emocional antes de pasar al análisis clínico.
+
+---
+
+# 🏥 ACTO 4 — EL IMPACTO CLÍNICO
+### Componente: ThreatSection
+
+## Objetivo
+
+Mostrar las consecuencias reales que el dengue genera sobre el sistema de salud.
+
+## Mejoras implementadas
+
+✅ Presentación de indicadores clínicos.
+
+✅ Visualización de:
+
+- Casos sin signos de alarma.
+- Casos con signos de alarma.
+- Casos graves.
+- Hospitalizaciones.
+- Mortalidad.
+
+✅ Hallazgo clínico destacado para resumir el comportamiento epidemiológico observado.
+
+## Resultado
+
+El usuario comprende la presión que el dengue genera sobre hospitales y servicios de salud.
+
+---
+
+# 🌐 TRANSICIÓN NARRATIVA
+### Componente: TransitionSection
+
+## Objetivo
+
+Conectar el impacto clínico con la dimensión territorial del problema.
+
+## Mejoras implementadas
+
+✅ Creación completa del componente TransitionSection.
+
+✅ Diseño basado en:
+
+- Redes epidemiológicas.
+- Coordenadas geográficas.
+- Sistemas de vigilancia territorial.
+
+✅ Implementación de animaciones GSAP y ScrollTrigger.
+
+✅ Eliminación de cambios bruscos entre secciones.
+
+## Resultado
+
+La transición se convierte en un puente narrativo que prepara al usuario para descubrir dónde se concentra el riesgo.
+
+---
+
+# 🗺️ ACTO 5 — EL TERRITORIO
+### Componente: TerritorySection
+
+## Objetivo
+
+Demostrar que los brotes siguen patrones espaciales identificables.
+
+## Mejoras implementadas
+
+✅ Desarrollo completo de TerritorySection.
+
+✅ Integración de análisis territorial basado en datos históricos.
+
+✅ Identificación del Área Metropolitana de Bucaramanga como principal núcleo epidemiológico.
+
+## Indicadores territoriales
+
+- Participación del AMB.
+- Casos históricos.
+- Casos graves.
+- Municipios involucrados.
+
+## Hallazgos
+
+- El AMB concentra aproximadamente el 69.3% de los casos históricos.
+- Bucaramanga representa la mayor carga epidemiológica regional.
+- Los patrones espaciales evidencian persistencia territorial del riesgo.
+
+## Resultado
+
+El usuario comprende dónde se concentra históricamente la transmisión.
+
+---
+
+# 💰 ACTO 6 — EL IMPACTO ECONÓMICO
+### Componente: CostSection
+
+## Objetivo
+
+Demostrar que el dengue también representa una carga económica para la ciudad.
+
+## Mejoras implementadas
+
+✅ Desarrollo de sección económica basada en literatura científica.
+
+✅ Estimación de costos asociados al dengue.
+
+✅ Indicadores económicos:
+
+- Costo estimado del brote.
+- Casos graves.
+- Hospitalizaciones.
+- Ahorro potencial mediante intervención temprana.
+
+✅ Incorporación de animaciones activadas por scroll.
+
+✅ Implementación de identidad visual amarillo–naranja.
+
+## Fuentes y metodología
+
+Se incorporó una sección específica para validar la información presentada mediante referencias científicas y datos históricos SIVIGILA.
+
+## Resultado
+
+El usuario comprende el impacto financiero asociado a los brotes de dengue.
+
+---
+
+# 🤖 ACTO 7 — LA SOLUCIÓN TECNOLÓGICA
+### Componente: SimulatorSection
+
+## Objetivo
+
+Presentar el modelo predictivo como respuesta al problema identificado.
+
+## Mejoras implementadas
+
+✅ Rediseño visual completo de SimulatorSection.
+
+✅ Integración estética basada en Inteligencia Artificial.
+
+✅ Implementación de:
+
+- Redes neuronales estilizadas.
+- Partículas dinámicas.
+- Conexiones tipo grafo.
+- Halos radiales tecnológicos.
+- Gradientes de profundidad.
+
+✅ Unificación cromática utilizando cian y morado.
+
+## Resultado
+
+La Inteligencia Artificial se presenta como la herramienta capaz de anticipar escenarios epidemiológicos antes de que se conviertan en emergencias sanitarias.
+
+---
+
+# 🏁 ACTO 8 — CIERRE Y PRESENTACIÓN DEL PROYECTO
+### Componente: CTASection
+
+## Objetivo
+
+Cerrar la narrativa y presentar formalmente la solución desarrollada.
+
+## Mejoras implementadas
+
+✅ Rediseño completo del footer.
+
+✅ Integración visual con SimulatorSection.
+
+✅ Fondo tecnológico consistente con la identidad visual del proyecto.
+
+✅ Mejora de:
+
+- Información institucional.
+- Botones principales.
+- Datos del concurso.
+- Contactos del equipo.
+
+## Resultado
+
+La experiencia finaliza con una presentación profesional y coherente con todo el recorrido narrativo.
+
+---
+
+# 🚀 Resultado General
+
+La landing evolucionó hacia una experiencia narrativa completa basada en ocho etapas:
+
+🔴 La amenaza  
+↓  
+🔥 La historia del brote  
+↓  
+👥 Las personas detrás de los datos  
+↓  
+🏥 El impacto clínico  
+↓  
+🌐 Transición territorial  
+↓  
+🗺️ El territorio  
+↓  
+💰 El impacto económico  
+↓  
+🤖 La solución tecnológica  
+↓  
+🏁 Presentación final del proyecto
+
+Esta estructura permite que los jurados comprendan progresivamente:
+
+- Qué está ocurriendo.
+- Cómo evolucionó el brote.
+- Quiénes se ven afectados.
+- Qué consecuencias clínicas genera.
+- Dónde se concentra el riesgo.
+- Cuánto cuesta.
+- Cómo puede anticiparse.
+- Por qué la solución propuesta aporta valor.
+
