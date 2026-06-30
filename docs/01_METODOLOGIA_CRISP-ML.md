@@ -88,6 +88,8 @@ Se construye **una sola matriz** `X ∈ ℝ^(N×16)` con `N = 10.267` filas (**c
 
 **El hallazgo que cambió el diseño.** Un modelo entrenado **solo con clima** da R² ≈ −0,49 (peor que la media). La señal predictiva fuerte es la **inercia epidémica** (importancia por permutación dominada por `casos_l*`). De ahí la iteración hacia un modelo **autoregresivo con el clima como modulador** — coherente con cómo operan los sistemas reales de alerta temprana.
 
+**Ablación (debida diligencia).** Se probaron pérdida **Poisson** y una feature de **contagio espacial**; ninguna mejora el R² (Poisson lo empeora; el contagio espacial es ruido por la desagregación por *share*). El modelo actual es el mejor de las variantes — el techo está en el **dato**, no en el algoritmo. Ver `INFORME_MATEMATICO.md` §4.6 y `ml/experiment_model.py`.
+
 > **✅ Quality gate 4:** el modelo supera el baseline de forma clara **en validación temporal sobre un brote**, y el comportamiento es honesto y explicable. **Superado.**
 
 ---

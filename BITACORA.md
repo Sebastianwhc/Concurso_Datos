@@ -47,6 +47,7 @@
   - Exporta semilla (últimos 4 casos por comuna) y rangos de clima para los sliders.
   - **ONNX verificado fiel** al modelo (diff 1e-6); ~372 KB → corre en el navegador.
 - **Hallazgo clave (honesto):** el clima por sí solo NO predice el dengue (R²=−0.49); la inercia epidémica (casos recientes) sí. El clima es modulador, no motor — así funcionan los sistemas reales de alerta.
+- **Ablación (¿se puede mejorar el R²=0.57?, `ml/experiment_model.py`):** probamos **pérdida Poisson** (R²=0.49, **empeora** −0.08) y **contagio espacial** (`vecinos_l1`, R²=0.573, +0.003 ≈ ruido). El modelo actual (GBR · MSE/log1p) ya es el mejor. **El techo está en el dato** (Bga desagregada por *share*), no en el algoritmo: el salto vendría de conteos reales por comuna. Detalle en [`docs/INFORME_MATEMATICO.md`](docs/INFORME_MATEMATICO.md) §4.6. *(No toca producción; `model.onnx` intacto.)*
 
 ### Simulador (`src/features/simulator/`) ✅ *core funcional*
 - **`forecast.ts`** — motor de pronóstico 100% en navegador con `onnxruntime-web` (backend wasm CPU, `numThreads=1`; wasm+glue cargados con `?url` desde `src/.../ortwasm/` → **demo offline sin headers COOP/COEP**). Replica fielmente el feature-engineering del pipeline Python (orden de 16 features, `log1p`/`expm1`).

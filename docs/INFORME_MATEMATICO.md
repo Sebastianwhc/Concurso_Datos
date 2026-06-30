@@ -202,6 +202,23 @@ $$ \text{Importancia}(j) \;=\; R^2(X) - \mathbb{E}\big[R^2(X^{\text{perm}(j)})\b
 
 Resultado: dominan las features **autoregresivas** (`casos_l*`, `casos_ma4`). De ahí el hallazgo de §6.
 
+### 4.6. Ablación — ¿se puede mejorar el R²? (qué probamos y descartamos)
+Antes de dar por bueno el modelo medimos si dos cambios habituales lo mejoraban, sobre **el mismo split temporal** (train ≤ 2023, test 2024–2025). Script reproducible: [`ml/experiment_model.py`](../ml/experiment_model.py) (no toca producción).
+
+| Variante | $R^2$ | MAE | $\Delta R^2$ |
+|---|---|---|---|
+| **GBR · MSE / `log1p` (modelo actual)** | **0,571** | 2,99 | — |
+| HistGBM · MSE / `log1p` | 0,548 | 3,05 | −0,023 |
+| HistGBM · **pérdida Poisson** | 0,491 | 3,40 | **−0,080** |
+| GBR + **contagio espacial** (`vecinos_l1`) | 0,573 | 3,00 | +0,003 |
+| HistGBM Poisson + contagio espacial | 0,525 | 3,33 | −0,046 |
+
+Dos hallazgos honestos:
+- **La pérdida Poisson empeora** (−0,08). El objetivo de Bucaramanga está desagregado por *share* (§2.1): es continuo y suavizado, no conteos enteros, así que la relación media–varianza que asume Poisson no encaja; `log1p`+MSE modela mejor ese dato.
+- **El contagio espacial no aporta** (+0,003 ≈ ruido). Como las comunas de Bucaramanga provienen de la misma curva de ciudad × *share*, la "presión del vecindario" ($\text{vecinos\_l1}$ = media de $\text{casos\_l1}$ de las otras comunas del municipio) es casi **colineal** con los rezagos $\text{casos\_l}_k$ que el modelo ya tiene.
+
+> **Conclusión:** el modelo elegido ya es el mejor de las variantes probadas. El techo de desempeño **no está en el algoritmo ni en las features, sino en el DATO**: la mayor mejora vendría de **conteos reales por comuna** (hoy aproximados por la huella espacial, §2.1), no de cambiar el modelo. Por eso no se persigue un R² más alto a costa de sobreajustar un único año de brote.
+
 ---
 
 ## 5. El pronóstico recursivo (lo que corre en el navegador)
