@@ -16,7 +16,7 @@ import { fetchLiveClima, type LiveClima } from './liveWeather';
 import styles from './SimulatorView.module.css';
 
 const HORIZONTE = 16; // semanas a proyectar
-const ANCHOR = { anio: 2025, semana: 35 }; // última semana observada (ancla Bucaramanga)
+const ANCHOR = { anio: 2026, semana: 22 }; // última semana observada (re-anclada a 2026 vía boletín INS; ver scripts/build_nowcast_seed.py)
 // Costo directo medio ponderado por caso de dengue en COP (ver docs/06_IMPACTO_ECONOMICO.md:
 // 68,4% ambulatorio + 31% hospitalizado + 0,57% grave, estudios Colombia, TRM 4.000).
 const COSTO_CASO_COP = 1_388_831;

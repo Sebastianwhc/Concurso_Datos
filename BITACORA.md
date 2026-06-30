@@ -2,7 +2,7 @@
 
 **Concurso:** Datos al Ecosistema 2026 · Categoría Avanzado · Reto Salud y Bienestar
 **Repo:** https://github.com/Sebastianwhc/Concurso_Datos · **Deploy:** https://concursodatos.vercel.app
-**Última actualización:** 2026-06-18
+**Última actualización:** 2026-06-30
 
 ---
 
@@ -58,6 +58,15 @@
 - **Traducción a pesos** — franja económica que multiplica los casos proyectados por el **costo medio por caso (≈$1,39 M COP**, ponderado con nuestras proporciones reales 68% ambulatorio / 31% hosp / 0,57% grave; ver `docs/06_IMPACTO_ECONOMICO.md`): muestra costo proyectado del horizonte y **ahorro potencial con acción temprana (−20%)**. Reactivo al escenario.
 - **Modo "Tiempo real"** (`liveWeather.ts`) — toggle que consume el **clima real de Bucaramanga vía Open-Meteo** (API abierta, sin key, CORS; agrega los últimos 7 días → features semanales), lo fija como escenario (acotado al rango del modelo), refresca cada 10 min y cae a sliders manuales si falla. Cierra el requisito de **fuentes en tiempo real** del nivel Avanzado. *(Honesto: Open-Meteo es abierto pero no datos.gov.co; el histórico de entrenamiento sí usa IDEAM/CDMB oficiales. El clima sigue siendo modulador.)*
 
+### Re-anclaje a 2026 — nowcasting con el boletín del INS (`scripts/build_nowcast_seed.py`) ✅ *2026-06-30*
+**Problema:** el modelo es autoregresivo (necesita casos recientes como semilla) y el dato municipal real (`dengue.json`) se corta en **2025-S35** (~agosto). Presentando en jul–ago 2026, el horizonte caía en el pasado. **Solución:** re-anclar la semilla a 2026 usando el **boletín epidemiológico del INS** (Santander semanal, acumulado; y Bucaramanga real 2026).
+- **Entrada:** `data/boletin_santander_semanal.csv` (rellenado a mano desde el boletín: Santander 2024 S1–52, 2025 S1–53, 2026 S1–24; **Bucaramanga real 2026 S1–22**). *Es dato crudo → vive en `data/`, NO versionado.*
+- **Método (en el script):** ① diferencia el acumulado → casos semanales; ② calibra `f_Bga = Bga/Santander` en el solape con dato municipal real (2024 + 2025 S01–S35); ③ **Bucaramanga 2026**: usa su curva **real** del boletín, desagregada por comuna (share); ④ **Floridablanca 2026** (sin dato directo): estima `f_Florida × Santander`, repartida por la huella histórica de sus comunas; ⑤ reconstruye la semilla (4 semanas, **ancla 2026-S22**).
+- **Validación (la baza de credibilidad):** `f_Bga` calibrado en 2024–2025 = **0,304**; aplicado al Santander 2026 predice Bucaramanga con **−11,2 %** de error vs. el dato real del boletín (real 1.098 vs 975). Que la fracción reproduzca el Bucaramanga real de 2026 **valida el método** → se aplica con confianza a Floridablanca (`f_Florida = 0,119`). *Para Bucaramanga se usa el dato real, así que ese −11 % solo acota la incertidumbre de Florida (la pata más débil, ya declarada).*
+- **Frontera honesta** (registrada en `nowcast_2026.json`): **real** (Bucaramanga → 2026-S22) · **estimado** (Floridablanca, vía fracción validada) · **pronóstico** (de S22 en adelante).
+- **Aplicado:** respaldo `public/data/model_meta_2025.json`; parche de `seed` + `last_week` (→ 2026-S22, 25 comunas) en `model_meta.json` + bloque `reanclaje_2026`; etiqueta del horizonte `ANCHOR = {2026, 22}` en `SimulatorView.tsx`. Build verde.
+- **Pendiente (UI):** panel "Situación 2026 · Santander" (dato real del boletín, serie ya en `nowcast_2026.json`) + vista de **backtest** (pronóstico vs. realidad) + marcar la frontera real/estimado/pronóstico.
+
 ### Navegación / layout (`src/layout/MainLayout.tsx`)
 - Sidebar glass con enlaces a **Inicio (landing)**, Dashboard y Simulador. El logo "EcoSalud IA" también vuelve al landing. (Antes no había forma de regresar al landing desde el panel.)
 
@@ -74,13 +83,20 @@
 ### Documentación técnica del concurso (criterios de evaluación)
 Ya creados en `docs/`: **`INFORME_SIMULADOR.md`** (cómo funciona el código), **`INFORME_MATEMATICO.md`** (todo el proceso con fórmulas: datasets → features → modelo → validación → pronóstico) y **`06_IMPACTO_ECONOMICO.md`** (cuánto cuesta el dengue y cuánto ahorra la herramienta, con fuentes citadas).
 
+**Redactados el 2026-06-30** (cierran los pendientes de documentación técnica):
+- **`01_METODOLOGIA_CRISP-ML.md`** — el proyecto enmarcado en las 6 fases de CRISP-ML(Q), con los *quality gates* de cada fase.
+- **`02_ARQUITECTURA.md`** — arquitectura consolidada (offline Python → artefactos → navegador) + diagramas Mermaid de componentes y despliegue.
+- **`03_ANALISIS_DATOS_EDA.md`** — EDA con cifras reales (demografía, severidad, estacionalidad, geografía, clima).
+- **`04_DIAGRAMAS_FLUJO.md`** — diagramas Mermaid: pipeline de datos, entrenamiento, inferencia recursiva en navegador, ciclo predicción→acción.
+- **`05_FUENTES_DATOS_ABIERTOS.md`** — tabla de fuentes con enlaces, licencias y trazabilidad dato→artefacto.
+- **`README.md` actualizado** — corregido el stack (se quitaron Mapbox/Canvas/GSAP/DANE que ya no aplican; refleja ECharts + ONNX + Zustand).
+
 Pendiente por redactar/estructurar:
-- **Metodología CRISP-ML** — enmarcar el trabajo en las fases (se sugiere en las reglas).
-- **Arquitectura de la solución** — consolidar lo disperso + diagrama.
-- **Análisis de datos (EDA)** — documento con cifras y gráficos.
-- **Diagramas de flujo** (Mermaid): datos, entrenamiento, inferencia.
-- **Evidencia de datos abiertos** — tabla de fuentes con enlaces y licencias.
-- **Actualizar `README.md`** — hoy menciona Mapbox/Canvas/DANE que ya no aplican.
+- **Metodología CRISP-ML** — ~~enmarcar el trabajo en las fases~~ ✅ hecho (`01_…`).
+- **Arquitectura de la solución** — ~~consolidar lo disperso + diagrama~~ ✅ hecho (`02_…`).
+- **Análisis de datos (EDA)** — ~~documento con cifras~~ ✅ hecho (`03_…`); falta exportar **gráficos** como imágenes para el informe impreso.
+- **Diagramas de flujo** (Mermaid) — ~~datos, entrenamiento, inferencia~~ ✅ hecho (`04_…`).
+- **Evidencia de datos abiertos** — ~~tabla de fuentes con enlaces y licencias~~ ✅ hecho (`05_…`).
 
 ### Obligatorio para concursar (puerta de elegibilidad)
 - **Publicar el "Uso" en datos.gov.co/usos** (`https://herramientas.datos.gov.co/usos`) — sin esto la propuesta **no se evalúa**.
@@ -89,13 +105,14 @@ Pendiente por redactar/estructurar:
 ### Otros
 - El **core ya está completo** (dashboard + modelo + simulador interactivo + alerta + economía + tiempo real). **Ramas del equipo ya integradas a `main`** (landing de Daniela + sección de contacto); build verde (`tsc -b && vite build`). Queda pulir la landing y sumar el acto económico (brief listo).
 - Verificar el simulador en **producción** (Vercel) tras el deploy: que el wasm cargue offline en el entorno real.
+- **Nota menor de consistencia:** `ml/train_model.py` usa `GradientBoostingRegressor` (sklearn) — el docstring y el `nota` de `model_meta.json` lo etiquetan como "HistGradientBoosting"; la etiqueta es imprecisa, el modelo real es GBR clásico (n_estimators=400, max_depth=4, lr=0.04). El `INFORME_MATEMATICO.md` está correcto.
 
 > **Autoevaluación rúbrica (pesos oficiales):** Innovación 15 · Datos abiertos 20 · Rigor 15 · IA 20 · Impacto 20 · Diseño 10. Estimación actual ≈ **80/100**; con la documentación + registro ≈ **86–90** (perfil de finalista). Topes estructurales: IA (GBM es "intermedio" en su taxonomía; nos apoyamos en el *modelo de simulación* + despliegue) e Impacto (el 5/5 exige piloto operativo real).
 
 ## 🌿 Ramas del equipo (✅ integradas a `main` — 2026-06-18)
 - **`origin/daniela`** — landing storytelling (actos 1–5) + `ThreatSection`/`TerritorySection` con datos reales SIVIGILA + `TransitionSection`. Merge limpio. *(Los 2 errores de build que tenía la rama ya estaban resueltos por su commit `fc4dd7c` "revert ThreatSection".)*
 - **`origin/feat/seccion-contacto`** — sección de contacto en `CTASection` + footer global en `MainLayout`. Conflictos resueltos a mano (`MainLayout.tsx/.module.css`, `.gitignore`) **conservando el sidebar móvil off-canvas**; se quitó un marcador "DANIELA" colado en el `<title>`.
-- *Estado:* merges hechos en local, **sin `push`** todavía; build verde verificado.
+- *Estado (2026-06-30):* los merges del equipo **ya están en `origin/main`**. La rama de trabajo actual es `daniela`; el único commit local sin `push` es `8683320` ("Actualización del dashboard con nuevos indicadores y mejoras visuales"). Build verde verificado.
 
 ### 4. Pendientes menores / mejoras
 - Santander: opción de nombres siempre visibles.
@@ -137,6 +154,8 @@ python scripts/build_municipios_outline.py  # requiere shapely; -> amb_municipio
 pip install -r ml/requirements.txt
 python ml/build_training_table.py
 python ml/train_model.py          # entrena + exporta public/data/model.onnx
+# Re-anclaje a 2026 (requiere data/boletin_santander_semanal.csv relleno; NO versionado):
+python scripts/build_nowcast_seed.py   # -> public/data/nowcast_2026.json (semilla 2026-S22)
 ```
 > Los CSV crudos y el caché de geocodificación viven en `data/` y **no** se versionan (ver `.gitignore`). Los artefactos procesados sí están en `public/data/`.
 > El wasm de `onnxruntime-web` (`src/features/simulator/ortwasm/`, ~11 MB) **sí** se versiona para que el build funcione offline. Si se actualiza `onnxruntime-web`, recopiar `ort-wasm-simd-threaded.{wasm,mjs}` desde `node_modules/onnxruntime-web/dist/`.
