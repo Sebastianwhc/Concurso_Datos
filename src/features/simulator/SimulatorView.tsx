@@ -13,6 +13,7 @@ import {
   type ForecastResult,
 } from './forecast';
 import { fetchLiveClima, type LiveClima } from './liveWeather';
+import Situacion2026 from './Situacion2026';
 import styles from './SimulatorView.module.css';
 
 const HORIZONTE = 16; // semanas a proyectar
@@ -349,6 +350,9 @@ const SimulatorView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Ancla real verificable: situación 2026 del boletín del INS (Santander) */}
+      <Situacion2026 />
 
       <div className={styles.grid}>
         {/* Mapa de riesgo */}
