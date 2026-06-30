@@ -434,8 +434,8 @@ const SimulatorSection: React.FC = () => {
                 🧠
               </div>
               <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>Motor Predictivo v2.0</div>
-                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>LSTM + Variables Climáticas</div>
+                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff' }}>Motor Predictivo</div>
+                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>Gradient Boosting · ONNX en el navegador</div>
               </div>
             </div>
             <div style={{ padding: '0.3rem 0.8rem', borderRadius: '100px', background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e', fontSize: '0.7rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
@@ -499,7 +499,7 @@ const SimulatorSection: React.FC = () => {
                   <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
                   Calculando proyección...
                 </span>
-              ) : '⚡ Proyectar Semana 38'}
+              ) : '⚡ Proyectar Semana 38 · 2026'}
             </button>
 
             {/* Results */}
@@ -513,7 +513,7 @@ const SimulatorSection: React.FC = () => {
                 animation: 'fadeInUp 0.5s ease'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)' }}>Resultado de Proyección — SE 38</span>
+                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)' }}>Resultado de Proyección — SE 38 · 2026</span>
                   <span style={{ padding: '0.2rem 0.7rem', borderRadius: '100px', background: `${riskColor}20`, color: riskColor, fontSize: '0.75rem', fontWeight: 700 }}>
                     Riesgo {riskLevel}
                   </span>
@@ -524,8 +524,8 @@ const SimulatorSection: React.FC = () => {
                     <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>Casos estimados</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: '#00e5ff' }}>87%</div>
-                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>Confianza modelo</div>
+                    <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: '#00e5ff' }}>0,57</div>
+                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>R² · validación brote 2024</div>
                   </div>
                   <div>
                     <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: '#7c3aed' }}>3</div>

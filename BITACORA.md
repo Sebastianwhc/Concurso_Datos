@@ -88,6 +88,17 @@ Lote de cara a la sustentación (build verde en cada paso):
 - **Simulador — botón verde "Correr simulación"** (`runBtn`, glow pulsante) en la columna izquierda bajo el mapa, para hacer la simulación más intuitiva.
 - **Landing:** botón del CTA renombrado a **"Explorar el AI Hub"**; **acceso directo y sutil al simulador** desde la portada (`HeroSection`, scroll a `#simulator`).
 
+#### Revisión de la landing — que cuadre con los cambios nuevos (2026-06-30)
+**Corregido** en `SimulatorSection.tsx` (el mockup decía cosas que no son las reales):
+- "**LSTM** + Variables Climáticas" → "**Gradient Boosting · ONNX** en el navegador" (el modelo **no es** un LSTM; es GBM exportado a ONNX).
+- "**87% Confianza modelo**" → "**0,57 · R² validación brote 2024**" (el 87% no tenía respaldo; ahora cuadra con la métrica honesta que usamos en todos los informes).
+- Etiquetas "Semana 38" / "SE 38" → "**Semana 38 · 2026**" (alinea con el re-anclaje: S22 + 16 = S38 de 2026).
+
+**Observaciones para Daniela** (son criterios de prosa, **no los toqué** — decisión suya):
+1. Las estadísticas de la landing son de **2025, que es año parcial** (dato individual SIVIGILA hasta ~S35 / agosto). Usar 2025 es correcto (es el último año con detalle por caso, igual que el dashboard segmentado), pero conviene un **"(a la fecha)"** para que el paso 2024→2025 no parezca un bajón engañoso.
+2. En `SimulatorSection`: *"telemetría climática **en tiempo real de la CDMB**"* — el modo tiempo real real es **Open-Meteo**; la CDMB es el histórico 2025. Sería más preciso *"variables climáticas (IDEAM/CDMB)"*.
+3. **Footer** (`CTASection`): "Datos abiertos SIVIGILA + CDMB" → podría sumar **IDEAM** e **INS (boletín 2026)**, que también se usan.
+
 ---
 
 ## ⏳ Lo que falta
