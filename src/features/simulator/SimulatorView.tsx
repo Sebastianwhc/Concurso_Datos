@@ -14,6 +14,7 @@ import {
 } from './forecast';
 import { fetchLiveClima, type LiveClima } from './liveWeather';
 import Situacion2026 from './Situacion2026';
+import Backtest2024 from './Backtest2024';
 import styles from './SimulatorView.module.css';
 
 const HORIZONTE = 16; // semanas a proyectar
@@ -285,37 +286,56 @@ const SimulatorView: React.FC = () => {
     };
   }, [forecast, meta, week, maxCasos]);
 
-  // --- Trayectoria metropolitana (línea con marcador en la semana actual) ---
+  // --- Trayectoria metropolitana: tramo OBSERVADO (semilla) -> PRONÓSTICO, con frontera ---
   const trendOption = useMemo<EChartsOption | null>(() => {
-    if (!forecast) return null;
-    const xs = forecast.totalSemana.map((_, i) => etiquetaSemana(i + 1));
+    if (!forecast || !meta) return null;
+    const OFFSET = 4; // semanas observadas (semilla) que se anteponen
+    const seedWeeks = [ANCHOR.semana - 3, ANCHOR.semana - 2, ANCHOR.semana - 1, ANCHOR.semana];
+    const seedLabels = seedWeeks.map((s) => `Sem. ${s} · ${ANCHOR.anio}`);
+    const seedTotals = [0, 1, 2, 3].map((j) =>
+      Math.round(Object.values(meta.seed).reduce((a, arr) => a + (arr[j] ?? 0), 0)));
+    const fc = forecast.totalSemana.map((v) => Math.round(v));
+    const xs = fc.map((_, i) => etiquetaSemana(i + 1));
+    const xAll = [...seedLabels, ...xs];
+    const obs: (number | null)[] = [...seedTotals, ...fc.map(() => null)];
+    const pred: (number | null)[] = [null, null, null, seedTotals[3], ...fc];
     return {
-      grid: { top: 18, right: 16, bottom: 28, left: 40 },
+      grid: { top: 26, right: 16, bottom: 28, left: 40 },
+      legend: { top: 0, right: 0, data: ['Observado', 'Pronóstico'],
+        textStyle: { color: 'rgba(255,255,255,0.8)', fontSize: 10 }, itemWidth: 14, itemHeight: 8 },
       tooltip: { trigger: 'axis', ...baseTooltip,
         formatter: (p: unknown) => {
-          const arr = p as { dataIndex: number; value: number }[];
+          const arr = p as { dataIndex: number; value: number | null }[];
           const i = arr[0].dataIndex;
-          return `<b>${xs[i]}</b> (+${i + 1} sem)<br/>Casos AMB: <b>${arr[0].value.toFixed(0)}</b>`;
+          const val = arr.find((a) => a.value != null)?.value ?? 0;
+          const tag = i < OFFSET ? 'observado' : `+${i - OFFSET + 1} sem`;
+          return `<b>${xAll[i]}</b> (${tag})<br/>Casos AMB: <b>${Math.round(val)}</b>`;
         } },
-      xAxis: { type: 'category', data: xs, axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 9, interval: 2 },
-        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.12)' } } },
-      yAxis: { type: 'value', axisLabel: { color: 'rgba(255,255,255,0.4)', fontSize: 10 },
+      xAxis: { type: 'category', data: xAll, axisLabel: { color: 'rgba(255,255,255,0.9)', fontSize: 9, interval: 2 },
+        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.45)' } } },
+      yAxis: { type: 'value', axisLabel: { color: 'rgba(255,255,255,0.9)', fontSize: 10 },
         splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } } },
-      series: [{
-        type: 'line', smooth: true, symbol: 'none',
-        data: forecast.totalSemana.map((v) => Math.round(v)),
-        lineStyle: { color: '#00f0ff', width: 2.5 },
-        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-          { offset: 0, color: 'rgba(0,240,255,0.35)' }, { offset: 1, color: 'rgba(0,240,255,0.02)' }]) },
-        markPoint: {
-          symbol: 'circle', symbolSize: 12,
-          data: [{ name: 'actual', coord: [week, Math.round(forecast.totalSemana[week] ?? 0)] }],
-          itemStyle: { color: '#fff', borderColor: '#00f0ff', borderWidth: 3 },
-          label: { show: false },
+      series: [
+        { name: 'Observado', type: 'line', smooth: true, symbol: 'none', data: obs,
+          lineStyle: { color: 'rgba(255,255,255,0.85)', width: 2 },
+          areaStyle: { color: 'rgba(255,255,255,0.06)' } },
+        { name: 'Pronóstico', type: 'line', smooth: true, symbol: 'none', connectNulls: false, data: pred,
+          lineStyle: { color: '#00f0ff', width: 2.5 },
+          areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            { offset: 0, color: 'rgba(0,240,255,0.35)' }, { offset: 1, color: 'rgba(0,240,255,0.02)' }]) },
+          markLine: { silent: true, symbol: 'none', data: [{ xAxis: OFFSET - 1 }],
+            lineStyle: { color: 'rgba(255,255,255,0.4)', type: 'dotted', width: 1.5 },
+            label: { formatter: 'pronóstico →', color: 'rgba(255,255,255,0.65)', fontSize: 10, position: 'insideEndTop' } },
+          markPoint: {
+            symbol: 'circle', symbolSize: 12,
+            data: [{ name: 'actual', coord: [week + OFFSET, Math.round(forecast.totalSemana[week] ?? 0)] }],
+            itemStyle: { color: '#fff', borderColor: '#00f0ff', borderWidth: 3 },
+            label: { show: false },
+          },
         },
-      }],
+      ],
     };
-  }, [forecast, week]);
+  }, [forecast, week, meta]);
 
   if (error)
     return <div className={styles.state}>No se pudo cargar el motor predictivo: {error}</div>;
@@ -355,6 +375,8 @@ const SimulatorView: React.FC = () => {
       <Situacion2026 />
 
       <div className={styles.grid}>
+        {/* Columna izquierda: mapa + control de simulación */}
+        <div className={styles.mapCol}>
         {/* Mapa de riesgo */}
         <div className={styles.mapCard}>
           <div className={styles.mapHead}>
@@ -389,6 +411,26 @@ const SimulatorView: React.FC = () => {
             Las predicciones se realimentan (autoregresivo): los casos de cada semana alimentan la
             siguiente. Girón no se modela aquí (sin comunas en datos abiertos).
           </div>
+        </div>
+
+        {/* Control de simulación destacado (botón verde para correr) — llena el espacio bajo el mapa */}
+        <div className={styles.panel}>
+          <div className={styles.panelHead}><h3>Control de simulación</h3></div>
+          <button
+            className={styles.runBtn}
+            data-playing={playing}
+            onClick={() => { if (week >= HORIZONTE - 1) setWeek(0); setPlaying((p) => !p); }}
+          >
+            {playing ? <><Pause size={18} /> Pausar</> : <><Play size={18} /> Correr simulación</>}
+          </button>
+          <div className={styles.runMeta}>
+            <span>Semana proyectada</span>
+            <b>+{week + 1} / {HORIZONTE}</b>
+          </div>
+          <div className={styles.runHint}>
+            Reproduce el pronóstico semana a semana en el mapa. Ajusta los sliders de clima para comparar escenarios.
+          </div>
+        </div>
         </div>
 
         {/* Panel lateral: escenario climático + resumen */}
@@ -451,7 +493,11 @@ const SimulatorView: React.FC = () => {
                 <span className={styles.bigLbl}>pico proyectado (+{semanaPico + 1} sem)</span>
               </div>
             </div>
-            {trendOption && <EChart option={trendOption} height={150} />}
+            {trendOption && <EChart option={trendOption} height={172} />}
+            <div className={styles.mapNote} style={{ marginTop: 2 }}>
+              Tramo <b>observado</b> = Bucaramanga real + Floridablanca estimada (boletín INS, hasta {`2026-S${ANCHOR.semana}`});
+              de la divisoria en adelante es <b>pronóstico</b> del modelo.
+            </div>
 
             {/* Traducción económica del escenario (el "tamaño del premio") */}
             <div className={styles.moneyStrip}>
@@ -561,6 +607,9 @@ const SimulatorView: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Validación: backtest del brote 2024 (pronóstico vs. realidad) */}
+      <Backtest2024 />
 
       {/* Nota honesta sobre el rol del clima */}
       <div className={styles.disclaimer}>

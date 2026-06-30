@@ -9,6 +9,7 @@ const HeroSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const scrollHintRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,6 +32,12 @@ const HeroSection: React.FC = () => {
         { opacity: 0, y: 40 },
         { opacity: 1, y: 0, duration: 1, ease: 'power3.out' },
         '-=0.8'
+      )
+      .fromTo(
+        ctaRef.current,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.8, ease: 'power2.out' },
+        '-=0.5'
       )
       .fromTo(
         scrollHintRef.current,
@@ -145,6 +152,39 @@ const HeroSection: React.FC = () => {
           Presentamos el primer simulador predictivo de Dengue impulsado por
           Inteligencia Artificial para Bucaramanga.
         </p>
+
+        {/* Acceso directo y sutil al simulador (final de la landing) */}
+        <div ref={ctaRef} style={{ marginTop: '2.25rem', opacity: 0, display: 'flex', justifyContent: 'center' }}>
+          <button
+            onClick={() => document.getElementById('simulator')?.scrollIntoView({ behavior: 'smooth' })}
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '0.55rem',
+              padding: '0.7rem 1.5rem', borderRadius: '100px',
+              background: 'rgba(0, 240, 255, 0.06)',
+              border: '1px solid rgba(0, 240, 255, 0.35)',
+              color: '#00f0ff', fontSize: '0.92rem', fontWeight: 600,
+              letterSpacing: '0.3px', cursor: 'pointer',
+              backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)',
+              transition: 'all 0.25s ease',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'rgba(0, 240, 255, 0.14)';
+              e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.6)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(0, 240, 255, 0.06)';
+              e.currentTarget.style.borderColor = 'rgba(0, 240, 255, 0.35)';
+              e.currentTarget.style.transform = 'translateY(0)';
+            }}
+          >
+            Ir directo al simulador
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 5v14" /><path d="M19 12l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Scroll indicator */}

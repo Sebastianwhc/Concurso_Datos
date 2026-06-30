@@ -65,7 +65,7 @@
 - **Validación (la baza de credibilidad):** `f_Bga` calibrado en 2024–2025 = **0,304**; aplicado al Santander 2026 predice Bucaramanga con **−11,2 %** de error vs. el dato real del boletín (real 1.098 vs 975). Que la fracción reproduzca el Bucaramanga real de 2026 **valida el método** → se aplica con confianza a Floridablanca (`f_Florida = 0,119`). *Para Bucaramanga se usa el dato real, así que ese −11 % solo acota la incertidumbre de Florida (la pata más débil, ya declarada).*
 - **Frontera honesta** (registrada en `nowcast_2026.json`): **real** (Bucaramanga → 2026-S22) · **estimado** (Floridablanca, vía fracción validada) · **pronóstico** (de S22 en adelante).
 - **Aplicado:** respaldo `public/data/model_meta_2025.json`; parche de `seed` + `last_week` (→ 2026-S22, 25 comunas) en `model_meta.json` + bloque `reanclaje_2026`; etiqueta del horizonte `ANCHOR = {2026, 22}` en `SimulatorView.tsx`. Build verde.
-- **Pendiente (UI):** panel "Situación 2026 · Santander" (dato real del boletín, serie ya en `nowcast_2026.json`) + vista de **backtest** (pronóstico vs. realidad) + marcar la frontera real/estimado/pronóstico.
+- **UI (✅ hecho):** panel "Situación 2026 · Santander" (`Situacion2026.tsx`), vista de **backtest 2024** (`Backtest2024.tsx`) y **frontera observado→pronóstico** en la trayectoria. Detalle abajo en *Mejoras de presentación*.
 
 ### Navegación / layout (`src/layout/MainLayout.tsx`)
 - Sidebar glass con enlaces a **Inicio (landing)**, Dashboard y Simulador. El logo "EcoSalud IA" también vuelve al landing. (Antes no había forma de regresar al landing desde el panel.)
@@ -75,6 +75,17 @@
 - **Aporte de Daniela (rama `daniela`, integrado):** storytelling actos 1–5; `ThreatSection` y `TerritorySection` alimentadas con **datos reales SIVIGILA** (`LandingView` carga `loadDengueData` y pasa `stats`); nueva `TransitionSection`.
 - **Sección de contacto + footer global (rama `feat/seccion-contacto`, integrado):** "Contacto de los Desarrolladores" en `CTASection` + footer en `MainLayout`. Al integrar se **conservó la lógica móvil off-canvas** del sidebar (solo se sumó el footer); resueltos a mano los conflictos en `MainLayout.tsx/.module.css` y `.gitignore`.
 - **Pendiente narrativo (brief listo):** falta el **acto económico** ("el dinero es casi todo en salud") — ver [`docs/07_BRIEF_NARRATIVA_ECONOMICA.md`](docs/07_BRIEF_NARRATIVA_ECONOMICA.md): contador de costo en `ThreatSection` (stakes) + nueva sección de **retorno/ahorro** antes del CTA (payoff).
+
+### Mejoras de presentación (UI/UX) — *2026-06-30*
+Lote de cara a la sustentación (build verde en cada paso):
+- **Dashboard segmentado (`DashboardView.tsx`):** dos secciones con su *por qué* explícito — **"2026 · Bucaramanga"** (conteos del boletín INS: canal endémico con la línea de 2026 + bandas históricas neón, tendencia anual 2015–2026 con 2026 parcial, KPIs 2026) y **"2015–2025 · SIVIGILA individual"** (demografía/clínica, que requiere el registro por caso). Mensaje clave: *el boletín da "cuántos", no "quiénes"*.
+- **Gráfico nuevo "Régimen de afiliación"** (al lado de Estrato): pareja temática de equidad/acceso (68% Contributivo, 26% Subsidiado…).
+- **Canal endémico con líneas de frontera neón** (p25 verde / p50 punteada / p75 rojo, con glow) y **ejes/labels en blanco** en todas las series temporales (dashboard + `ClimatePanel` + simulador) para mejor contraste sobre el fondo oscuro.
+- **Simulador — panel "Situación 2026 · Santander" (`Situacion2026.tsx`):** curva real del boletín (2024 brote / 2025 / 2026) + KPIs + badge de validación del método. Es el ancla real verificable.
+- **Simulador — backtest del brote 2024 (`scripts/build_backtest_2024.py` → `backtest_2024.json` → `Backtest2024.tsx`):** corre el ONNX desde **2024-S8** (ciego de ahí) con **clima real** y superpone la curva real. Resultado: el modelo proyecta la trayectoria ascendente del brote (subestima ~17% el pico, MAE ~52/sem; conservador pero acierta dirección y magnitud). + tarjeta de métricas (R²=0,571, MAE 2,99, baseline −0,36, validación −11%). *La baza de credibilidad.*
+- **Simulador — frontera observado→pronóstico** en la trayectoria metropolitana (tramo observado en blanco = Bga real + Florida estimada; divisoria punteada; pronóstico en cian).
+- **Simulador — botón verde "Correr simulación"** (`runBtn`, glow pulsante) en la columna izquierda bajo el mapa, para hacer la simulación más intuitiva.
+- **Landing:** botón del CTA renombrado a **"Explorar el AI Hub"**; **acceso directo y sutil al simulador** desde la portada (`HeroSection`, scroll a `#simulator`).
 
 ---
 

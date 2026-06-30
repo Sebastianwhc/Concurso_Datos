@@ -196,6 +196,14 @@
   border: 1px solid var(--glass-border);
   border-radius: 16px;
   padding: 1.25rem 1.4rem 0.75rem;
+  position: relative;
+}
+
+/* Fila de KPIs de la sección 2026 (boletín) */
+.kpiRow2026 {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 .panelHead { margin-bottom: 0.5rem; }

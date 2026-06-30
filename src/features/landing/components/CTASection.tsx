@@ -332,7 +332,7 @@ const CTASection: React.FC = () => {
               flex: '1 1 220px', maxWidth: '320px',
             }}
           >
-            Ver Dashboard Interactivo
+            Explorar el AI Hub
           </button>
 
           <button

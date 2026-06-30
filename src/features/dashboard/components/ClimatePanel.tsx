@@ -6,8 +6,9 @@ import styles from '../DashboardView.module.css';
 
 interface ClimaWeek { anio: number; semana: number; precip: number | null; temp: number | null; humedad: number | null; }
 
-const AXIS = 'rgba(255,255,255,0.35)';
-const SPLIT = 'rgba(255,255,255,0.05)';
+const AXIS = 'rgba(255,255,255,0.9)';       // labels y nombres de eje (blancos)
+const AXIS_LINE = 'rgba(255,255,255,0.45)'; // líneas de eje (visibles)
+const SPLIT = 'rgba(255,255,255,0.06)';     // grilla interna (tenue a propósito)
 
 /** Panel multicausal: casos de dengue vs. clima semanal (lluvia y temperatura). */
 const ClimatePanel: React.FC<{ rows: Row[] }> = ({ rows }) => {
@@ -52,7 +53,7 @@ const ClimatePanel: React.FC<{ rows: Row[] }> = ({ rows }) => {
       grid: { left: 50, right: 64, top: 36, bottom: 40 },
       xAxis: {
         type: 'category', data: x, boundaryGap: false,
-        axisLine: { lineStyle: { color: SPLIT } }, axisLabel: { color: AXIS, fontSize: 10 },
+        axisLine: { lineStyle: { color: AXIS_LINE } }, axisLabel: { color: AXIS, fontSize: 10 },
       },
       yAxis: [
         { type: 'value', name: 'Casos', position: 'left', nameTextStyle: { color: AXIS }, axisLabel: { color: AXIS, fontSize: 10 }, splitLine: { lineStyle: { color: SPLIT } } },
