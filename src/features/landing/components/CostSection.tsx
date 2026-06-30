@@ -19,8 +19,36 @@ const CostSection: React.FC = () => {
   useEffect(() => {
     if (!sectionRef.current) return;
 
-    // Fade-in animations for header texts
-    gsap.fromTo(
+    const counts = { cost: 0, brote: 0, min: 0, max: 0 };
+    const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      setCostPerCase(1.4);
+      setBroteCost(16000);
+      setSavingsMin(1600);
+      setSavingsMax(4800);
+      gsap.set(sectionRef.current.querySelectorAll('.cost-reveal-text'), { opacity: 1, y: 0 });
+      gsap.set(sectionRef.current.querySelectorAll('.cost-card'), { opacity: 1, y: 0, scale: 1 });
+      gsap.set(climaxRef.current, { opacity: 1, scale: 1, y: 0 });
+      return;
+    }
+
+    // Force a ScrollTrigger refresh after mount to ensure correct layout calculations
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 200);
+
+    // Consolidated timeline triggered every time the section enters the viewport (like other acts)
+    const costTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: 'top 75%',
+        toggleActions: 'play none none reverse',
+      },
+    });
+
+    // 1. Reveal header texts
+    costTl.fromTo(
       sectionRef.current.querySelectorAll('.cost-reveal-text'),
       { opacity: 0, y: 35 },
       {
@@ -29,16 +57,11 @@ const CostSection: React.FC = () => {
         duration: 1.2,
         stagger: 0.18,
         ease: 'power3.out',
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: 'top 75%',
-          toggleActions: 'play none none reverse',
-        },
       }
     );
 
-    // Cards reveal
-    gsap.fromTo(
+    // 2. Reveal KPI cards
+    costTl.fromTo(
       sectionRef.current.querySelectorAll('.cost-card'),
       { opacity: 0, y: 40, scale: 0.96 },
       {
@@ -48,16 +71,32 @@ const CostSection: React.FC = () => {
         duration: 1.1,
         stagger: 0.12,
         ease: 'power3.out',
-        scrollTrigger: {
-          trigger: cardsRef.current,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
-        },
-      }
+      },
+      '-=0.95'
     );
 
-    // Climax card reveal
-    gsap.fromTo(
+    // 3. Animate the counter numbers from 0 to final value
+    costTl.to(
+      counts,
+      {
+        cost: 1.4,
+        brote: 16000,
+        min: 1600,
+        max: 4800,
+        duration: 2.2,
+        ease: 'power2.out',
+        onUpdate: () => {
+          setCostPerCase(counts.cost);
+          setBroteCost(Math.round(counts.brote));
+          setSavingsMin(Math.round(counts.min));
+          setSavingsMax(Math.round(counts.max));
+        },
+      },
+      '-=1.2'
+    );
+
+    // 4. Reveal climax card
+    costTl.fromTo(
       climaxRef.current,
       { opacity: 0, scale: 0.94, y: 55 },
       {
@@ -66,35 +105,14 @@ const CostSection: React.FC = () => {
         y: 0,
         duration: 1.4,
         ease: 'power3.out',
-        scrollTrigger: {
-          trigger: climaxRef.current,
-          start: 'top 85%',
-          toggleActions: 'play none none reverse',
-        },
-      }
+      },
+      '-=1.4'
     );
 
-    // Animate the counters using GSAP ScrollTrigger
-    const counts = { cost: 0, brote: 0, min: 0, max: 0 };
-    gsap.to(counts, {
-      cost: 1.4,
-      brote: 16000,
-      min: 1600,
-      max: 4800,
-      duration: 2.2,
-      ease: 'power2.out',
-      scrollTrigger: {
-        trigger: cardsRef.current,
-        start: 'top 75%',
-        toggleActions: 'play none none reverse',
-      },
-      onUpdate: () => {
-        setCostPerCase(counts.cost);
-        setBroteCost(Math.round(counts.brote));
-        setSavingsMin(Math.round(counts.min));
-        setSavingsMax(Math.round(counts.max));
-      },
-    });
+    return () => {
+      costTl.kill();
+      clearTimeout(refreshTimer);
+    };
   }, []);
 
   return (
@@ -113,8 +131,7 @@ const CostSection: React.FC = () => {
         background: 'linear-gradient(180deg, #0b0f19 0%, #070a14 50%, #0b0f19 100%)',
       }}
     >
-      {/* Ambient Narrative Halos (Naranja) */}
-      {/* Halo Central (Detrás del Contenido) */}
+      {/* Ambient Narrative Halos (Amarillo) */}
       <div
         style={{
           position: 'absolute',
@@ -123,15 +140,13 @@ const CostSection: React.FC = () => {
           transform: 'translate(-50%, -50%)',
           width: 'min(600px, 85vw)',
           height: 'min(600px, 85vw)',
-          background: 'radial-gradient(circle, #fb923c 0%, rgba(251, 146, 60, 0.4) 50%, transparent 80%)',
-          opacity: 0.22,
+          background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.6) 50%, transparent 80%)',
+          opacity: 0.45,
           filter: 'blur(80px)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
       />
-
-      {/* Halo Lateral Izquierdo Superior */}
       <div
         style={{
           position: 'absolute',
@@ -140,15 +155,13 @@ const CostSection: React.FC = () => {
           transform: 'translate(-50%, -50%)',
           width: 'min(800px, 100vw)',
           height: 'min(800px, 100vw)',
-          background: 'radial-gradient(circle, #fb923c 0%, rgba(251, 146, 60, 0.3) 50%, transparent 80%)',
-          opacity: 0.14,
+          background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.45) 50%, transparent 80%)',
+          opacity: 0.30,
           filter: 'blur(110px)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
       />
-
-      {/* Halo Lateral Derecho Medio */}
       <div
         style={{
           position: 'absolute',
@@ -157,15 +170,13 @@ const CostSection: React.FC = () => {
           transform: 'translate(50%, -50%)',
           width: 'min(850px, 110vw)',
           height: 'min(850px, 110vw)',
-          background: 'radial-gradient(circle, #fb923c 0%, rgba(251, 146, 60, 0.3) 50%, transparent 80%)',
-          opacity: 0.18,
+          background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.45) 50%, transparent 80%)',
+          opacity: 0.35,
           filter: 'blur(120px)',
           pointerEvents: 'none',
           zIndex: 0,
         }}
       />
-
-      {/* Halo Lateral Izquierdo Inferior */}
       <div
         style={{
           position: 'absolute',
@@ -174,8 +185,8 @@ const CostSection: React.FC = () => {
           transform: 'translate(-50%, -50%)',
           width: 'min(700px, 95vw)',
           height: 'min(700px, 95vw)',
-          background: 'radial-gradient(circle, #fb923c 0%, rgba(251, 146, 60, 0.3) 50%, transparent 80%)',
-          opacity: 0.12,
+          background: 'radial-gradient(circle, #facc15 0%, rgba(250, 204, 21, 0.45) 50%, transparent 80%)',
+          opacity: 0.25,
           filter: 'blur(100px)',
           pointerEvents: 'none',
           zIndex: 0,
