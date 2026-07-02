@@ -35,6 +35,7 @@ const CTASection: React.FC = () => {
     // Background Particle Canvas (Cian, Azul, Violeta, Púrpura)
     const canvas = canvasRef.current;
     let handleResize = () => {};
+    let visibilityObserver: IntersectionObserver | undefined;
     if (canvas) {
       const ctx = canvas.getContext('2d');
       if (ctx) {
@@ -120,7 +121,29 @@ const CTASection: React.FC = () => {
           animationRef.current = requestAnimationFrame(animate);
         };
 
-        animate();
+        // Only run the rAF loop while the section is visible.
+        let running = false;
+        const start = () => {
+          if (running) return;
+          running = true;
+          animate();
+        };
+        const stop = () => {
+          running = false;
+          cancelAnimationFrame(animationRef.current);
+        };
+        if (sectionRef.current) {
+          visibilityObserver = new IntersectionObserver(
+            ([entry]) => {
+              if (entry.isIntersecting) start();
+              else stop();
+            },
+            { threshold: 0 }
+          );
+          visibilityObserver.observe(sectionRef.current);
+        } else {
+          start();
+        }
 
         handleResize = () => {
           if (!canvas) return;
@@ -134,6 +157,7 @@ const CTASection: React.FC = () => {
     }
 
     return () => {
+      visibilityObserver?.disconnect();
       cancelAnimationFrame(animationRef.current);
       window.removeEventListener('resize', handleResize);
     };

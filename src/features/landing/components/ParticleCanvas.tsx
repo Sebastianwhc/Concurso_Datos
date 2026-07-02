@@ -26,7 +26,8 @@ const ParticleCanvas: React.FC = () => {
     canvas.height = height;
 
     const particles: Particle[] = [];
-    const PARTICLE_COUNT = 120;
+    const PARTICLE_COUNT = 70;
+    const CONNECT_DIST = 110;
     const colors = [
       'rgba(0, 240, 255,',   // cyan
       'rgba(0, 150, 255,',   // blue
@@ -55,22 +56,6 @@ const ParticleCanvas: React.FC = () => {
       vy: (Math.random() - 0.5) * 0.2,
     }));
 
-    const drawConnections = (p: Particle) => {
-      for (const other of particles) {
-        const dx = p.x - other.x;
-        const dy = p.y - other.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 120) {
-          ctx.beginPath();
-          ctx.strokeStyle = `rgba(0, 240, 255, ${0.08 * (1 - dist / 120)})`;
-          ctx.lineWidth = 0.5;
-          ctx.moveTo(p.x, p.y);
-          ctx.lineTo(other.x, other.y);
-          ctx.stroke();
-        }
-      }
-    };
-
     const animate = () => {
       ctx.clearRect(0, 0, width, height);
 
@@ -89,16 +74,36 @@ const ParticleCanvas: React.FC = () => {
         ctx.fillRect(blob.x - blob.radius, blob.y - blob.radius, blob.radius * 2, blob.radius * 2);
       }
 
-      // Draw particles
+      // Update particle positions
       for (const p of particles) {
         p.x += p.vx;
         p.y += p.vy;
 
         if (p.x < 0 || p.x > width) p.vx *= -1;
         if (p.y < 0 || p.y > height) p.vy *= -1;
+      }
 
-        drawConnections(p);
+      // Draw connections once per unique pair (avoids O(n²) double counting)
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const other = particles[j];
+          const dx = p.x - other.x;
+          const dy = p.y - other.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < CONNECT_DIST) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0, 240, 255, ${0.08 * (1 - dist / CONNECT_DIST)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(other.x, other.y);
+            ctx.stroke();
+          }
+        }
+      }
 
+      // Draw particles
+      for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
         ctx.fillStyle = `${p.color} ${p.alpha})`;
@@ -114,7 +119,27 @@ const ParticleCanvas: React.FC = () => {
       animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Only animate while the canvas is on-screen, to avoid burning CPU/GPU
+    // when the user has scrolled past the hero.
+    let running = false;
+    const start = () => {
+      if (running) return;
+      running = true;
+      animate();
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(animationRef.current);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) start();
+        else stop();
+      },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
 
     const handleResize = () => {
       width = window.innerWidth;
@@ -125,7 +150,8 @@ const ParticleCanvas: React.FC = () => {
     window.addEventListener('resize', handleResize);
 
     return () => {
-      cancelAnimationFrame(animationRef.current);
+      observer.disconnect();
+      stop();
       window.removeEventListener('resize', handleResize);
     };
   }, []);
