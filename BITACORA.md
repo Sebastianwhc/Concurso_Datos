@@ -2,7 +2,51 @@
 
 **Concurso:** Datos al Ecosistema 2026 · Categoría Avanzado · Reto Salud y Bienestar
 **Repo:** https://github.com/Sebastianwhc/Concurso_Datos · **Deploy:** https://concursodatos.vercel.app
-**Última actualización:** 2026-06-30
+**Última actualización:** 2026-07-06
+
+---
+
+## 🗓️ 2026-07-06 — Preparación para la sustentación (rendimiento, estructura, fuentes y landing)
+
+Lote de trabajo de cara a la presentación. Todo con build verde (`tsc -b && vite build`) en cada paso.
+Resumen ejecutivo también en [`CHANGELOG.md`](CHANGELOG.md) y visión global en [`DOCUMENTO_MAESTRO.md`](DOCUMENTO_MAESTRO.md).
+
+### 1. Rendimiento de la landing (se trababa en macOS, no en Windows)
+- **Causa:** tres sistemas de partículas en `<canvas>` (Hero, CTA, Simulador) corrían su `requestAnimationFrame` **todo el tiempo**, aunque la sección no estuviera visible; además el Hero (`ParticleCanvas`) hacía un conteo de conexiones **O(n²)** (120 partículas → ~14.400 chequeos/frame). macOS/WebKit compone `filter/backdrop-filter: blur` mucho más caro que Windows, y sumado a los canvas saturaba el compositor.
+- **Fix:** `IntersectionObserver` en los 3 canvas → el `rAF` se **cancela al salir de viewport** y se reanuda al volver (solo corre el canvas visible). Hero: partículas 120→70 y conexiones dibujadas **una sola vez por par** (`j=i+1`), ~6× menos trabajo/frame. Sin cambio visual. *(Confirmado fluido por el usuario en su Mac.)*
+
+### 2. Estructura del repo para evaluación (adaptada de `Sugerencia_EstructuraRepositorio_Avanzado.txt`)
+- **Nuevos en la raíz:** `DOCUMENTO_MAESTRO.md` (toda la info del proyecto: qué/cómo/para qué/contexto), `LICENSE` (MIT), `CHANGELOG.md`, `requirements.txt` + `environment.yml` (deps Python consolidadas), `.github/workflows/ci.yml` (build obligatorio + lint informativo).
+- **Nuevos en `docs/`:** `planteamiento_problema.md`, `conclusiones.md`, `data_dictionary.md`, `public_impact_assessment.md` (ética/sesgos), `validacion_guide.md`, `CONTRATO_ARTEFACTOS.md` (≈ `api_spec`, ya que no hay API REST: la app es estática y el "contrato" son los JSON de `public/data/`).
+- **Decisión honesta:** la plantilla sugerida es para una plataforma grande (con `agents/`, `kubernetes/`, `docker/`, `serverless/`). Este proyecto es una **app web estática + pipeline Python offline**, así que se adoptó la estructura **en espíritu** (mapeo documentado en el maestro §9) y **no se fabricaron** carpetas de infra que no se usan — incluirlas vacías engañaría al jurado y restaría rigor.
+- **Nota CI:** el workflow quedó **en disco pero no pusheado** (el token de `gh` no tiene el scope `workflow`). Para activarlo: `gh auth refresh -s workflow` y hacer push, o subirlo por la web.
+
+### 3. Limpieza de código
+- Eliminadas dependencias **sin uso**: `deck.gl`, `@deck.gl/layers`, `@deck.gl/react`, `mapbox-gl`, `react-map-gl` (exploradas en versiones tempranas; la final usa **ECharts** para todo lo geoespacial). Se agregó `tslib` explícito (lo necesitaba `echarts-for-react`, antes venía transitivo de deck.gl). `package-lock.json` bajó ~4.500 líneas.
+- Eliminado componente muerto `SolutionSection.tsx` (no importado en ningún lado).
+- **Consistencia del modelo:** etiqueta corregida a `GradientBoostingRegressor` (antes decía "HistGradientBoosting") en `train_model.py` y `model_meta.json`. El modelo real siempre fue GBR (n_estimators=400, max_depth=4, lr=0.04).
+
+### 4. Fuentes reales + corrección de atribución (honestidad de cara al jurado)
+Enlaces confirmados por el usuario y registrados en [`docs/05_FUENTES_DATOS_ABIERTOS.md`](docs/05_FUENTES_DATOS_ABIERTOS.md) (con vista previa de cada artefacto):
+- **`santander_dengue.json`** ← datos.gov.co, dataset nacional `qzc7-jbg3` (dengue por municipio).
+- **`dengue.json`** ← **registro individual por convenio con la Clínica FOSCAL** (Santander, **carácter semiprivado, NO dato abierto**). Se publica solo agregado/anonimizado.
+- **Boletín INS** ← `ins.gov.co/.../Vista-Boletin-Epidemilogico.aspx` (alimenta `nowcast_2026.json`).
+- **Geografía DANE** ← geovisor ArcGIS (MGN 2018) → `santander_municipios.geojson`, `amb_metropolitana.geojson`.
+- **⚠️ Corrección clave:** antes los docs decían que las 28.626 filas de `dengue.json` (SIVIGILA/datos.gov.co) cumplían el requisito de "+10.000 filas de datos abiertos". **Era incorrecto**: FOSCAL es semiprivado. Reencuadrado: el requisito de *datos abiertos* se cumple con el **dataset nacional de datos.gov.co** (millones de filas) + fuentes públicas (INS, DANE, IDEAM, CDMB, GIS); la **profundidad analítica** (demografía/clínica/geocodificación) se apoya en FOSCAL. Ambos planos declarados abiertamente.
+- **DANE añadido como fuente formal** (la nota de la bitácora "DANE ya no aplica" era solo sobre el *stack técnico*; la base geográfica de Santander/AMB sí es del DANE).
+- *Pendiente:* enlaces exactos de **CDMB/IDEAM** (confirmar si el PM2.5 es CDMB) y de los **geoportales GIS** de comunas.
+
+### 5. Landing anclada al brote 2024 + situación real 2026 (resuelve la *Observación #1 para Daniela*)
+- **Problema:** la sección "La Amenaza" titulaba con el **2025 parcial** (2.418 casos, corte en agosto/S35 del registro individual), que parecía una caída ~79 % vs 2024 (11.541) y **subvendía la amenaza**. El boletín del INS sí tiene Santander **completo** 2025 y 2026.
+- **Fix (opción elegida):**
+  - **Titular + demografía/clínica → brote 2024** (año completo, 11.541 casos; Bucaramanga sola 11.357). Es la muestra más robusta y el detalle por caso **solo** existe en FOSCAL (el boletín da "cuántos", no "quiénes").
+  - **Frescura → situación 2026** con el **dato real del boletín**: 1.098 casos a la semana 22. La landing ahora **carga `nowcast_2026.json`** (como el simulador).
+  - **Credibilidad:** se indica que el brote 2024 lo confirman **FOSCAL y el boletín INS** (coinciden en ~11k: 11.541 vs 11.051 estimado → <4 %).
+  - Renombrados campos honestos: `totalCases2025`→`casosBrote`, `bga2025`→`bgaBrote`; prop `bucaramangaCases2025`→`bucaramangaCasesBrote` (+`broteYear`). Degradación elegante si el boletín no carga.
+- **Correcciones de texto previas (mismo lote):** en `SimulatorSection` "telemetría en tiempo real de la CDMB" → "variables climáticas (IDEAM/CDMB)"; footer del `CTASection` con fuentes completas (SIVIGILA · IDEAM · CDMB · INS).
+
+### Entorno de desarrollo
+- Se instaló **Node.js 24.18.0 LTS** en `~/.local` (la Mac no lo tenía) para poder correr `npm`/build/dev.
 
 ---
 
@@ -94,10 +138,10 @@ Lote de cara a la sustentación (build verde en cada paso):
 - "**87% Confianza modelo**" → "**0,57 · R² validación brote 2024**" (el 87% no tenía respaldo; ahora cuadra con la métrica honesta que usamos en todos los informes).
 - Etiquetas "Semana 38" / "SE 38" → "**Semana 38 · 2026**" (alinea con el re-anclaje: S22 + 16 = S38 de 2026).
 
-**Observaciones para Daniela** (son criterios de prosa, **no los toqué** — decisión suya):
-1. Las estadísticas de la landing son de **2025, que es año parcial** (dato individual SIVIGILA hasta ~S35 / agosto). Usar 2025 es correcto (es el último año con detalle por caso, igual que el dashboard segmentado), pero conviene un **"(a la fecha)"** para que el paso 2024→2025 no parezca un bajón engañoso.
-2. En `SimulatorSection`: *"telemetría climática **en tiempo real de la CDMB**"* — el modo tiempo real real es **Open-Meteo**; la CDMB es el histórico 2025. Sería más preciso *"variables climáticas (IDEAM/CDMB)"*.
-3. **Footer** (`CTASection`): "Datos abiertos SIVIGILA + CDMB" → podría sumar **IDEAM** e **INS (boletín 2026)**, que también se usan.
+**Observaciones para Daniela** — *✅ las tres resueltas el 2026-07-06 (ver entrada al inicio de la bitácora):*
+1. ~~Landing con 2025 parcial → parece bajón engañoso.~~ ✅ **Resuelto:** se ancló al **brote 2024** (completo) + **situación real 2026** del boletín INS (1.098 casos), en vez del 2025 parcial.
+2. ~~`SimulatorSection`: "en tiempo real de la CDMB".~~ ✅ **Corregido** → "variables climáticas (IDEAM/CDMB)".
+3. ~~Footer con fuentes incompletas.~~ ✅ **Corregido** → "SIVIGILA · IDEAM · CDMB · INS".
 
 ---
 
