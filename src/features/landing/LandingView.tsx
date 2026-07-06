@@ -12,9 +12,22 @@ import { loadDengueData, COL, type DengueData } from '../dashboard/dengue';
 
 gsap.registerPlugin(ScrollTrigger);
 
+interface NowcastData {
+  ancla: { anio: number; semana: number };
+  series: {
+    santander: Array<{ anio: number; semana: number; casos: number }>;
+    bucaramanga_real: Array<{ anio: number; semana: number; casos: number }>;
+    floridablanca_estimada: Array<{ anio: number; semana: number; casos: number }>;
+  };
+}
+
 export interface ThreatData {
-  totalCases2025: number;
-  bga2025: number;
+  broteYear: number;
+  casosBrote: number;
+  bgaBrote: number;
+  casos2026: number;
+  semana2026: number;
+  casosSantander2025: number;
   historicalSeries: Array<{ year: number; cases: number }>;
   peakYear: number;
   peakCases: number;
@@ -41,16 +54,23 @@ export interface ThreatData {
 
 const LandingView: React.FC = () => {
   const [dengueData, setDengueData] = useState<DengueData | null>(null);
+  const [nowcast, setNowcast] = useState<NowcastData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    loadDengueData()
-      .then((data) => {
+    Promise.all([
+      loadDengueData(),
+      fetch(`${import.meta.env.BASE_URL}data/nowcast_2026.json`)
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null),
+    ])
+      .then(([data, now]) => {
         setDengueData(data);
+        setNowcast(now as NowcastData | null);
         setLoading(false);
       })
       .catch((e) => {
-        console.error('Failed to load dengue data:', e);
+        console.error('Failed to load landing data:', e);
         setLoading(false);
       });
 
@@ -76,10 +96,20 @@ const LandingView: React.FC = () => {
     const rows = dengueData.rows;
     const meta = dengueData.meta;
 
-    // 1. Filtrar registros para 2025
-    const rows2025 = rows.filter((r) => r[COL.anio] === 2025);
-    const totalCases2025 = rows2025.length;
-    const bga2025 = rows2025.filter((r) => r[COL.municipio] === 0).length;
+    // 1. Año del brote (2024): año completo y más robusto para demografía/clínica.
+    //    El detalle por caso solo existe en el registro individual (FOSCAL) → usamos
+    //    2024 (11.541 casos) en vez de 2025 parcial (corte en agosto/S35).
+    const BROTE_YEAR = 2024;
+    const rowsBrote = rows.filter((r) => r[COL.anio] === BROTE_YEAR);
+    const casosBrote = rowsBrote.length;
+    const bgaBrote = rowsBrote.filter((r) => r[COL.municipio] === 0).length;
+
+    // 1b. Situación vigente desde el boletín del INS (dato fresco 2026 y Santander 2025 completo)
+    const sumYear = (arr: Array<{ anio: number; casos: number }> | undefined, year: number) =>
+      (arr ?? []).filter((p) => p.anio === year).reduce((a, p) => a + p.casos, 0);
+    const casos2026 = Math.round(sumYear(nowcast?.series.bucaramanga_real, 2026));
+    const semana2026 = nowcast?.ancla?.semana ?? 0;
+    const casosSantander2025 = Math.round(sumYear(nowcast?.series.santander, 2025));
 
     // 2. Evolución histórica 2015-2025
     const yearCounts: Record<number, number> = {};
@@ -111,13 +141,13 @@ const LandingView: React.FC = () => {
     const baselineYear = 2015;
     const baselineCases = yearCounts[baselineYear] ?? 0;
 
-    const femaleCases = rows2025.filter((r) => r[COL.sexo] === 0).length;
-    const maleCases = rows2025.filter((r) => r[COL.sexo] === 1).length;
-    const femalePercent = totalCases2025 > 0 ? parseFloat(((femaleCases / totalCases2025) * 100).toFixed(1)) : 0;
-    const malePercent = totalCases2025 > 0 ? parseFloat(((maleCases / totalCases2025) * 100).toFixed(1)) : 0;
+    const femaleCases = rowsBrote.filter((r) => r[COL.sexo] === 0).length;
+    const maleCases = rowsBrote.filter((r) => r[COL.sexo] === 1).length;
+    const femalePercent = casosBrote > 0 ? parseFloat(((femaleCases / casosBrote) * 100).toFixed(1)) : 0;
+    const malePercent = casosBrote > 0 ? parseFloat(((maleCases / casosBrote) * 100).toFixed(1)) : 0;
 
     const ageDistribution = meta.dicts.edad.map((name, i) => {
-      const cases = rows2025.filter((r) => r[COL.edad] === i).length;
+      const cases = rowsBrote.filter((r) => r[COL.edad] === i).length;
       return { name, cases };
     });
 
@@ -130,21 +160,25 @@ const LandingView: React.FC = () => {
       }
     });
 
-    const hospitalizedCount = rows2025.filter((r) => r[COL.hosp] === 1).length;
-    const hospitalizedPercent = totalCases2025 > 0 ? parseFloat(((hospitalizedCount / totalCases2025) * 100).toFixed(1)) : 0;
-    const deadCount = rows2025.filter((r) => r[COL.fallecido] === 1).length;
-    const letalidad = totalCases2025 > 0 ? parseFloat(((deadCount / totalCases2025) * 100).toFixed(2)) : 0;
+    const hospitalizedCount = rowsBrote.filter((r) => r[COL.hosp] === 1).length;
+    const hospitalizedPercent = casosBrote > 0 ? parseFloat(((hospitalizedCount / casosBrote) * 100).toFixed(1)) : 0;
+    const deadCount = rowsBrote.filter((r) => r[COL.fallecido] === 1).length;
+    const letalidad = casosBrote > 0 ? parseFloat(((deadCount / casosBrote) * 100).toFixed(2)) : 0;
 
-    const sinSignosCases = rows2025.filter((r) => r[COL.severidad] === 0).length;
-    const sinSignosPercent = totalCases2025 > 0 ? parseFloat(((sinSignosCases / totalCases2025) * 100).toFixed(1)) : 0;
-    const conSignosCases = rows2025.filter((r) => r[COL.severidad] === 1).length;
-    const conSignosPercent = totalCases2025 > 0 ? parseFloat(((conSignosCases / totalCases2025) * 100).toFixed(1)) : 0;
-    const graveCases = rows2025.filter((r) => r[COL.severidad] === 2).length;
-    const gravePercent = totalCases2025 > 0 ? parseFloat(((graveCases / totalCases2025) * 100).toFixed(1)) : 0;
+    const sinSignosCases = rowsBrote.filter((r) => r[COL.severidad] === 0).length;
+    const sinSignosPercent = casosBrote > 0 ? parseFloat(((sinSignosCases / casosBrote) * 100).toFixed(1)) : 0;
+    const conSignosCases = rowsBrote.filter((r) => r[COL.severidad] === 1).length;
+    const conSignosPercent = casosBrote > 0 ? parseFloat(((conSignosCases / casosBrote) * 100).toFixed(1)) : 0;
+    const graveCases = rowsBrote.filter((r) => r[COL.severidad] === 2).length;
+    const gravePercent = casosBrote > 0 ? parseFloat(((graveCases / casosBrote) * 100).toFixed(1)) : 0;
 
     return {
-      totalCases2025,
-      bga2025,
+      broteYear: BROTE_YEAR,
+      casosBrote,
+      bgaBrote,
+      casos2026,
+      semana2026,
+      casosSantander2025,
       historicalSeries,
       peakYear,
       peakCases,
@@ -168,7 +202,7 @@ const LandingView: React.FC = () => {
       graveCases,
       gravePercent,
     };
-  }, [dengueData]);
+  }, [dengueData, nowcast]);
 
   return (
     <div
@@ -190,7 +224,7 @@ const LandingView: React.FC = () => {
       <TransitionSection />
 
       {/* Sección 3: El Territorio (El Mapa de Casos) */}
-      <TerritorySection bucaramangaCases2025={stats?.bga2025 ?? 0} />
+      <TerritorySection bucaramangaCasesBrote={stats?.bgaBrote ?? 0} broteYear={stats?.broteYear ?? 2024} />
 
       {/* Acto 6: Impacto Económico */}
       <CostSection />

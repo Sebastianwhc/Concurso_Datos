@@ -19,6 +19,7 @@ La narrativa detallada de cada iteración vive en [`BITACORA.md`](BITACORA.md).
 - **CI** (`.github/workflows/ci.yml`) — lint + build en cada push/PR.
 
 ### Changed
+- **Landing — año de referencia corregido (evita subvender la amenaza):** la sección "La Amenaza" pasa de titular con el **2025 parcial** (2.418 casos, corte en agosto) al **brote completo de 2024** (11.541 casos, muestra robusta para demografía/clínica). Se añade la **situación vigente 2026** con el **dato real del boletín INS** (1.098 casos, a S22), y se refuerza la credibilidad indicando que el brote 2024 lo confirman FOSCAL y el boletín. La landing ahora carga `nowcast_2026.json`.
 - **Rendimiento de la landing (macOS):** los 3 sistemas de partículas (Hero, CTA, Simulador) se pausan fuera de viewport vía `IntersectionObserver`; el Hero reduce partículas 120→70 y elimina el conteo O(n²) de conexiones.
 - **Precisión de textos de cara al jurado:** en la landing, "telemetría climática en tiempo real de la CDMB" → "variables climáticas (IDEAM / CDMB)"; footer con fuentes completas (SIVIGILA · IDEAM · CDMB · INS).
 - **Consistencia del modelo:** etiqueta corregida a `GradientBoostingRegressor` (antes decía "HistGradientBoosting") en `train_model.py` y `model_meta.json`.

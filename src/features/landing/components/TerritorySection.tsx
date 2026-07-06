@@ -522,10 +522,11 @@ const MapCanvas: React.FC<MapCanvasProps> = ({ active, height }) => {
 
 /* ─── Main Section ─── */
 interface TerritorySectionProps {
-  bucaramangaCases2025: number;
+  bucaramangaCasesBrote: number;
+  broteYear: number;
 }
 
-const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCases2025 }) => {
+const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBrote, broteYear }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const [mapActive, setMapActive] = useState(false);
@@ -836,7 +837,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCases202
                 lineHeight: 1.6,
                 margin: '0.5rem 0 0 0',
               }}>
-                Los {ambMuniCount || '4'} municipios del Área Metropolitana consolidan la gran mayoría de la carga epidemiológica de Santander. Tan solo en Bucaramanga, se reportaron {bucaramangaCases2025 > 0 ? bucaramangaCases2025.toLocaleString() : '...'} casos durante el año 2025.
+                Los {ambMuniCount || '4'} municipios del Área Metropolitana consolidan la gran mayoría de la carga epidemiológica de Santander. Tan solo en Bucaramanga, se reportaron {bucaramangaCasesBrote > 0 ? bucaramangaCasesBrote.toLocaleString() : '...'} casos durante el brote de {broteYear}.
               </p>
             </div>
 

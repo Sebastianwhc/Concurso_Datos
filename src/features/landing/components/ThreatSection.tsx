@@ -515,7 +515,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 textShadow: '0 0 35px rgba(255,77,77,0.18)',
               }}
             >
-              {data.totalCases2025.toLocaleString()}
+              {data.casosBrote.toLocaleString()}
             </span>
             <span
               style={{
@@ -528,7 +528,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 marginTop: '0.8rem',
               }}
             >
-              CASOS NOTIFICADOS EN 2025
+              CASOS EN EL BROTE DE {data.broteYear}
             </span>
             <span
               style={{
@@ -538,7 +538,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 marginTop: '0.3rem',
               }}
             >
-              Corte epidemiológico actual
+              Confirmado por SIVIGILA (FOSCAL) y boletín INS
             </span>
           </div>
 
@@ -656,7 +656,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            Bucaramanga registra <strong style={{ color: '#ff6b6b' }}>{data.totalCases2025.toLocaleString()} casos</strong> notificados durante 2025. Detrás de cada registro existe una <strong style={{ color: '#ff6b6b' }}>persona</strong>, una <strong style={{ color: '#ff6b6b' }}>familia</strong> y una <strong style={{ color: '#ff6b6b' }}>comunidad</strong> expuesta al riesgo epidemiológico.
+            En su mayor brote, <strong style={{ color: '#ff6b6b' }}>{data.broteYear}</strong>, Bucaramanga registró <strong style={{ color: '#ff6b6b' }}>{data.casosBrote.toLocaleString()} casos</strong>{data.casos2026 > 0 && (
+              <> — y la amenaza sigue viva: en <strong style={{ color: '#ff6b6b' }}>2026</strong> ya van <strong style={{ color: '#ff6b6b' }}>{data.casos2026.toLocaleString()} casos reales</strong> (boletín INS, a la semana {data.semana2026})</>
+            )}. Detrás de cada registro existe una <strong style={{ color: '#ff6b6b' }}>persona</strong>, una <strong style={{ color: '#ff6b6b' }}>familia</strong> y una <strong style={{ color: '#ff6b6b' }}>comunidad</strong> expuesta al riesgo epidemiológico.
           </p>
 
           {/* Micro Indicadores */}
@@ -672,9 +674,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             }}
           >
             {[
-              `• ${data.totalCases2025.toLocaleString()} Casos reportados`,
-              '• Año 2025',
-              '• Vigilancia SIVIGILA',
+              `• ${data.casosBrote.toLocaleString()} casos en el brote ${data.broteYear}`,
+              data.casos2026 > 0 ? `• ${data.casos2026.toLocaleString()} casos reales en 2026` : '• Brote epidémico',
+              '• SIVIGILA + boletín INS',
             ].map((text, idx) => (
               <div
                 key={idx}
@@ -1063,13 +1065,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Año Actual (2025)
+                En curso (2026)
               </span>
               <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
-                {data.totalCases2025.toLocaleString()}
+                {data.casos2026 > 0 ? data.casos2026.toLocaleString() : '—'}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#00f0ff', fontWeight: 500 }}>
-                Casos notificados (corte parcial)
+                Casos reales · boletín INS (a S{data.semana2026})
               </span>
             </div>
           </div>
@@ -1364,13 +1366,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                         textAlign: 'center',
                       }}>
                         <span style={{ fontSize: '1.9rem', fontWeight: 900, color: '#fff', lineHeight: 1.1, letterSpacing: '-1px' }}>
-                          {data.totalCases2025.toLocaleString()}
+                          {data.casosBrote.toLocaleString()}
                         </span>
                         <span style={{ fontSize: '0.62rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px', marginTop: '0.2rem' }}>
                           CASOS ANALIZADOS
                         </span>
                         <span style={{ fontSize: '0.68rem', fontWeight: 600, color: '#b300ff', marginTop: '0.15rem' }}>
-                          Año 2025
+                          Brote {data.broteYear}
                         </span>
                       </div>
                     </div>
