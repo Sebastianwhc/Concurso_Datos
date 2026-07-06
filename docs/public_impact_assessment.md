@@ -22,9 +22,12 @@ puede hacer la herramienta, qué daños podría causar y cómo los mitigamos.
 
 ## 3. Privacidad y protección de datos
 
-- **No se procesan datos personales identificables.** El SIVIGILA se consume ya **anonimizado**; el
-  consolidado publicado agrega a nivel de **caso sin identificadores** (año, semana, sexo, grupo etario,
-  estrato, severidad…), nunca nombres, documentos ni direcciones exactas.
+- **No se publican datos personales identificables.** El registro individual proviene de un **convenio con
+  la Clínica FOSCAL** (semiprivado) y se usa **solo para producir estadísticas y features agregadas**; el
+  artefacto publicado (`dengue.json`) contiene **casos sin identificadores** (año, semana, sexo, grupo
+  etario, estrato, severidad…), nunca nombres, documentos ni direcciones exactas.
+- **Base legal del registro individual:** convenio institucional con la FOSCAL. Al no ser dato abierto, no
+  se redistribuyen los microdatos originales; el repositorio solo expone la versión agregada/anonimizada.
 - La **geocodificación** se hace a nivel de **calle** y los casos se **agregan por comuna/punto**, de modo
   que ningún caso individual es localizable en una vivienda.
 - Los **CSV crudos no se versionan** (`.gitignore`); el repositorio solo publica artefactos agregados.

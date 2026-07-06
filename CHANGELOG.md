@@ -10,6 +10,10 @@ La narrativa detallada de cada iteración vive en [`BITACORA.md`](BITACORA.md).
 
 ### Added
 - **`DOCUMENTO_MAESTRO.md`** — documento único con toda la información del proyecto (qué, cómo, para qué y en qué contexto funciona).
+- **Fuentes con enlaces reales + vista previa de cada artefacto** en `docs/05_FUENTES_DATOS_ABIERTOS.md`: dataset nacional datos.gov.co (`qzc7-jbg3`), boletín INS, geografía DANE (MGN 2018).
+
+### Fixed
+- **Atribución de fuentes corregida (honestidad):** `dengue.json` proviene de un **convenio con la Clínica FOSCAL** (semiprivado), **no** es dato abierto; el requisito de *datos abiertos* del concurso se cumple con el dataset nacional de datos.gov.co y las fuentes públicas (INS, DANE, IDEAM, CDMB, GIS). Se añadió el **DANE (MGN)** como fuente formal (la base geográfica de Santander/AMB sí proviene del DANE).
 - **`LICENSE`** (MIT), **`requirements.txt`** y **`environment.yml`** consolidados en la raíz.
 - **`docs/`**: `planteamiento_problema.md`, `conclusiones.md`, `data_dictionary.md`, `public_impact_assessment.md`, `validacion_guide.md`, `CONTRATO_ARTEFACTOS.md`.
 - **CI** (`.github/workflows/ci.yml`) — lint + build en cada push/PR.

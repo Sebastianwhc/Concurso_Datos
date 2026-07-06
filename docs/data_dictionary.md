@@ -6,11 +6,15 @@ Fuentes y licencias en [`05_FUENTES_DATOS_ABIERTOS.md`](05_FUENTES_DATOS_ABIERTO
 
 ---
 
-## 1. Consolidado SIVIGILA individual — `public/data/dengue.json`
+## 1. Consolidado del registro individual de dengue — `public/data/dengue.json`
+
+> **Origen:** registro **individual** de dengue obtenido por **convenio con la Clínica FOSCAL** (Santander),
+> de **carácter semiprivado** — no es un dato abierto. Solo se publica esta versión **agregada y
+> anonimizada** (sin identificadores). Ver [`05_FUENTES_DATOS_ABIERTOS.md`](05_FUENTES_DATOS_ABIERTOS.md) §4.
 
 Formato **columnar** (arreglo de filas de enteros + diccionarios de códigos), para que
-28.626 casos × 12 campos pesen ~820 KB en el navegador. Decodificado desde el SIVIGILA
-individual de Bucaramanga (76 variables originales, 2015–2025) por `scripts/build_dashboard_data.py`.
+28.626 casos × 12 campos pesen ~820 KB en el navegador. Decodificado desde el registro individual
+(76 variables originales, 2015–2025) por `scripts/build_dashboard_data.py`.
 El índice de cada columna está en `COL` de [`src/features/dashboard/dengue.ts`](../src/features/dashboard/dengue.ts).
 
 | # | Variable | Tipo | Descripción | Codificación |

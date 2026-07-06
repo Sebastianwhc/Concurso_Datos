@@ -132,15 +132,23 @@ Todos los datos son **abiertos**. Trazabilidad, enlaces y licencias en
 
 | Fuente | Uso | Artefacto |
 |--------|-----|-----------|
-| **SIVIGILA** individual (Bucaramanga) | 28.626 casos · 76 variables · 2015–2025 | `dengue.json` |
-| **SIVIGILA** nacional | dengue por municipio de Santander (87 mun.) 2007–2022 | `santander_dengue.json` |
+| **Registro individual de dengue — convenio FOSCAL** *(semiprivado, no abierto)* | 28.626 casos · 76 variables · 2015–2025 (demografía, clínica, síntomas) | `dengue.json` |
+| **Dengue por municipio — SIVIGILA nacional** *(datos.gov.co `qzc7-jbg3`)* | dengue por municipio de Santander 2007–2022 | `santander_dengue.json` |
+| **Boletín epidemiológico INS** | re-anclaje de la semilla a 2026 | `nowcast_2026.json` |
+| **DANE — Marco Geoestadístico Nacional (MGN 2018)** | polígonos de municipios (Santander + AMB) | `santander_municipios.geojson`, `amb_metropolitana.geojson` |
 | **IDEAM + CDMB** | clima semanal 2007–2026 (precip, temp, humedad, PM2.5) | `clima_semanal.json` |
 | **GIS oficial** (AMB, Floridablanca) | comunas: Bga 17 + Florida 8 | `amb_comunas.geojson` |
-| Direcciones (Reporte Salud Pública) → geocodificadas | casos por comuna (80 % geocodificados) | `metro_puntos.json` |
-| **Boletín epidemiológico INS** | re-anclaje de la semilla a 2026 | `nowcast_2026.json` |
+| Direcciones (registro FOSCAL) → geocodificadas (Nominatim/OSM) | casos por comuna (80 % geocodificados) | `metro_puntos.json` |
 
-**Requisitos del concurso cubiertos:** +10.000 filas ✅ (28.626) · +20 variables ✅ (76) · datos abiertos ✅ ·
-integración clima+salud ✅ · IA predictiva avanzada ✅ · repo público ✅.
+> ⚠️ **Matiz de honestidad:** el registro **individual** (`dengue.json`) proviene de un **convenio con la
+> Clínica FOSCAL** y es **semiprivado**, no un dato abierto; se publica solo **agregado y anonimizado**. El
+> requisito formal de *datos abiertos* del concurso se satisface con el **dataset nacional de datos.gov.co**
+> (millones de filas) y las fuentes públicas (INS, DANE, IDEAM, CDMB, GIS). Detalle en
+> [`docs/05_FUENTES_DATOS_ABIERTOS.md`](docs/05_FUENTES_DATOS_ABIERTOS.md) §4–§5.
+
+**Requisitos del concurso cubiertos:** +10.000 filas ✅ (dataset abierto nacional datos.gov.co) · +20
+variables ✅ (76) · datos abiertos ✅ (fuentes 2–8) · integración clima+salud ✅ · IA predictiva avanzada ✅ ·
+repo público ✅.
 
 ---
 

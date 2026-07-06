@@ -43,13 +43,19 @@ Ver el detalle en [`docs/02_ARQUITECTURA.md`](docs/02_ARQUITECTURA.md).
 
 | Fuente | Uso | Artefacto |
 |---|---|---|
-| **SIVIGILA** (individual, Bucaramanga) | 28.626 casos, 76 variables, 2015–2025 | `public/data/dengue.json` |
-| **SIVIGILA** (nacional) | dengue por municipio de Santander 2007–2022 | `public/data/santander_dengue.json` |
+| **Registro individual de dengue — convenio FOSCAL** *(semiprivado)* | 28.626 casos, 76 variables, 2015–2025 | `public/data/dengue.json` |
+| **SIVIGILA nacional** *(datos.gov.co `qzc7-jbg3`)* | dengue por municipio de Santander 2007–2022 | `public/data/santander_dengue.json` |
+| **Boletín epidemiológico INS** | re-anclaje de la semilla a 2026 | `public/data/nowcast_2026.json` |
+| **DANE — MGN 2018** | polígonos de municipios (Santander + AMB) | `public/santander_municipios.geojson` |
 | **IDEAM + CDMB** | clima semanal 2007–2026 (precip, temp, humedad, PM2.5) | `public/data/clima_semanal.json` |
 | **GIS oficial** (AMB, geoportal Floridablanca) | comunas de Bga (17) + Florida (8) | `public/amb_comunas.geojson` |
-| Direcciones (Reporte Salud Pública) → geocodificadas | casos georreferenciados por comuna | `public/data/metro_puntos.json` |
+| Direcciones (registro FOSCAL) → geocodificadas (Nominatim/OSM) | casos georreferenciados por comuna | `public/data/metro_puntos.json` |
 
-Detalle completo, enlaces y licencias en [`docs/05_FUENTES_DATOS_ABIERTOS.md`](docs/05_FUENTES_DATOS_ABIERTOS.md).
+> **Nota:** `dengue.json` proviene de un **convenio con la FOSCAL** (semiprivado, no abierto); se publica
+> solo agregado/anonimizado. El requisito de *datos abiertos* se cumple con el dataset nacional de
+> datos.gov.co y las fuentes públicas (INS, DANE, IDEAM, CDMB, GIS).
+
+Detalle completo, vista previa de cada archivo, enlaces y licencias en [`docs/05_FUENTES_DATOS_ABIERTOS.md`](docs/05_FUENTES_DATOS_ABIERTOS.md).
 
 ---
 
