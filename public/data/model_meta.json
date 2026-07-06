@@ -541,7 +541,7 @@
       "R2": 0.571
     }
   },
-  "nota": "HistGradientBoosting; pronóstico autoregresivo (casos recientes) + clima modulador. Salida en log1p -> aplicar expm1. El simulador realimenta la predicción para proyectar semana a semana.",
+  "nota": "GradientBoostingRegressor (sklearn); pronóstico autoregresivo (casos recientes) + clima modulador. Salida en log1p -> aplicar expm1. El simulador realimenta la predicción para proyectar semana a semana.",
   "reanclaje_2026": {
     "fuente": "boletin INS (Santander semanal) + Bucaramanga real 2026",
     "ancla": {

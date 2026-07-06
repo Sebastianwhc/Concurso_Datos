@@ -427,8 +427,8 @@ const SimulatorSection: React.FC = () => {
               maxWidth: '650px', margin: '0 auto', lineHeight: 1.7, opacity: 0,
             }}
           >
-            Cruzamos datos abiertos del <strong style={{ color: 'rgba(255,255,255,0.8)' }}>SIVIGILA</strong> con telemetría
-            climática en tiempo real de la <strong style={{ color: 'rgba(255,255,255,0.8)' }}>CDMB</strong> —
+            Cruzamos datos abiertos del <strong style={{ color: 'rgba(255,255,255,0.8)' }}>SIVIGILA</strong> con variables
+            climáticas <strong style={{ color: 'rgba(255,255,255,0.8)' }}>(IDEAM / CDMB)</strong> —
             humedad, temperatura y precipitaciones — para proyectar el impacto semana a semana.
           </p>
         </div>

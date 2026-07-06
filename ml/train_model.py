@@ -1,7 +1,8 @@
 """
 Entrena el modelo de pronóstico de dengue por comuna-semana y lo exporta a ONNX.
 
-Modelo: HistGradientBoostingRegressor (gradient boosting por histogramas, sklearn).
+Modelo: GradientBoostingRegressor (gradient boosting de árboles, sklearn;
+  n_estimators=400, max_depth=4, learning_rate=0.04).
   Se eligió sobre XGBoost porque skl2onnx lo exporta FIEL a ONNX (XGBoost+onnxmltools
   rompe la conversión). Mismo tipo de modelo (ensamblaje de árboles con boosting).
 
@@ -120,9 +121,9 @@ def main():
         "clima_ranges": ranges, "comunas": cf["comunas"],
         "seed": seed, "last_week": last_week,
         "metrics": {"baseline": m_base, "modelo": m_xgb},
-        "nota": "HistGradientBoosting; pronóstico autoregresivo (casos recientes) + clima "
-                "modulador. Salida en log1p -> aplicar expm1. El simulador realimenta la "
-                "predicción para proyectar semana a semana.",
+        "nota": "GradientBoostingRegressor (sklearn); pronóstico autoregresivo (casos "
+                "recientes) + clima modulador. Salida en log1p -> aplicar expm1. El "
+                "simulador realimenta la predicción para proyectar semana a semana.",
     }
     json.dump(meta, open(os.path.join(PUB, "model_meta.json"), "w", encoding="utf-8"),
               ensure_ascii=False, indent=2)

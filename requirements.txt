@@ -1,0 +1,24 @@
+# ==========================================================================
+# EcoSalud IA — Dependencias Python (pipelines offline + ML)
+# Python 3.12. Solo se usa para REGENERAR artefactos de datos y el modelo;
+# la app web (React/Vite) no necesita Python para correr.
+# Instalar:  pip install -r requirements.txt
+# ==========================================================================
+
+# --- Datos y cómputo ---
+pandas
+numpy
+
+# --- Machine Learning (entrenamiento + validación) ---
+scikit-learn          # GradientBoostingRegressor + métricas
+
+# --- Exportación e inferencia del modelo (ONNX) ---
+skl2onnx              # sklearn -> ONNX (export fiel, verificado a 1e-6)
+onnx
+onnxruntime           # verificación/validación numérica del .onnx en Python
+
+# --- Geoprocesamiento (comunas, contornos de municipios, point-in-polygon) ---
+shapely               # unary_union para disolver comunas -> contorno de ciudad
+
+# nota: la geocodificación (scripts/geocode_metro.py) usa solo la librería
+# estándar (urllib) contra Nominatim + caché local; no requiere paquetes extra.

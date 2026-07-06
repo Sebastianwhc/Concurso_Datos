@@ -1,0 +1,87 @@
+IdEquipo-proyecto-abierto-ia/
+Avanzado-ia/
+│
+├── RECURSOS/                                          # Es la subcarpeta dedicada exclusivamente al material visual. 
+│   ├── Presentacion.pptx                              # Archivo de PowerPoint original                 
+│   ├── presentacion.pdf                               # Presentación exportada a PDF
+│   ├── portada.png                                    # Imagen de la diapositiva principal
+│
+├── README.md                                          # Guía principal del proyecto (Ficha técnica y resultados)
+├── LICENSE                                            # Tipo de licencia abierta (ej. MIT, Apache 2.0)
+├── .gitignore                                         # Exclusión de archivos pesados, credenciales y temporales
+├── requirements.txt                                   # Dependencias del proyecto (Scikit-Learn, Pandas, etc.)
+├── environment.yml
+├── Changelog.md                                       # Registro cronológico de versiones y cambios.
+│
+├── docs/
+│   ├── architecture/                                  # Diagramas de la arquitectura híbrida y multiagente
+│   ├── api_spec.md                                    # Documentación de endpoints en formato OpenAPI/Swagger
+│   └── public_impact_assessment.md                    # Evaluación de impacto, ética y mitigación de sesgos
+│   └── data_dictionary.md                             # Definición de las 10-20 variables del consolidado
+│   ├── planteamiento_problema.md                      # Definición clara del problema
+│   ├── marco_metodologico.md                          # CRISP-ML
+│   ├── fuentes_datos.md                               # Enlaces a
+│   └── conclusiones.md                                # Hallazgos. Limitaciones. Próximos pasos
+│   └── validación_guide.md                            # Guía detallada para que pares validen los resultados
+
+├── data/                                             # Gestión del ciclo de vida de los datos
+│   ├── raw/                                          # Datos abiertos estructurados y no estructurados (espejo)(incluye dataset datos.gov.co)
+│   ├── processed/                                    # Datos limpios, transformados y anonimizados
+│   └── realtime/                                     # Buffers de flujos de datos en tiempo real (IoT/APIs)
+│   └── external/                                     # Datos auxiliares
+│
+├── notebooks/                                          # Experimentación y análisis exploratorio
+│   ├── 01_EDA_exploracion_datos.ipynb                 # Experimentación y análisis exploratorio
+│   ├── 02_limpieza_transformacion.ipynb               # Limpieza, Codificación, Normalización
+│   ├── 03_analisis_descriptivo.ipynb                  # Estadísticas básicas, Correlaciones
+│   ├── 04_modelo_predictivo.ipynb                     # Entrenamiento simple, Validación básica
+│   └── 05_reportes_automaticos.ipynb                  # Reportes, Gráficos dinámicos
+│
+├── src/
+│   ├── __init__.py
+│   ├── agents/                                       # Sistema multiagente para atención al ciudadano
+│   │   ├── citizen_agent.py                          # Interfaz conversacional generativa
+│   │   └── analyst_agent.py                          # Generador automatizado de reportes basados en datos
+│   ├── data_pipeline/                                # Módulos de Big Data (Spark/Flink)
+│   │   ├── ingest.py                                 # Conexión con APIS de datos abiertos
+│   │   └── transform.py                              # Procesamiento y vectorización de datos
+│   ├── features/                                     # Ingeniería de características para analítica
+│   ├── inference.py                                  # Pipeline de ejecución de modelos en producción
+│   └── train.py                                      # Scripts de reentrenamiento automático
+│
+├── models/
+│   ├── predictive/                                   # Modelos de analítica avanzada y detección de anomalías
+│   ├── llm_rag/                                      # Embeddings y prompts para el sistema conversacional
+│   └── simulation/                                   # Modelos de simulación de escenarios sociodemográficos
+│
+├── reports/                                           # Resultados visibles
+│   ├── figures/
+│   │   ├── distribuciones.png
+│   │   ├── correlaciones.png
+│   │   └── matriz_confusion.png
+│   │
+│   └── reporte_final.pdf
+│
+├── tests/
+│   ├── unit/                        # Pruebas unitarias de algoritmos
+│   ├── integration/                 # Pruebas de integración de fuentes de datos
+│   └── bias_tests/                  # Pruebas automatizadas de equidad y sesgo algorítmico
+│
+│gov-ai-intelligence-platform/
+├── .github/ (o .gitlab/)
+│   ├── workflows/
+│   │   ├── ci-cd-pipeline.yml                        # Automatización de pruebas, linter y despliegue
+│   │   └── data-update-cron.yml                      # Orquestación programada para ingesta de datos abiertos
+│   └── CODEOWNERS                                    # Asignación de responsables por módulo de IA
+├── config/
+│   ├── base_config.yaml                              # Configuraciones generales del entorno
+│   ├── model_hyperparams.yaml                        # Hiperparámetros de redes neuronales y LLMs
+│   └── security_policy.json                          # Políticas de anonimización y gobernanza de datos
+├── deployments/
+│   ├── docker/
+│   │   ├── Dockerfile.api           # Contenedor para los endpoints del sistema conversacional
+│   │   └── Dockerfile.inference     # Contenedor optimizado para modelos predictivos (GPU)
+│   ├── kubernetes/
+│   │   ├── deployment.yaml          # Configuración de escalabilidad de agentes IA
+│   │   └── hpa.yaml                 # Autoescalado horizontal basado en la demanda ciudadana
+│   └── serverless/                  # Funciones lambda para reportes automatizados

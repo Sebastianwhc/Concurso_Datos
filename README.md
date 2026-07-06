@@ -4,7 +4,11 @@
 
 Desarrollo para la **Categoría Avanzado** del concurso **"Datos al Ecosistema 2026: IA para Colombia"** (Reto Salud y Bienestar). Combina **datos abiertos** (SIVIGILA, IDEAM, CDMB y GIS oficiales) con un **modelo de IA que corre en el navegador** para anticipar la evolución del dengue comuna por comuna, traducirlo a impacto económico y proponer acciones de control.
 
-**Deploy:** https://concursodatos.vercel.app · **Bitácora del proyecto:** [`BITACORA.md`](BITACORA.md)
+**Deploy:** https://concursodatos.vercel.app
+
+📘 **¿Primera vez aquí? Empieza por el [`DOCUMENTO_MAESTRO.md`](DOCUMENTO_MAESTRO.md)** — reúne toda la
+información del proyecto (qué, cómo, para qué y en qué contexto funciona). Narrativa cronológica en
+[`BITACORA.md`](BITACORA.md); hitos en [`CHANGELOG.md`](CHANGELOG.md).
 
 ---
 
@@ -31,7 +35,7 @@ Ver el detalle en [`docs/02_ARQUITECTURA.md`](docs/02_ARQUITECTURA.md).
 - **Pipelines de datos / ML (offline):** Python — pandas, scikit-learn (`GradientBoostingRegressor`), `skl2onnx`, shapely.
 - **Estilos:** CSS modular con design tokens y glassmorphism.
 
-> Nota histórica: versiones tempranas exploraron Mapbox/deck.gl/Canvas/GSAP; la versión final usa **ECharts** para todo lo geoespacial y de gráficos. Esas dependencias quedaron sin uso.
+> Nota histórica: versiones tempranas exploraron Mapbox/deck.gl para lo geoespacial; la versión final usa **ECharts** para todos los mapas y gráficos, por lo que esas dependencias se **eliminaron** del `package.json`. GSAP sí se usa (animaciones de la landing).
 
 ---
 
@@ -70,7 +74,7 @@ python scripts/geocode_metro.py             # -> metro_puntos.json (primera vez 
 python scripts/build_municipios_outline.py  # -> amb_municipios.geojson (requiere shapely)
 
 # Modelo de IA
-pip install -r ml/requirements.txt
+pip install -r requirements.txt             # deps Python (pipelines + ML)
 python ml/build_training_table.py           # -> training_table.csv
 python ml/train_model.py                     # -> public/data/model.onnx + model_meta.json
 ```
@@ -81,14 +85,22 @@ python ml/train_model.py                     # -> public/data/model.onnx + model
 
 | Documento | Contenido |
 |---|---|
+| [`planteamiento_problema.md`](docs/planteamiento_problema.md) | problema, objetivos y alcance |
 | [`01_METODOLOGIA_CRISP-ML.md`](docs/01_METODOLOGIA_CRISP-ML.md) | el proyecto en las 6 fases de CRISP-ML(Q) |
 | [`02_ARQUITECTURA.md`](docs/02_ARQUITECTURA.md) | arquitectura de la solución + diagramas |
 | [`03_ANALISIS_DATOS_EDA.md`](docs/03_ANALISIS_DATOS_EDA.md) | análisis exploratorio con cifras reales |
 | [`04_DIAGRAMAS_FLUJO.md`](docs/04_DIAGRAMAS_FLUJO.md) | diagramas de flujo (Mermaid) |
 | [`05_FUENTES_DATOS_ABIERTOS.md`](docs/05_FUENTES_DATOS_ABIERTOS.md) | fuentes, enlaces y licencias |
 | [`06_IMPACTO_ECONOMICO.md`](docs/06_IMPACTO_ECONOMICO.md) | cuánto cuesta el dengue y cuánto ahorra la herramienta |
+| [`data_dictionary.md`](docs/data_dictionary.md) | diccionario de variables (consolidado + tabla de entrenamiento) |
+| [`CONTRATO_ARTEFACTOS.md`](docs/CONTRATO_ARTEFACTOS.md) | estructura de los artefactos JSON (equivalente a la API) |
+| [`public_impact_assessment.md`](docs/public_impact_assessment.md) | impacto, ética, privacidad y mitigación de sesgos |
+| [`validacion_guide.md`](docs/validacion_guide.md) | guía para que pares reproduzcan los resultados |
+| [`conclusiones.md`](docs/conclusiones.md) | hallazgos, limitaciones y próximos pasos |
 | [`INFORME_SIMULADOR.md`](docs/INFORME_SIMULADOR.md) | cómo funciona el simulador (código) |
 | [`INFORME_MATEMATICO.md`](docs/INFORME_MATEMATICO.md) | del dato crudo a la predicción, con fórmulas |
+
+**Licencia:** [MIT](LICENSE) — código y datos abiertos.
 
 ---
 

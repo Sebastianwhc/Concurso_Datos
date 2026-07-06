@@ -1,0 +1,17 @@
+# Entorno Conda equivalente a requirements.txt (pipelines offline + ML).
+# Crear:  conda env create -f environment.yml  &&  conda activate ecosalud-ia
+# La app web (React/Vite) NO usa este entorno; ver package.json para el frontend.
+name: ecosalud-ia
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pandas
+  - numpy
+  - scikit-learn
+  - shapely
+  - pip
+  - pip:
+      - skl2onnx
+      - onnx
+      - onnxruntime

@@ -476,7 +476,7 @@ const CTASection: React.FC = () => {
 
       {/* Footer */}
       <div style={{ position: 'absolute', bottom: '2rem', left: 0, right: 0, textAlign: 'center', fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.5px', padding: '0 1rem', zIndex: 2 }}>
-        © 2026 EcoSalud IA · Datos abiertos SIVIGILA + CDMB · Hecho con ❤️ en Bucaramanga
+        © 2026 EcoSalud IA · Datos abiertos SIVIGILA · IDEAM · CDMB · INS · Hecho con ❤️ en Bucaramanga
       </div>
 
       <style>{`
