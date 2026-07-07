@@ -9,6 +9,7 @@ La narrativa detallada de cada iteración vive en [`BITACORA.md`](BITACORA.md).
 ## [Unreleased] — Preparación para la sustentación (2026-07-06)
 
 ### Added
+- **Landing — panel del motor predictivo con comuna + semana + recomendación:** el mockup de `SimulatorSection` (antes del AI Hub) ahora deja **elegir comuna** (25 reales, agrupadas por municipio) y **semana proyectada** (S23–S38 · 2026); muestra casos estimados, incidencia /10k, nivel de riesgo y la **recomendación de control** para esa comuna. Grounded en la incidencia base real del modelo, modulada por clima y semana; actualiza en vivo.
 - **Simulador — consulta puntual por comuna + semana:** nuevo panel en el motor predictivo donde se **elige una comuna** (25, agrupadas por municipio) y una **semana proyectada** (16), y muestra sus **casos e incidencia**, la **tendencia**, su **mini-trayectoria** de 16 semanas con marcador, y la **recomendación de control específica** para esa comuna.
 - **Landing — sección visual "Datos abiertos"** (`SourcesSection.tsx`, tras el Territorio): 6 tarjetas de fuentes (datos.gov.co, boletín INS, DANE, IDEAM/CDMB, geoportales AMB, registro FOSCAL) con etiqueta ABIERTO/CONVENIO + franja de tratamiento. Da respaldo visual a la parte 3 del pitch.
 - **`docs/GUION_PITCH.md`** — guion del pitch (15 min) mapeado a la landing, con tiempos, Q&A y checklist.

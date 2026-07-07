@@ -1,19 +1,62 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 gsap.registerPlugin(ScrollTrigger);
+
+type ComunaLite = { id: string; nombre: string; municipio: string; pob: number; incidencia_base: number };
+
+/** Niveles de riesgo por incidencia semanal (casos/10.000 hab), igual que el
+ *  simulador real (docs/INFORME_SIMULADOR.md). */
+const NIVELES = [
+  { min: 3.0, label: 'ALTO', color: '#ef4444',
+    accion: 'Intervención inmediata: fumigación focalizada (control adulticida), eliminación de criaderos casa a casa y búsqueda activa de febriles.' },
+  { min: 1.5, label: 'MEDIO', color: '#f97316',
+    accion: 'Intensificar el control vectorial y las campañas de eliminación de criaderos; alertar a las IPS de la zona.' },
+  { min: 0.7, label: 'VIGILANCIA', color: '#eab308',
+    accion: 'Monitoreo reforzado y prevención comunitaria: lavado de tanques, recipientes y llantas.' },
+  { min: 0, label: 'BAJO', color: '#22c55e',
+    accion: 'Vigilancia epidemiológica rutinaria.' },
+];
+
+/** Respaldo por si falla la carga de model_meta.json (comunas reales). */
+const FALLBACK_COMUNAS: ComunaLite[] = [
+  { id: 'B1', nombre: 'Comuna Norte', municipio: 'Bucaramanga', pob: 66710, incidencia_base: 0.24 },
+  { id: 'B2', nombre: 'Comuna Nororiental', municipio: 'Bucaramanga', pob: 27515, incidencia_base: 0.182 },
+  { id: 'F8', nombre: 'La Cumbre / El Carmen', municipio: 'Floridablanca', pob: 46328, incidencia_base: 7.166 },
+  { id: 'F3', nombre: 'Bucarica / Caracolí', municipio: 'Floridablanca', pob: 11375, incidencia_base: 6.681 },
+];
 
 const SimulatorSection: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const mockupRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
-  
+
   const [temperature, setTemperature] = useState(31);
   const [precipitation, setPrecipitation] = useState(65);
   const [projecting, setProjecting] = useState(false);
   const [projected, setProjected] = useState(false);
+
+  // Selección de comuna + semana para la proyección puntual
+  const [comunas, setComunas] = useState<ComunaLite[]>(FALLBACK_COMUNAS);
+  const [selComuna, setSelComuna] = useState('');
+  const [week, setWeek] = useState(38); // semana epidemiológica 2026 (horizonte S23–S38)
+
+  // Carga las comunas reales del modelo (nombres + incidencia base) para la proyección.
+  useEffect(() => {
+    let active = true;
+    fetch(`${import.meta.env.BASE_URL}data/model_meta.json`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((m) => {
+        if (!active || !m?.comunas?.length) return;
+        setComunas(m.comunas.map((c: ComunaLite) => ({
+          id: c.id, nombre: c.nombre, municipio: c.municipio, pob: c.pob, incidencia_base: c.incidencia_base,
+        })));
+      })
+      .catch(() => { /* mantiene el fallback */ });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (!sectionRef.current || !mockupRef.current) return;
@@ -183,9 +226,29 @@ const SimulatorSection: React.FC = () => {
     }, 2000);
   };
 
-  const riskLevel = temperature > 30 && precipitation > 50 ? 'ALTO' : temperature > 28 ? 'MEDIO' : 'BAJO';
-  const riskColor = riskLevel === 'ALTO' ? '#ef4444' : riskLevel === 'MEDIO' ? '#eab308' : '#22c55e';
-  const estimatedCases = Math.round((temperature * 2.5 + precipitation * 0.8) * (1 + Math.random() * 0.1));
+  // Proyección puntual: incidencia de la comuna seleccionada, modulada por el
+  // escenario climático y la semana. Grounded en la incidencia base real del modelo.
+  const projection = useMemo(() => {
+    // Default: la comuna de mayor incidencia base (primera impresión con riesgo).
+    const fallback = comunas.length
+      ? comunas.reduce((a, b) => (b.incidencia_base > a.incidencia_base ? b : a))
+      : null;
+    const c = comunas.find((x) => x.id === selComuna) ?? fallback;
+    if (!c) return null;
+    const tFactor = Math.max(0, Math.min(1, (temperature - 22) / 12)); // 22°C→0, 34°C→1
+    const pFactor = Math.max(0, Math.min(1, precipitation / 120));     // 0mm→0, 120mm→1
+    const climateMult = 0.5 + tFactor * 1.0 + pFactor * 0.7;           // ~0,5–2,2
+    const weekMult = 0.9 + ((week - 23) / 15) * 0.35;                  // leve estacionalidad
+    const base = Math.min(c.incidencia_base, 6);                       // acota outliers → escala plausible
+    const inc = base * climateMult * weekMult;                         // casos/10k hab/sem
+    const casos = Math.max(0, Math.round((inc / 10000) * c.pob));
+    const nivel = NIVELES.find((n) => inc >= n.min) ?? NIVELES[NIVELES.length - 1];
+    return { c, inc, casos, nivel };
+  }, [comunas, selComuna, temperature, precipitation, week]);
+
+  const riskColor = projection?.nivel.color ?? '#22c55e';
+  const riskLevel = projection?.nivel.label ?? 'BAJO';
+  const estimatedCases = projection?.casos ?? 0;
 
   return (
     <section
@@ -469,6 +532,46 @@ const SimulatorSection: React.FC = () => {
 
           {/* Controls */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.8rem' }}>
+            {/* Comuna + Semana */}
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+              <div style={{ flex: 1, minWidth: '160px' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>📍 Comuna</label>
+                <select
+                  value={projection?.c.id ?? ''}
+                  onChange={(e) => setSelComuna(e.target.value)}
+                  style={{
+                    width: '100%', padding: '0.7rem 0.8rem', borderRadius: '12px',
+                    background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(0,229,255,0.2)',
+                    color: '#fff', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  {['Bucaramanga', 'Floridablanca'].map((mun) => (
+                    <optgroup key={mun} label={mun} style={{ background: '#0f1626' }}>
+                      {comunas.filter((c) => c.municipio === mun).map((c) => (
+                        <option key={c.id} value={c.id} style={{ background: '#0f1626' }}>{c.nombre}</option>
+                      ))}
+                    </optgroup>
+                  ))}
+                </select>
+              </div>
+              <div style={{ flex: 1, minWidth: '160px' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '0.5rem' }}>🗓️ Semana proyectada</label>
+                <select
+                  value={week}
+                  onChange={(e) => setWeek(Number(e.target.value))}
+                  style={{
+                    width: '100%', padding: '0.7rem 0.8rem', borderRadius: '12px',
+                    background: 'rgba(0,0,0,0.35)', border: '1px solid rgba(124,58,237,0.25)',
+                    color: '#fff', fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer', outline: 'none',
+                  }}
+                >
+                  {Array.from({ length: 16 }, (_, i) => 23 + i).map((w) => (
+                    <option key={w} value={w} style={{ background: '#0f1626' }}>Semana {w} · 2026</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             {/* Temperature */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
@@ -477,7 +580,7 @@ const SimulatorSection: React.FC = () => {
               </div>
               <input
                 type="range" min="20" max="40" value={temperature}
-                onChange={(e) => { setTemperature(Number(e.target.value)); setProjected(false); }}
+                onChange={(e) => setTemperature(Number(e.target.value))}
                 style={{ width: '100%', height: '6px', borderRadius: '3px', appearance: 'none', background: 'linear-gradient(90deg, #22c55e 0%, #eab308 50%, #ef4444 100%)', outline: 'none', cursor: 'pointer' }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3rem' }}>
@@ -494,7 +597,7 @@ const SimulatorSection: React.FC = () => {
               </div>
               <input
                 type="range" min="0" max="150" value={precipitation}
-                onChange={(e) => { setPrecipitation(Number(e.target.value)); setProjected(false); }}
+                onChange={(e) => setPrecipitation(Number(e.target.value))}
                 style={{ width: '100%', height: '6px', borderRadius: '3px', appearance: 'none', background: 'linear-gradient(90deg, #0066aa 0%, #00b8ff 50%, #00f0ff 100%)', outline: 'none', cursor: 'pointer' }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.3rem' }}>
@@ -523,7 +626,7 @@ const SimulatorSection: React.FC = () => {
                   <span style={{ width: 16, height: 16, border: '2px solid rgba(255,255,255,0.3)', borderTopColor: '#fff', borderRadius: '50%', display: 'inline-block', animation: 'spin 0.8s linear infinite' }} />
                   Calculando proyección...
                 </span>
-              ) : '⚡ Proyectar Semana 38 · 2026'}
+              ) : `⚡ Proyectar ${projection?.c.nombre ?? 'comuna'} · Semana ${week}`}
             </button>
 
             {/* Results */}
@@ -537,7 +640,9 @@ const SimulatorSection: React.FC = () => {
                 animation: 'fadeInUp 0.5s ease'
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)' }}>Resultado de Proyección — SE 38 · 2026</span>
+                  <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)' }}>
+                    {projection?.c.nombre} · <span style={{ color: 'rgba(255,255,255,0.35)' }}>{projection?.c.municipio}</span> · Semana {week} · 2026
+                  </span>
                   <span style={{ padding: '0.2rem 0.7rem', borderRadius: '100px', background: `${riskColor}20`, color: riskColor, fontSize: '0.75rem', fontWeight: 700 }}>
                     Riesgo {riskLevel}
                   </span>
@@ -548,13 +653,26 @@ const SimulatorSection: React.FC = () => {
                     <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>Casos estimados</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: '#00e5ff' }}>0,57</div>
-                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>R² · validación brote 2024</div>
+                    <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: riskColor }}>{(projection?.inc ?? 0).toFixed(1)}</div>
+                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>Incidencia /10k hab</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: '#7c3aed' }}>3</div>
-                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>Comunas críticas</div>
+                    <div style={{ fontSize: 'clamp(1.2rem,3vw,1.5rem)', fontWeight: 800, color: '#00e5ff' }}>0,57</div>
+                    <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>R² · validación 2024</div>
                   </div>
+                </div>
+
+                {/* Recomendación para la comuna */}
+                <div style={{ marginTop: '1.25rem', paddingTop: '1.1rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: riskColor, boxShadow: `0 0 8px ${riskColor}` }} />
+                    <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', color: riskColor }}>
+                      Recomendación de control
+                    </span>
+                  </div>
+                  <p style={{ fontSize: '0.86rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.55, margin: 0 }}>
+                    {projection?.nivel.accion}
+                  </p>
                 </div>
               </div>
             )}
