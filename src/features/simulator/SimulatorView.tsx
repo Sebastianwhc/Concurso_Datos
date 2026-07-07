@@ -87,6 +87,10 @@ const SimulatorView: React.FC = () => {
   const [playing, setPlaying] = useState(false);
   const timer = useRef<number | null>(null);
 
+  // Consulta puntual: comuna + semana elegidas por el usuario (independiente de la reproducción)
+  const [selComuna, setSelComuna] = useState<string>('');
+  const [detailWeek, setDetailWeek] = useState<number>(0);
+
   // --- Carga inicial: meta + sesión ONNX + geojson de comunas ---
   useEffect(() => {
     let active = true;
@@ -223,6 +227,60 @@ const SimulatorView: React.FC = () => {
     return { items, conteo, prioridad };
   }, [forecast, meta, week]);
 
+  // Consulta puntual: comuna + semana elegidas -> métricas y recomendación de esa comuna.
+  const consulta = useMemo(() => {
+    if (!forecast || !meta) return null;
+    // Default estable: la comuna con mayor total proyectado en todo el horizonte.
+    let defId = meta.comunas[0]?.id ?? '';
+    let mxTot = -1;
+    for (const c of meta.comunas) {
+      const tot = (forecast.porComuna[c.id] ?? []).reduce((a, b) => a + b, 0);
+      if (tot > mxTot) { mxTot = tot; defId = c.id; }
+    }
+    const id = selComuna || defId;
+    const c = comunaById[id];
+    if (!c) return null;
+    const serie = forecast.porComuna[id] ?? [];
+    const w = Math.min(detailWeek, serie.length - 1);
+    const casos = serie[w] ?? 0;
+    const inc = (casos / c.pob) * 10000; // por 10.000 hab/semana
+    const prev = w > 0 ? (serie[w - 1] ?? casos) : (meta.seed[id]?.[3] ?? casos);
+    const tend = casos > prev * 1.05 ? 'subiendo' : casos < prev * 0.95 ? 'bajando' : 'estable';
+    const nivel = nivelDe(inc);
+    const pico = serie.length ? Math.max(...serie) : 0;
+    const semanaPico = serie.indexOf(pico);
+    const total = serie.reduce((a, b) => a + b, 0);
+    return { id, c, w, serie, casos, inc, tend, nivel, pico, semanaPico, total };
+  }, [forecast, meta, selComuna, detailWeek, comunaById]);
+
+  // Mini-trayectoria de la comuna consultada (16 semanas) con marcador en la semana elegida.
+  const consultaChart = useMemo<EChartsOption | null>(() => {
+    if (!consulta) return null;
+    const xs = consulta.serie.map((_, i) => etiquetaSemana(i + 1));
+    return {
+      grid: { top: 14, right: 10, bottom: 22, left: 30 },
+      tooltip: { trigger: 'axis', ...baseTooltip,
+        formatter: (p: unknown) => {
+          const a = p as { dataIndex: number; value: number }[];
+          return `<b>${xs[a[0].dataIndex]}</b><br/>Casos: <b>${Math.round(a[0].value)}</b>`;
+        } },
+      xAxis: { type: 'category', data: xs,
+        axisLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 9, interval: 3 },
+        axisLine: { lineStyle: { color: 'rgba(255,255,255,0.35)' } } },
+      yAxis: { type: 'value', axisLabel: { color: 'rgba(255,255,255,0.7)', fontSize: 9 },
+        splitLine: { lineStyle: { color: 'rgba(255,255,255,0.06)' } } },
+      series: [{
+        type: 'line', smooth: true, symbol: 'none', data: consulta.serie.map((v) => Math.round(v)),
+        lineStyle: { color: consulta.nivel.color, width: 2.5 },
+        areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color: 'rgba(255,255,255,0.12)' }, { offset: 1, color: 'rgba(255,255,255,0.01)' }]) },
+        markPoint: { symbol: 'circle', symbolSize: 11,
+          data: [{ name: 'sel', coord: [consulta.w, Math.round(consulta.casos)] }],
+          itemStyle: { color: '#fff', borderColor: consulta.nivel.color, borderWidth: 3 }, label: { show: false } },
+      }],
+    };
+  }, [consulta]);
+
   const totalActual = forecast ? forecast.totalSemana[week] ?? 0 : 0;
   const totalPico = forecast ? Math.max(...forecast.totalSemana) : 0;
   const semanaPico = forecast ? forecast.totalSemana.indexOf(totalPico) : 0;
@@ -349,6 +407,10 @@ const SimulatorView: React.FC = () => {
     temp: meta.clima_ranges.temp.med,
     humedad: meta.clima_ranges.humedad.med,
   });
+
+  const ConsultaTrend = consulta
+    ? (consulta.tend === 'subiendo' ? TrendingUp : consulta.tend === 'bajando' ? TrendingDown : Minus)
+    : Minus;
 
   return (
     <div className={styles.sim}>
@@ -548,6 +610,64 @@ const SimulatorView: React.FC = () => {
             </div>
             <span className={styles.weekTag}>{etiquetaSemana(week + 1)} · +{week + 1} sem</span>
           </div>
+
+          {/* Consulta puntual: elige comuna + semana -> recomendación específica */}
+          {consulta && (
+            <div className={styles.consulta}>
+              <div className={styles.consultaControls}>
+                <label className={styles.consultaField}>
+                  <span>Comuna</span>
+                  <select
+                    className={styles.consultaSelect}
+                    value={consulta.id}
+                    onChange={(e) => setSelComuna(e.target.value)}
+                  >
+                    {['Bucaramanga', 'Floridablanca'].map((mun) => (
+                      <optgroup key={mun} label={mun}>
+                        {meta.comunas.filter((c) => c.municipio === mun).map((c) => (
+                          <option key={c.id} value={c.id}>{c.nombre}</option>
+                        ))}
+                      </optgroup>
+                    ))}
+                  </select>
+                </label>
+                <label className={styles.consultaField}>
+                  <span>Semana proyectada</span>
+                  <select
+                    className={styles.consultaSelect}
+                    value={consulta.w}
+                    onChange={(e) => setDetailWeek(Number(e.target.value))}
+                  >
+                    {Array.from({ length: HORIZONTE }, (_, k) => (
+                      <option key={k} value={k}>{etiquetaSemana(k + 1)} · +{k + 1} sem</option>
+                    ))}
+                  </select>
+                </label>
+              </div>
+
+              <div className={styles.consultaResult} style={{ borderLeftColor: consulta.nivel.color }}>
+                <div className={styles.consultaTop}>
+                  <span className={styles.consultaNombre}>
+                    {consulta.c.nombre} <em>{consulta.c.municipio}</em>
+                  </span>
+                  <span className={styles.consultaNivel} style={{ color: consulta.nivel.color }}>
+                    {consulta.nivel.label}
+                  </span>
+                </div>
+                <div className={styles.consultaMetrics}>
+                  <div><b>{consulta.casos.toFixed(1)}</b><span>casos proyectados</span></div>
+                  <div><b>{consulta.inc.toFixed(1)}</b><span>por 10k hab</span></div>
+                  <div className={styles.consultaTendBox}><ConsultaTrend size={14} /><span>{consulta.tend}</span></div>
+                  <div><b>{Math.round(consulta.total)}</b><span>total {HORIZONTE} sem</span></div>
+                </div>
+                {consultaChart && <EChart option={consultaChart} height={120} />}
+                <div className={styles.consultaAccion}>
+                  <span className={styles.consultaAccionLbl}>Recomendación para esta comuna</span>
+                  {consulta.nivel.accion}
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Mensaje titular (cambia con la semana y el escenario) */}
           <div

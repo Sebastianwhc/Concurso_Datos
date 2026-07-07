@@ -344,6 +344,102 @@
   .alertaSection { padding: 1rem 0.95rem; }
 }
 
+/* --- Consulta puntual por comuna + semana --- */
+.consulta {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--glass-border);
+}
+.consultaControls {
+  display: flex;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+.consultaField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 180px;
+}
+.consultaField > span {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+}
+.consultaSelect {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  padding: 0.55rem 0.7rem;
+  font-size: 0.86rem;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.consultaSelect:focus { border-color: var(--accent-cyan); }
+.consultaSelect option,
+.consultaSelect optgroup { background: #0f1626; color: var(--text-primary); }
+.consultaResult {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--glass-border);
+  border-left: 3px solid;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+.consultaTop {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.55rem;
+}
+.consultaNombre { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+.consultaNombre em { font-size: 0.72rem; font-style: normal; color: var(--text-secondary); margin-left: 0.4rem; }
+.consultaNivel {
+  font-size: 0.74rem; font-weight: 700; white-space: nowrap;
+  padding: 0.2rem 0.65rem; border-radius: 100px;
+  background: rgba(255, 255, 255, 0.05);
+}
+.consultaMetrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+.consultaMetrics > div { display: flex; flex-direction: column; }
+.consultaMetrics b { font-size: 1.05rem; color: var(--text-primary); font-weight: 800; line-height: 1.1; }
+.consultaMetrics span { font-size: 0.66rem; color: var(--text-secondary); }
+.consultaTendBox {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  align-self: center;
+}
+.consultaTendBox svg { flex-shrink: 0; }
+.consultaAccion {
+  font-size: 0.84rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin-top: 0.5rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--glass-border);
+}
+.consultaAccionLbl {
+  display: block;
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--accent-cyan);
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
 /* --- Nota honesta --- */
 .disclaimer {
   display: flex;
