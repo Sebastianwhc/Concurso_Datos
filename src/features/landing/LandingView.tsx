@@ -5,6 +5,7 @@ import HeroSection from './components/HeroSection';
 import ThreatSection from './components/ThreatSection';
 import TransitionSection from './components/TransitionSection';
 import TerritorySection from './components/TerritorySection';
+import SourcesSection from './components/SourcesSection';
 import SimulatorSection from './components/SimulatorSection';
 import CostSection from './components/CostSection';
 import CTASection from './components/CTASection';
@@ -225,6 +226,9 @@ const LandingView: React.FC = () => {
 
       {/* Sección 3: El Territorio (El Mapa de Casos) */}
       <TerritorySection bucaramangaCasesBrote={stats?.bgaBrote ?? 0} broteYear={stats?.broteYear ?? 2024} />
+
+      {/* Sección 4: Datos Abiertos (Fuentes, variables y tratamiento) */}
+      <SourcesSection />
 
       {/* Acto 6: Impacto Económico */}
       <CostSection />

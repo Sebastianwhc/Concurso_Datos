@@ -9,6 +9,8 @@ La narrativa detallada de cada iteración vive en [`BITACORA.md`](BITACORA.md).
 ## [Unreleased] — Preparación para la sustentación (2026-07-06)
 
 ### Added
+- **Landing — sección visual "Datos abiertos"** (`SourcesSection.tsx`, tras el Territorio): 6 tarjetas de fuentes (datos.gov.co, boletín INS, DANE, IDEAM/CDMB, geoportales AMB, registro FOSCAL) con etiqueta ABIERTO/CONVENIO + franja de tratamiento. Da respaldo visual a la parte 3 del pitch.
+- **`docs/GUION_PITCH.md`** — guion del pitch (15 min) mapeado a la landing, con tiempos, Q&A y checklist.
 - **`DOCUMENTO_MAESTRO.md`** — documento único con toda la información del proyecto (qué, cómo, para qué y en qué contexto funciona).
 - **Fuentes con enlaces reales + vista previa de cada artefacto** en `docs/05_FUENTES_DATOS_ABIERTOS.md`: dataset nacional datos.gov.co (`qzc7-jbg3`), boletín INS, geografía DANE (MGN 2018).
 

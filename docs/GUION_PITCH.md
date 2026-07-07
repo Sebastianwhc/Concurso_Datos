@@ -11,7 +11,7 @@ actos mientras se narra. Este guion mapea la estructura de evaluación (6 partes
 |---|-------|----------------------|--------|
 | 1 | Proyecto | Hero | 1:30 |
 | 2 | Problema | La Amenaza (actos 1–4) | 2:30 |
-| 3 | Datos abiertos | Territorio + footer (narrado) | 2:30 |
+| 3 | Datos abiertos | Sección "Datos abiertos" (tarjetas de fuentes) | 2:30 |
 | 4 | IA / Analítica | Simulador (mockup + explicación) | 3:30 |
 | 5 | Resultados | Simulador (correr en vivo + métricas) | 2:30 |
 | 6 | Impacto | Impacto Económico + CTA | 2:00 |
@@ -55,9 +55,9 @@ Honestidad: 2024 fue *el* brote; 2025/2026 son años más normales — no lo esc
 
 ---
 
-## 3 · DATOS ABIERTOS — *(Territorio + footer · 2:30)*
-**🖥️ Pantalla:** sección **Territorio** (los mapas del AMB / Santander). Al final, puedes bajar al **footer**
-que lista las fuentes.
+## 3 · DATOS ABIERTOS — *(sección "Datos abiertos" · 2:30)*
+**🖥️ Pantalla:** sección **"Construido sobre datos abiertos"** (viene justo después del Territorio): las 6
+tarjetas de fuentes + la franja de tratamiento. Cada tarjeta tiene su etiqueta (ABIERTO / CONVENIO).
 
 **🎙️ Guion:**
 > "Todo esto se construye sobre **datos abiertos**. Nuestras fuentes:
