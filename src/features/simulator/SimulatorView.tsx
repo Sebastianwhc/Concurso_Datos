@@ -378,7 +378,7 @@ const SimulatorView: React.FC = () => {
           lineStyle: { color: 'rgba(255,255,255,0.85)', width: 2 },
           areaStyle: { color: 'rgba(255,255,255,0.06)' } },
         { name: 'Pronóstico', type: 'line', smooth: true, symbol: 'none', connectNulls: false, data: pred,
-          lineStyle: { color: '#00f0ff', width: 2.5, type: 'dashed' },
+          lineStyle: { color: '#00f0ff', width: 2.5 },
           areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: 'rgba(0,240,255,0.35)' }, { offset: 1, color: 'rgba(0,240,255,0.02)' }]) },
           markLine: { silent: true, symbol: 'none', data: [{ xAxis: OFFSET - 1 }],
@@ -434,7 +434,7 @@ const SimulatorView: React.FC = () => {
       </div>
 
       {/* Ancla real verificable: situación 2026 del boletín del INS (Santander) */}
-      <Situacion2026 />
+      <Situacion2026 forecast={forecast} comunas={meta.comunas} />
 
       <div className={styles.grid}>
         {/* Columna izquierda: mapa + control de simulación */}

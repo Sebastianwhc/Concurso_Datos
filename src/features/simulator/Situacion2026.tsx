@@ -3,6 +3,7 @@ import * as echarts from 'echarts';
 import type { EChartsOption } from 'echarts';
 import { CheckCircle2, Activity } from 'lucide-react';
 import EChart from '../dashboard/components/EChart';
+import type { Comuna, ForecastResult } from './forecast';
 import styles from './SimulatorView.module.css';
 
 /**
@@ -31,7 +32,13 @@ const baseTooltip = {
 };
 const fmt = (n: number) => Math.round(n).toLocaleString('es-CO');
 
-const Situacion2026: React.FC = () => {
+interface Props {
+  /** Pronóstico del motor (por comuna, AMB) usado para extender la curva 2026 más allá de lo observado. */
+  forecast: ForecastResult | null;
+  comunas: Comuna[];
+}
+
+const Situacion2026: React.FC<Props> = ({ forecast, comunas }) => {
   const [nc, setNc] = useState<Nowcast | null>(null);
 
   useEffect(() => {
@@ -61,6 +68,22 @@ const Situacion2026: React.FC = () => {
     const acum2024Comp = sum(2024, sUlt);   // 2024 acumulado a la misma semana
     const ratio = acum2024Comp ? acum2026 / acum2024Comp : 0;
 
+    // Tramo pronosticado: Bucaramanga (forecast del motor) reescalada a Santander
+    // vía la fracción calibrada f_bga, continuando la curva 2026 desde la última
+    // semana real (punteado, para no confundirse con dato observado).
+    const pronostico: (number | null)[] = new Array(53).fill(null);
+    if (forecast && comunas.length && nc.calibracion.f_bga > 0) {
+      const boundaryIdx = sUlt - 1;
+      pronostico[boundaryIdx] = ult?.casos ?? null; // punto de continuidad con la línea real
+      const bgaIds = comunas.filter((c) => c.municipio === 'Bucaramanga').map((c) => c.id);
+      for (let i = 0; i < forecast.horizonte; i++) {
+        const idx = boundaryIdx + 1 + i;
+        if (idx >= 53) break;
+        const bgaCasos = bgaIds.reduce((s, id) => s + (forecast.porComuna[id]?.[i] ?? 0), 0);
+        pronostico[idx] = Math.round(bgaCasos / nc.calibracion.f_bga);
+      }
+    }
+
     const option: EChartsOption = {
       tooltip: { trigger: 'axis', ...baseTooltip,
         axisPointer: { type: 'line', lineStyle: { color: 'rgba(255,255,255,0.2)' } } },
@@ -83,10 +106,13 @@ const Situacion2026: React.FC = () => {
           lineStyle: { color: '#00f0ff', width: 3 },
           areaStyle: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             { offset: 0, color: 'rgba(0,240,255,0.30)' }, { offset: 1, color: 'rgba(0,240,255,0.02)' }]) } },
+        { name: '2026 (pronóstico)', type: 'line', smooth: true, symbol: 'none', connectNulls: false,
+          data: pronostico,
+          lineStyle: { color: '#00f0ff', width: 2.5, type: 'dashed' } },
       ],
     };
     return { option, acum2026, ult, sUlt, ratio };
-  }, [nc]);
+  }, [nc, forecast, comunas]);
 
   if (!nc || !data) return null;
   const errAbs = Math.abs(nc.calibracion.f_bga_error_pct_2026);
