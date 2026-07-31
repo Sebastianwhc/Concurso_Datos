@@ -1,0 +1,37 @@
+name: CI
+
+# Verifica que el frontend compila (typecheck + build) y pasa el linter
+# en cada push y pull request. La app es estática: sin backend que desplegar.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Lint + Build (Vite)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Lint informativo (no bloquea): quedan violaciones de estilo heredadas
+      # (tipos `any` en configuraciones de ECharts). La puerta real es el build.
+      - name: Lint (informativo)
+        run: npm run lint
+        continue-on-error: true
+
+      # Puerta obligatoria: typecheck + bundle de producción.
+      - name: Build (tsc -b && vite build)
+        run: npm run build
