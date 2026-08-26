@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Filter, RotateCcw, ChevronDown, Check } from 'lucide-react';
 import { emptyFilters, type DengueMeta, type Filters } from '../dengue';
+import { useT } from '../../../i18n/useT';
 import styles from '../DashboardView.module.css';
 
 interface Props {
@@ -20,12 +21,15 @@ const Dropdown: React.FC<{
   setOpenKey: (k: string | null) => void;
   onToggle: (v: number) => void;
   onClear: () => void;
-}> = ({ id, label, opts, selected, openKey, setOpenKey, onToggle, onClear }) => {
+  allLabel: string;
+  selectedLabel: string;
+  clearLabel: string;
+}> = ({ id, label, opts, selected, openKey, setOpenKey, onToggle, onClear, allLabel, selectedLabel, clearLabel }) => {
   const open = openKey === id;
   const summary =
-    selected.size === 0 ? 'Todos'
+    selected.size === 0 ? allLabel
       : selected.size === 1 ? opts.find((o) => selected.has(o.value))?.label ?? '1'
-        : `${selected.size} seleccionados`;
+        : `${selected.size} ${selectedLabel}`;
 
   return (
     <div className={styles.fdrop}>
@@ -45,7 +49,7 @@ const Dropdown: React.FC<{
         <div className={styles.fdropPanel}>
           <div className={styles.fdropPanelHead}>
             <span>{label}</span>
-            {selected.size > 0 && <button type="button" onClick={onClear}>Limpiar</button>}
+            {selected.size > 0 && <button type="button" onClick={onClear}>{clearLabel}</button>}
           </div>
           <div className={styles.fdropList}>
             {opts.map((o) => {
@@ -67,6 +71,7 @@ const Dropdown: React.FC<{
 };
 
 const FilterBar: React.FC<Props> = ({ meta, filters, onChange }) => {
+  const { t, lang } = useT();
   const [openKey, setOpenKey] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -86,11 +91,23 @@ const FilterBar: React.FC<Props> = ({ meta, filters, onChange }) => {
   };
   const clear = (key: keyof Filters) => onChange({ ...filters, [key]: new Set<number>() });
 
-  const sexoOpts: Opt[] = meta.dicts.sexo.map((l, i) => ({ value: i, label: l === 'F' ? 'Femenino' : 'Masculino' }));
-  const sevOpts: Opt[] = meta.dicts.severidad.map((l, i) => ({ value: i, label: l }));
-  const estrOpts: Opt[] = meta.dicts.estrato.map((l, i) => ({ value: i, label: l === 'Sin dato' ? l : `Estrato ${l}` }));
+  const sexoOpts: Opt[] = meta.dicts.sexo.map((l, i) => ({
+    value: i,
+    label: l === 'F' ? (lang === 'es' ? 'Femenino' : 'Female') : (lang === 'es' ? 'Masculino' : 'Male'),
+  }));
+  const sevOpts: Opt[] = meta.dicts.severidad.map((l, i) => ({
+    value: i,
+    label: lang === 'es' ? l : (l === 'Grave' ? 'Severe' : l === 'Con signos de alarma' ? 'With warning signs' : l === 'Sin signos de alarma' ? 'Without warning signs' : l),
+  }));
+  const estrOpts: Opt[] = meta.dicts.estrato.map((l, i) => ({
+    value: i,
+    label: l === 'Sin dato' ? (lang === 'es' ? 'Sin dato' : 'No data') : (lang === 'es' ? `Estrato ${l}` : `Stratum ${l}`),
+  }));
   const anioOpts: Opt[] = meta.years.map((y) => ({ value: y, label: String(y) }));
-  const hospOpts: Opt[] = [{ value: 1, label: 'Hospitalizado' }, { value: 0, label: 'Ambulatorio' }];
+  const hospOpts: Opt[] = [
+    { value: 1, label: lang === 'es' ? 'Hospitalizado' : 'Hospitalized' },
+    { value: 0, label: lang === 'es' ? 'Ambulatorio' : 'Outpatient' },
+  ];
 
   const anySelected = filters.anio.size || filters.sexo.size || filters.severidad.size || filters.estrato.size || filters.hosp.size;
 
@@ -98,20 +115,20 @@ const FilterBar: React.FC<Props> = ({ meta, filters, onChange }) => {
     <div className={styles.filterBar} ref={ref}>
       <div className={styles.filterTitle}>
         <Filter size={16} />
-        <span>Filtros</span>
+        <span>{t.dashboard.filters.title}</span>
       </div>
 
       <div className={styles.filterDropdowns}>
-        <Dropdown id="anio" label="Año" opts={anioOpts} selected={filters.anio} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('anio', v)} onClear={() => clear('anio')} />
-        <Dropdown id="sexo" label="Sexo" opts={sexoOpts} selected={filters.sexo} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('sexo', v)} onClear={() => clear('sexo')} />
-        <Dropdown id="severidad" label="Severidad" opts={sevOpts} selected={filters.severidad} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('severidad', v)} onClear={() => clear('severidad')} />
-        <Dropdown id="estrato" label="Estrato" opts={estrOpts} selected={filters.estrato} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('estrato', v)} onClear={() => clear('estrato')} />
-        <Dropdown id="hosp" label="Hospitalización" opts={hospOpts} selected={filters.hosp} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('hosp', v)} onClear={() => clear('hosp')} />
+        <Dropdown id="anio" label={t.dashboard.filters.year} opts={anioOpts} selected={filters.anio} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('anio', v)} onClear={() => clear('anio')} allLabel={t.dashboard.filters.all} selectedLabel={t.dashboard.filters.selectedCount} clearLabel={t.dashboard.filters.clear} />
+        <Dropdown id="sexo" label={t.dashboard.filters.sex} opts={sexoOpts} selected={filters.sexo} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('sexo', v)} onClear={() => clear('sexo')} allLabel={t.dashboard.filters.all} selectedLabel={t.dashboard.filters.selectedCount} clearLabel={t.dashboard.filters.clear} />
+        <Dropdown id="severidad" label={t.dashboard.filters.severity} opts={sevOpts} selected={filters.severidad} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('severidad', v)} onClear={() => clear('severidad')} allLabel={t.dashboard.filters.all} selectedLabel={t.dashboard.filters.selectedCount} clearLabel={t.dashboard.filters.clear} />
+        <Dropdown id="estrato" label={t.dashboard.filters.stratum} opts={estrOpts} selected={filters.estrato} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('estrato', v)} onClear={() => clear('estrato')} allLabel={t.dashboard.filters.all} selectedLabel={t.dashboard.filters.selectedCount} clearLabel={t.dashboard.filters.clear} />
+        <Dropdown id="hosp" label={t.dashboard.filters.hosp} opts={hospOpts} selected={filters.hosp} openKey={openKey} setOpenKey={setOpenKey} onToggle={(v) => toggleIn('hosp', v)} onClear={() => clear('hosp')} allLabel={t.dashboard.filters.all} selectedLabel={t.dashboard.filters.selectedCount} clearLabel={t.dashboard.filters.clear} />
       </div>
 
       {anySelected ? (
         <button className={styles.resetBtn} onClick={() => onChange(emptyFilters())}>
-          <RotateCcw size={13} /> Limpiar todo
+          <RotateCcw size={13} /> {t.dashboard.filters.clearAll}
         </button>
       ) : null}
     </div>

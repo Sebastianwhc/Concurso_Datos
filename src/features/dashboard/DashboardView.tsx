@@ -10,11 +10,12 @@ import KpiCards from './components/KpiCards';
 import FilterBar from './components/FilterBar';
 import GeoMaps from './components/GeoMaps';
 import ClimatePanel from './components/ClimatePanel';
+import { useT } from '../../i18n/useT';
 import styles from './DashboardView.module.css';
 
-const AXIS = 'rgba(255,255,255,0.9)';       // labels y nombres de eje (blancos)
-const AXIS_LINE = 'rgba(255,255,255,0.45)'; // líneas de eje (visibles)
-const SPLIT = 'rgba(255,255,255,0.06)';     // grilla interna (tenue a propósito)
+const AXIS = 'rgba(255,255,255,0.9)';
+const AXIS_LINE = 'rgba(255,255,255,0.45)';
+const SPLIT = 'rgba(255,255,255,0.06)';
 const CYAN = '#00f0ff';
 
 const baseGrid = { left: 48, right: 20, top: 30, bottom: 36 };
@@ -32,11 +33,10 @@ const tooltipStyle = {
 const AMBER = '#f59e0b';
 
 const DashboardView: React.FC = () => {
+  const { t, lang } = useT();
   const [data, setData] = useState<DengueData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [filters, setFilters] = useState<Filters>(emptyFilters());
-  // Conteos semanales de Bucaramanga 2026 (boletín INS, vía nowcast_2026.json).
-  // Solo conteos: no hay detalle por caso, por eso 2026 va aparte (ver segmentación).
   const [bga2026, setBga2026] = useState<number[] | null>(null);
 
   useEffect(() => {
@@ -54,20 +54,17 @@ const DashboardView: React.FC = () => {
       .catch(() => setBga2026(null));
   }, []);
 
-  // Filas filtradas (incluye año) para KPIs y demografía (perfil histórico 2015-2025)
   const rows = useMemo(() => (data ? applyFilters(data.rows, filters) : []), [data, filters]);
 
-  // --- Vigilancia 2026 (conteos del boletín; independiente de los filtros) ---
   const vig2026 = useMemo(() => {
     if (!data || !bga2026) return null;
     const present = bga2026.map((v, i) => [v, i + 1]).filter(([v]) => !Number.isNaN(v));
     const lastWeek = present.length ? present[present.length - 1][1] : 0;
     const total = present.reduce((a, [v]) => a + v, 0);
     const ultima = present.length ? present[present.length - 1][0] : 0;
-    // Mismo periodo (a igual semana) en años de referencia, desde el dato individual.
     const uptoWk = (year: number) =>
       data.rows.reduce((a, r) => a + (r[COL.anio] === year && r[COL.semana] <= lastWeek ? 1 : 0), 0);
-    const ref2024 = uptoWk(2024);     // 2024 fue brote
+    const ref2024 = uptoWk(2024);
     const pct2024 = ref2024 ? (total / ref2024) * 100 : 0;
     return { lastWeek, total, ultima, pct2024 };
   }, [data, bga2026]);
@@ -80,11 +77,15 @@ const DashboardView: React.FC = () => {
     const mIdx = meta.dicts.sexo.indexOf('M');
     const kpis = computeKpis(rows, gravesIdx);
 
-    // --- Canal endémico (2026 vs canal histórico) — bandas de TODO el histórico, sin filtros.
-    // focusYear=-1 (inexistente) => las bandas usan los 11 años 2015-2025; no se dibuja línea foco. ---
     const ec = endemicChannel(data.rows, meta.years, -1);
     const line2026 = bga2026 ?? new Array(53).fill(NaN);
     const ceil = Math.max(...ec.p75, ...line2026.filter((v) => !Number.isNaN(v)), 1) * 1.2;
+
+    const labelSuccess = lang === 'es' ? 'Éxito' : 'Success';
+    const labelSecurity = lang === 'es' ? 'Seguridad' : 'Security';
+    const labelEpidemic = lang === 'es' ? 'Epidemia' : 'Epidemic';
+    const label2026 = lang === 'es' ? '2026 (boletín INS)' : '2026 (INS Bulletin)';
+
     const endemic: EChartsOption = {
       tooltip: {
         trigger: 'axis', ...tooltipStyle,
@@ -92,36 +93,46 @@ const DashboardView: React.FC = () => {
           const arr = params as Array<{ dataIndex: number }>;
           const i = arr[0]?.dataIndex ?? 0;
           const v2026 = line2026[i];
-          return `<b>Semana ${ec.weeks[i]}</b><br/>` +
-            (Number.isNaN(v2026) ? '<i style="color:rgba(255,255,255,0.5)">2026: sin dato aún</i><br/>'
-              : `Casos 2026 (boletín): <b style="color:${CYAN}">${v2026}</b><br/>`) +
-            `Esperado histórico (mediana): ${Math.round(ec.p50[i])}<br/>` +
-            `Umbral epidemia (p75): ${Math.round(ec.p75[i])}`;
+          const weekLabel = lang === 'es' ? `Semana ${ec.weeks[i]}` : `Week ${ec.weeks[i]}`;
+          const noData = lang === 'es' ? '2026: sin dato aún' : '2026: no data yet';
+          const cases2026 = lang === 'es' ? 'Casos 2026 (boletín):' : '2026 Cases (bulletin):';
+          const expected = lang === 'es' ? 'Esperado histórico (mediana):' : 'Historic expected (median):';
+          const threshold = lang === 'es' ? 'Umbral epidemia (p75):' : 'Epidemic threshold (p75):';
+
+          return `<b>${weekLabel}</b><br/>` +
+            (Number.isNaN(v2026) ? `<i style="color:rgba(255,255,255,0.5)">${noData}</i><br/>`
+              : `${cases2026} <b style="color:${CYAN}">${v2026}</b><br/>`) +
+            `${expected} ${Math.round(ec.p50[i])}<br/>` +
+            `${threshold} ${Math.round(ec.p75[i])}`;
         },
       },
-      legend: { data: ['Éxito', 'Seguridad', 'Epidemia', '2026 (boletín INS)'], textStyle: { color: AXIS }, top: 0, right: 0 },
+      legend: { data: [labelSuccess, labelSecurity, labelEpidemic, label2026], textStyle: { color: AXIS }, top: 0, right: 0 },
       grid: { ...baseGrid, top: 36 },
-      xAxis: { type: 'category', data: ec.weeks, name: 'Semana epidemiológica', nameLocation: 'middle', nameGap: 26, nameTextStyle: { color: AXIS }, ...axisCommon },
-      yAxis: { type: 'value', name: 'Casos', nameTextStyle: { color: AXIS }, ...axisCommon },
+      xAxis: {
+        type: 'category', data: ec.weeks,
+        name: lang === 'es' ? 'Semana epidemiológica' : 'Epidemiological week',
+        nameLocation: 'middle', nameGap: 26, nameTextStyle: { color: AXIS }, ...axisCommon
+      },
+      yAxis: {
+        type: 'value',
+        name: lang === 'es' ? 'Casos' : 'Cases',
+        nameTextStyle: { color: AXIS }, ...axisCommon
+      },
       series: [
-        // Rellenos de las bandas (apilados) — un poco más saturados para que se lean sobre el azul oscuro
-        { name: 'Éxito', type: 'line', data: ec.p25, stack: 'band', lineStyle: { opacity: 0 }, showSymbol: false, areaStyle: { color: 'rgba(34,197,94,0.30)' } },
-        { name: 'Seguridad', type: 'line', data: ec.p75.map((v, i) => v - ec.p25[i]), stack: 'band', lineStyle: { opacity: 0 }, showSymbol: false, areaStyle: { color: 'rgba(234,179,8,0.26)' } },
-        { name: 'Epidemia', type: 'line', data: ec.p75.map((v) => ceil - v), stack: 'band', lineStyle: { opacity: 0 }, showSymbol: false, areaStyle: { color: 'rgba(239,68,68,0.22)' } },
-        // Líneas de frontera neón (con glow) — definen los umbrales con nitidez
+        { name: labelSuccess, type: 'line', data: ec.p25, stack: 'band', lineStyle: { opacity: 0 }, showSymbol: false, areaStyle: { color: 'rgba(34,197,94,0.30)' } },
+        { name: labelSecurity, type: 'line', data: ec.p75.map((v, i) => v - ec.p25[i]), stack: 'band', lineStyle: { opacity: 0 }, showSymbol: false, areaStyle: { color: 'rgba(234,179,8,0.26)' } },
+        { name: labelEpidemic, type: 'line', data: ec.p75.map((v) => ceil - v), stack: 'band', lineStyle: { opacity: 0 }, showSymbol: false, areaStyle: { color: 'rgba(239,68,68,0.22)' } },
         { name: 'p25', type: 'line', data: ec.p25, showSymbol: false, smooth: true, silent: true,
           lineStyle: { color: '#22e07a', width: 1.6, shadowColor: 'rgba(34,224,122,0.9)', shadowBlur: 7 }, z: 4 },
         { name: 'p50', type: 'line', data: ec.p50, showSymbol: false, smooth: true, silent: true,
           lineStyle: { color: 'rgba(255,255,255,0.5)', width: 1, type: 'dashed' }, z: 4 },
         { name: 'p75', type: 'line', data: ec.p75, showSymbol: false, smooth: true, silent: true,
           lineStyle: { color: '#ff5a36', width: 1.9, shadowColor: 'rgba(255,90,54,0.95)', shadowBlur: 8 }, z: 5 },
-        // Curva 2026 — protagonista, cian con glow
-        { name: '2026 (boletín INS)', type: 'line', data: line2026, showSymbol: false, smooth: true, connectNulls: false,
+        { name: label2026, type: 'line', data: line2026, showSymbol: false, smooth: true, connectNulls: false,
           lineStyle: { color: CYAN, width: 3.2, shadowColor: 'rgba(0,240,255,0.95)', shadowBlur: 11 }, z: 6 },
       ],
     };
 
-    // --- Tendencia anual (2015–2026; 2026 parcial del boletín) ---
     const yearly = casesByYear(data.rows, meta.years);
     const trendYears: (number | string)[] = [...meta.years, 2026];
     const trendData = [
@@ -133,8 +144,11 @@ const DashboardView: React.FC = () => {
         trigger: 'axis', ...tooltipStyle,
         formatter: (params: unknown) => {
           const a = (params as Array<{ axisValue: string; value: number; dataIndex: number }>)[0];
-          const parcial = a.dataIndex === meta.years.length ? ` (parcial, a sem. ${vig2026?.lastWeek ?? '—'})` : '';
-          return `<b>${a.axisValue}</b>${parcial}<br/>Casos: <b>${a.value}</b>`;
+          const parcial = a.dataIndex === meta.years.length
+            ? (lang === 'es' ? ` (parcial, a sem. ${vig2026?.lastWeek ?? '—'})` : ` (partial, thru week ${vig2026?.lastWeek ?? '—'})`)
+            : '';
+          const casesText = lang === 'es' ? 'Casos:' : 'Cases:';
+          return `<b>${a.axisValue}</b>${parcial}<br/>${casesText} <b>${a.value}</b>`;
         },
       },
       grid: baseGrid,
@@ -143,8 +157,9 @@ const DashboardView: React.FC = () => {
       series: [{ type: 'bar', data: trendData, barWidth: '55%' }],
     };
 
-    // --- Pirámide edad × sexo ---
     const { f, m } = ageBySex(rows, meta.dicts.edad.length, fIdx, mIdx);
+    const femaleLabel = lang === 'es' ? 'Femenino' : 'Female';
+    const maleLabel = lang === 'es' ? 'Masculino' : 'Male';
     const pyramid: EChartsOption = {
       tooltip: {
         trigger: 'axis', axisPointer: { type: 'shadow' }, ...tooltipStyle,
@@ -154,17 +169,16 @@ const DashboardView: React.FC = () => {
             arr.map((p) => `${p.seriesName}: <b>${Math.abs(p.value)}</b>`).join('<br/>');
         },
       },
-      legend: { data: ['Femenino', 'Masculino'], textStyle: { color: AXIS }, top: 0 },
+      legend: { data: [femaleLabel, maleLabel], textStyle: { color: AXIS }, top: 0 },
       grid: { ...baseGrid, top: 30, left: 60 },
       xAxis: { type: 'value', axisLabel: { color: AXIS, fontSize: 11, formatter: (v: number) => `${Math.abs(v)}` }, axisLine: { lineStyle: { color: AXIS_LINE } }, splitLine: { lineStyle: { color: SPLIT } } },
       yAxis: { type: 'category', data: meta.dicts.edad, axisLine: { lineStyle: { color: AXIS_LINE } }, axisLabel: { color: AXIS, fontSize: 11 } },
       series: [
-        { name: 'Femenino', type: 'bar', stack: 'sex', data: f.map((v) => -v), itemStyle: { color: '#b300ff', borderRadius: [0, 3, 3, 0] } },
-        { name: 'Masculino', type: 'bar', stack: 'sex', data: m, itemStyle: { color: CYAN, borderRadius: [0, 3, 3, 0] } },
+        { name: femaleLabel, type: 'bar', stack: 'sex', data: f.map((v) => -v), itemStyle: { color: '#b300ff', borderRadius: [0, 3, 3, 0] } },
+        { name: maleLabel, type: 'bar', stack: 'sex', data: m, itemStyle: { color: CYAN, borderRadius: [0, 3, 3, 0] } },
       ],
     };
 
-    // --- Severidad (donut) ---
     const sev = countByDict(rows, COL.severidad, meta.dicts.severidad.length);
     const sevColors = ['#22c55e', '#eab308', '#ef4444', 'rgba(255,255,255,0.25)'];
     const severity: EChartsOption = {
@@ -174,11 +188,18 @@ const DashboardView: React.FC = () => {
         type: 'pie', radius: ['45%', '70%'], center: ['50%', '44%'], avoidLabelOverlap: true,
         itemStyle: { borderColor: '#0b0f19', borderWidth: 2 },
         label: { color: '#fff', fontSize: 11 },
-        data: meta.dicts.severidad.map((name, i) => ({ name, value: sev[i], itemStyle: { color: sevColors[i % sevColors.length] } })),
+        data: meta.dicts.severidad.map((name, i) => {
+          let label = name;
+          if (lang === 'en') {
+            if (name === 'Grave') label = 'Severe';
+            else if (name === 'Con signos de alarma') label = 'With warning signs';
+            else if (name === 'Sin signos de alarma') label = 'Without warning signs';
+          }
+          return { name: label, value: sev[i], itemStyle: { color: sevColors[i % sevColors.length] } };
+        }),
       }],
     };
 
-    // --- Estrato ---
     const estr = countByDict(rows, COL.estrato, meta.dicts.estrato.length);
     const estrato: EChartsOption = {
       tooltip: { trigger: 'axis', ...tooltipStyle },
@@ -188,7 +209,6 @@ const DashboardView: React.FC = () => {
       series: [{ type: 'bar', data: estr, barWidth: '55%', itemStyle: { color: '#eab308', borderRadius: [4, 4, 0, 0] } }],
     };
 
-    // --- Régimen de afiliación (acceso / equidad; pareja temática con estrato) ---
     const reg = countByDict(rows, COL.regimen, meta.dicts.regimen.length);
     const regPairs = reg.map((v, i) => [v, i] as [number, number]).filter(([v]) => v > 0).sort((a, b) => a[0] - b[0]);
     const totalReg = rows.length || 1;
@@ -203,7 +223,6 @@ const DashboardView: React.FC = () => {
       series: [{ type: 'bar', data: regPairs.map(([v]) => v), barWidth: '60%', itemStyle: { color: '#22d3ee', borderRadius: [0, 3, 3, 0] } }],
     };
 
-    // --- Síntomas (top prevalencia) ---
     const prev = symptomPrevalence(rows, meta.symptoms.length);
     const order = prev.map((v, i) => [v, i]).sort((a, b) => a[0] - b[0]).slice(-12);
     const total = rows.length || 1;
@@ -216,76 +235,93 @@ const DashboardView: React.FC = () => {
     };
 
     return { kpis, options: { endemic, trend, pyramid, severity, estrato, regimen, symptoms } };
-  }, [data, rows, filters, bga2026, vig2026]);
+  }, [data, rows, filters, bga2026, vig2026, lang]);
 
-  if (error) return <div className={styles.state}>Error cargando datos: {error}</div>;
-  if (!data || !charts) return <div className={styles.state}>Cargando datos del SIVIGILA…</div>;
+  if (error) return <div className={styles.state}>{lang === 'es' ? `Error cargando datos: ${error}` : `Error loading data: ${error}`}</div>;
+  if (!data || !charts) return <div className={styles.state}>{lang === 'es' ? 'Cargando datos del SIVIGILA…' : 'Loading SIVIGILA data…'}</div>;
 
   const { kpis, options } = charts;
+  const locale = lang === 'es' ? 'es-CO' : 'en-US';
 
   return (
     <div className={styles.dashboard}>
       {/* ===== SECCIÓN 2026 · Vigilancia en curso (boletín INS) ===== */}
       <SectionHeader
-        eyebrow="Vigilancia en curso"
-        title="2026 · Bucaramanga"
-        note="Datos del boletín epidemiológico del INS (conteos semanales). El boletín reporta cuántos casos hay, pero no el detalle por caso (edad, sexo, severidad, síntomas): por eso de 2026 solo se pueden mostrar vistas de conteo y tiempo. El perfil demográfico y clínico (más abajo) necesita el registro individual del SIVIGILA, disponible hasta 2025."
+        eyebrow={t.dashboard.section1Eyebrow}
+        title={t.dashboard.section1Title}
+        note={t.dashboard.section1Note}
       />
 
       {vig2026 && (
         <div className={styles.kpiRow2026}>
-          <Stat2026 value={vig2026.total.toLocaleString('es-CO')} label={`acumulado 2026 (a sem. ${vig2026.lastWeek})`} />
-          <Stat2026 value={vig2026.ultima.toLocaleString('es-CO')} label={`casos en la sem. ${vig2026.lastWeek}`} />
-          <Stat2026 value={`${vig2026.pct2024.toFixed(0)}%`} label="del nivel de 2024 (brote) a igual semana"
-            color={vig2026.pct2024 >= 100 ? '#ef4444' : '#22c55e'} />
+          <Stat2026
+            value={vig2026.total.toLocaleString(locale)}
+            label={t.dashboard.statAcum.replace('{sem}', String(vig2026.lastWeek))}
+          />
+          <Stat2026
+            value={vig2026.ultima.toLocaleString(locale)}
+            label={t.dashboard.statWeek.replace('{sem}', String(vig2026.lastWeek))}
+          />
+          <Stat2026
+            value={`${vig2026.pct2024.toFixed(0)}%`}
+            label={t.dashboard.statRatio}
+            color={vig2026.pct2024 >= 100 ? '#ef4444' : '#22c55e'}
+          />
         </div>
       )}
 
       <div className={styles.chartGrid}>
-        <Panel title="Canal endémico · 2026 vs canal histórico"
-          subtitle="Casos de 2026 (boletín) sobre las bandas 2015–2025 (éxito / seguridad / epidemia)"
-          span={2} tag="boletín INS · preliminar">
+        <Panel
+          title={t.dashboard.panelEndemicTitle}
+          subtitle={t.dashboard.panelEndemicSub}
+          span={2}
+          tag={t.dashboard.panelEndemicTag}
+        >
           <EChart option={options.endemic} height={360} />
         </Panel>
 
-        <Panel title="Tendencia anual 2015–2026" subtitle="Casos por año · la barra de 2026 es parcial (boletín)"
-          span={2} tag="boletín INS · preliminar">
+        <Panel
+          title={t.dashboard.panelTrendTitle}
+          subtitle={t.dashboard.panelTrendSub}
+          span={2}
+          tag={t.dashboard.panelEndemicTag}
+        >
           <EChart option={options.trend} />
         </Panel>
       </div>
 
       {/* ===== SECCIÓN 2015–2025 · Perfil epidemiológico (SIVIGILA individual) ===== */}
       <SectionHeader
-        eyebrow="Perfil epidemiológico detallado"
-        title="2015–2025 · SIVIGILA individual"
-        note="28.626 casos con 76 variables por registro. Aquí sí hay demografía, clínica y síntomas, porque cada caso viene desagregado. Usa los filtros para segmentar este histórico."
+        eyebrow={t.dashboard.section2Eyebrow}
+        title={t.dashboard.section2Title}
+        note={t.dashboard.section2Note}
       />
 
       <FilterBar meta={data.meta} filters={filters} onChange={setFilters} />
       <KpiCards kpis={kpis} />
 
       <div className={styles.chartGrid}>
-        <Panel title="Clima vs Dengue" subtitle="Casos semanales frente a lluvia y temperatura · integración multicausal" span={2}>
+        <Panel title={t.dashboard.panelClimateTitle} subtitle={t.dashboard.panelClimateSub} span={2}>
           <ClimatePanel rows={rows} />
         </Panel>
 
-        <Panel title="Pirámide poblacional" subtitle="Casos por grupo de edad y sexo">
+        <Panel title={t.dashboard.panelPyramidTitle} subtitle={t.dashboard.panelPyramidSub}>
           <EChart option={options.pyramid} height={360} />
         </Panel>
 
-        <Panel title="Clasificación clínica" subtitle="Distribución por severidad">
+        <Panel title={t.dashboard.panelSeverityTitle} subtitle={t.dashboard.panelSeveritySub}>
           <EChart option={options.severity} />
         </Panel>
 
-        <Panel title="Estrato socioeconómico" subtitle="Casos por estrato">
+        <Panel title={t.dashboard.panelEstratoTitle} subtitle={t.dashboard.panelEstratoSub}>
           <EChart option={options.estrato} />
         </Panel>
 
-        <Panel title="Régimen de afiliación" subtitle="Aseguramiento de los casos · acceso y equidad">
+        <Panel title={t.dashboard.panelRegimenTitle} subtitle={t.dashboard.panelRegimenSub}>
           <EChart option={options.regimen} />
         </Panel>
 
-        <Panel title="Signos y síntomas" subtitle="Prevalencia en los casos filtrados" span={2}>
+        <Panel title={t.dashboard.panelSymptomsTitle} subtitle={t.dashboard.panelSymptomsSub} span={2}>
           <EChart option={options.symptoms} height={360} />
         </Panel>
       </div>

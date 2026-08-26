@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Coins, AlertCircle, PiggyBank, Cpu } from 'lucide-react';
+import { useT } from '../../../i18n/useT';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const CostSection: React.FC = () => {
+  const { t } = useT();
   const sectionRef = useRef<HTMLElement>(null);
   const cardsRef = useRef<HTMLDivElement>(null);
   const climaxRef = useRef<HTMLDivElement>(null);
@@ -215,7 +217,7 @@ const CostSection: React.FC = () => {
               boxShadow: '0 0 15px rgba(250, 204, 21, 0.12)',
             }}
           >
-            IMPACTO ECONÓMICO
+            {t.cost.badge}
           </span>
 
           <h2
@@ -230,7 +232,7 @@ const CostSection: React.FC = () => {
               opacity: 0,
             }}
           >
-            EL DENGUE TAMBIÉN
+            {t.cost.titleLine1}
             <br />
             <span style={{
               background: 'linear-gradient(90deg, #facc15, #fb923c, #ef4444)',
@@ -239,7 +241,7 @@ const CostSection: React.FC = () => {
               color: 'transparent',
               fontWeight: 900,
             }}>
-              TIENE UN COSTO
+              {t.cost.titleLine2}
             </span>
           </h2>
 
@@ -253,9 +255,7 @@ const CostSection: React.FC = () => {
               opacity: 0,
             }}
           >
-            El impacto de una epidemia no se mide únicamente en pacientes, hospitalizaciones o fallecimientos.
-            También se refleja en recursos públicos, capacidad operativa, atención médica y presupuesto sanitario.
-            Cada caso representa un costo que podría evitarse si el riesgo se identifica antes de que el brote alcance su punto crítico.
+            {t.cost.desc}
           </p>
         </div>
 
@@ -303,13 +303,13 @@ const CostSection: React.FC = () => {
               <Coins size={22} />
             </div>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              CADA CASO TIENE UN COSTO
+              {t.cost.card1Title}
             </span>
             <span style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>
-              ${costPerCase.toFixed(1)} MILLONES
+              {t.cost.card1Value.replace('{cost}', costPerCase.toFixed(1))}
             </span>
             <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
-              Costo promedio estimado por caso de dengue para el sistema de salud colombiano. Este valor incluye atención médica y costos directos asociados al manejo clínico.
+              {t.cost.card1Desc}
             </p>
           </div>
 
@@ -347,13 +347,13 @@ const CostSection: React.FC = () => {
               <AlertCircle size={22} />
             </div>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              UN BROTE TIENE CONSECUENCIAS REALES
+              {t.cost.card2Title}
             </span>
             <span style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>
-              ${broteCost.toLocaleString('de-DE')} MILLONES
+              {t.cost.card2Value.replace('{cost}', broteCost.toLocaleString('de-DE'))}
             </span>
             <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
-              Costo directo estimado del brote de dengue registrado en Bucaramanga durante 2024.
+              {t.cost.card2Desc}
             </p>
           </div>
 
@@ -391,13 +391,13 @@ const CostSection: React.FC = () => {
               <PiggyBank size={22} />
             </div>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              PREVENIR ES MÁS BARATO QUE REACCIONAR
+              {t.cost.card3Title}
             </span>
             <span style={{ fontSize: '1.75rem', fontWeight: 900, color: '#fff', lineHeight: 1.2 }}>
-              ${savingsMin.toLocaleString('de-DE')} – ${savingsMax.toLocaleString('de-DE')} MILLONES
+              {t.cost.card3Value.replace('{min}', savingsMin.toLocaleString('de-DE')).replace('{max}', savingsMax.toLocaleString('de-DE'))}
             </span>
             <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
-              Ahorro potencial anual si una estrategia de alerta temprana logra evitar entre el 10% y el 30% de los casos durante un año epidémico.
+              {t.cost.card3Desc}
             </p>
           </div>
 
@@ -435,13 +435,13 @@ const CostSection: React.FC = () => {
               <Cpu size={22} />
             </div>
             <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              OPERAR LA PLATAFORMA
+              {t.cost.card4Title}
             </span>
             <span style={{ fontSize: '2rem', fontWeight: 900, color: '#fff', lineHeight: 1.1 }}>
-              ≈ $0
+              {t.cost.card4Value}
             </span>
             <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', margin: 0, lineHeight: 1.5 }}>
-              La plataforma opera mediante tecnologías abiertas, inferencia local en navegador y arquitectura de bajo costo.
+              {t.cost.card4Desc}
             </p>
           </div>
         </div>
@@ -479,7 +479,7 @@ const CostSection: React.FC = () => {
               textTransform: 'uppercase',
             }}
           >
-            UN SOLO CASO DE DENGUE EVITADO
+            {t.cost.climaxTitle1}
             <br />
             <span style={{
               background: 'linear-gradient(90deg, #facc15, #fb923c, #ef4444)',
@@ -488,7 +488,7 @@ const CostSection: React.FC = () => {
               color: 'transparent',
               fontWeight: 950,
             }}>
-              PAGA TODO EL PROYECTO
+              {t.cost.climaxTitle2}
             </span>
           </h3>
           <div style={{ width: '40px', height: '1.5px', background: 'rgba(250, 204, 21, 0.3)', margin: '0.5rem auto' }} />
@@ -500,9 +500,9 @@ const CostSection: React.FC = () => {
               margin: 0,
             }}
           >
-            El retorno no es marginal.
+            {t.cost.climaxSub1}
             <br />
-            <span style={{ color: '#fb923c', fontWeight: 700 }}>Es de órdenes de magnitud.</span>
+            <span style={{ color: '#fb923c', fontWeight: 700 }}>{t.cost.climaxSub2}</span>
           </p>
         </div>
 
@@ -526,7 +526,7 @@ const CostSection: React.FC = () => {
               margin: '0 0 1rem 0',
             }}
           >
-            FUENTES Y METODOLOGÍA
+            {t.cost.methodologyTitle}
           </h4>
           <p
             style={{
@@ -537,7 +537,7 @@ const CostSection: React.FC = () => {
               width: '100%',
             }}
           >
-            Las estimaciones económicas se basan en estudios científicos publicados para Colombia sobre costos de atención del dengue y en datos epidemiológicos propios de SIVIGILA Bucaramanga 2015–2025. Las proporciones de gravedad fueron calculadas utilizando la base histórica del proyecto. Las cifras de ahorro representan escenarios de impacto potencial y dependen de la capacidad de respuesta de la autoridad sanitaria.
+            {t.cost.methodologyDesc}
           </p>
 
           {/* Referencias */}

@@ -1,30 +1,33 @@
 import React from 'react';
 import { Activity, BedDouble, AlertTriangle, HeartPulse } from 'lucide-react';
 import type { Kpis } from '../dengue';
+import { useT } from '../../../i18n/useT';
 import styles from '../DashboardView.module.css';
 
-const fmt = (n: number) => n.toLocaleString('es-CO');
-
 const KpiCards: React.FC<{ kpis: Kpis }> = ({ kpis }) => {
+  const { t, lang } = useT();
+  const locale = lang === 'es' ? 'es-CO' : 'en-US';
+  const fmt = (n: number) => n.toLocaleString(locale);
+
   const cards = [
     {
       icon: <Activity size={22} />, color: 'var(--accent-cyan)',
-      label: 'Casos totales', value: fmt(kpis.total), sub: 'registros SIVIGILA',
+      label: t.dashboard.kpis.total, value: fmt(kpis.total), sub: t.dashboard.kpis.totalSub,
     },
     {
       icon: <BedDouble size={22} />, color: '#eab308',
-      label: 'Hospitalizados', value: fmt(kpis.hosp),
-      sub: `${kpis.hospPct.toFixed(1)}% del total`,
+      label: t.dashboard.kpis.hosp, value: fmt(kpis.hosp),
+      sub: t.dashboard.kpis.hospSub.replace('{pct}', kpis.hospPct.toFixed(1)),
     },
     {
       icon: <AlertTriangle size={22} />, color: 'var(--accent-orange)',
-      label: 'Dengue grave', value: fmt(kpis.graves),
-      sub: `${kpis.total ? ((kpis.graves / kpis.total) * 100).toFixed(1) : 0}% del total`,
+      label: t.dashboard.kpis.grave, value: fmt(kpis.graves),
+      sub: t.dashboard.kpis.graveSub.replace('{pct}', (kpis.total ? ((kpis.graves / kpis.total) * 100).toFixed(1) : '0')),
     },
     {
       icon: <HeartPulse size={22} />, color: '#ef4444',
-      label: 'Fallecidos', value: fmt(kpis.fallecidos),
-      sub: `letalidad ${kpis.letalidad.toFixed(2)}%`,
+      label: t.dashboard.kpis.deaths, value: fmt(kpis.fallecidos),
+      sub: t.dashboard.kpis.deathsSub.replace('{pct}', kpis.letalidad.toFixed(2)),
     },
   ];
 

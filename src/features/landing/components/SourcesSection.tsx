@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Database, Activity, MapPinned, CloudRain, Building2, ShieldCheck, Server } from 'lucide-react';
+import { useT } from '../../../i18n/useT';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -14,59 +15,60 @@ interface Source {
   open: boolean; // true = dato abierto; false = convenio/semiprivado
 }
 
-const SOURCES: Source[] = [
-  {
-    icon: <Database size={22} />,
-    name: 'Dengue por municipio',
-    entity: 'INS · datos.gov.co',
-    detail: 'SIVIGILA nacional (2007–2022). Millones de registros: el dataset abierto que sustenta el análisis.',
-    tag: 'ABIERTO',
-    open: true,
-  },
-  {
-    icon: <Activity size={22} />,
-    name: 'Boletín epidemiológico',
-    entity: 'INS',
-    detail: 'Vigilancia semanal de Santander y Bucaramanga (2024–2026). Ancla la situación al día de hoy.',
-    tag: 'ABIERTO',
-    open: true,
-  },
-  {
-    icon: <MapPinned size={22} />,
-    name: 'Geografía oficial',
-    entity: 'DANE · Marco Geoestadístico Nacional',
-    detail: 'Polígonos de municipios de Santander y del Área Metropolitana (MGN 2018).',
-    tag: 'ABIERTO',
-    open: true,
-  },
-  {
-    icon: <CloudRain size={22} />,
-    name: 'Clima semanal',
-    entity: 'IDEAM · CDMB',
-    detail: 'Precipitación, temperatura y humedad (2007–2026). El modulador del riesgo de transmisión.',
-    tag: 'ABIERTO',
-    open: true,
-  },
-  {
-    icon: <Building2 size={22} />,
-    name: 'Comunas del AMB',
-    entity: 'Geoportales AMB · Floridablanca',
-    detail: 'Límites de las 25 comunas del área metropolitana para el análisis espacial por comuna.',
-    tag: 'ABIERTO',
-    open: true,
-  },
-  {
-    icon: <ShieldCheck size={22} />,
-    name: 'Registro clínico individual',
-    entity: 'Convenio · Clínica FOSCAL',
-    detail: '28.626 casos, 76 variables (2015–2025). Da la profundidad demográfica y clínica. Se usa solo agregado y anonimizado.',
-    tag: 'CONVENIO · ANONIMIZADO',
-    open: false,
-  },
-];
-
 const SourcesSection: React.FC = () => {
+  const { t } = useT();
   const sectionRef = useRef<HTMLElement>(null);
+
+  const sources: Source[] = [
+    {
+      icon: <Database size={22} />,
+      name: t.sources.card1Name,
+      entity: 'INS · datos.gov.co',
+      detail: t.sources.card1Detail,
+      tag: t.sources.tagOpen,
+      open: true,
+    },
+    {
+      icon: <Activity size={22} />,
+      name: t.sources.card2Name,
+      entity: 'INS',
+      detail: t.sources.card2Detail,
+      tag: t.sources.tagOpen,
+      open: true,
+    },
+    {
+      icon: <MapPinned size={22} />,
+      name: t.sources.card3Name,
+      entity: 'DANE · Marco Geoestadístico Nacional',
+      detail: t.sources.card3Detail,
+      tag: t.sources.tagOpen,
+      open: true,
+    },
+    {
+      icon: <CloudRain size={22} />,
+      name: t.sources.card4Name,
+      entity: 'IDEAM · CDMB',
+      detail: t.sources.card4Detail,
+      tag: t.sources.tagOpen,
+      open: true,
+    },
+    {
+      icon: <Building2 size={22} />,
+      name: t.sources.card5Name,
+      entity: 'Geoportales AMB · Floridablanca',
+      detail: t.sources.card5Detail,
+      tag: t.sources.tagOpen,
+      open: true,
+    },
+    {
+      icon: <ShieldCheck size={22} />,
+      name: t.sources.card6Name,
+      entity: 'Convenio · Clínica FOSCAL',
+      detail: t.sources.card6Detail,
+      tag: t.sources.tagAgreement,
+      open: false,
+    },
+  ];
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -180,7 +182,7 @@ const SourcesSection: React.FC = () => {
               boxShadow: '0 0 15px rgba(0, 229, 255, 0.12)',
             }}
           >
-            Datos abiertos
+            {t.sources.badge}
           </span>
 
           <h2
@@ -195,7 +197,7 @@ const SourcesSection: React.FC = () => {
               opacity: 0,
             }}
           >
-            CONSTRUIDO SOBRE
+            {t.sources.titleLine1}
             <br />
             <span style={{
               background: 'linear-gradient(90deg, #00f0ff, #00b8ff, #b300ff)',
@@ -204,7 +206,7 @@ const SourcesSection: React.FC = () => {
               color: 'transparent',
               fontWeight: 900,
             }}>
-              DATOS ABIERTOS Y VERIFICABLES
+              {t.sources.titleLine2}
             </span>
           </h2>
 
@@ -218,8 +220,7 @@ const SourcesSection: React.FC = () => {
               opacity: 0,
             }}
           >
-            Cada predicción es rastreable hasta su fuente. Cruzamos vigilancia epidemiológica, clima y
-            geografía oficial —todo público— con un registro clínico de detalle usado de forma responsable.
+            {t.sources.desc}
           </p>
         </div>
 
@@ -232,7 +233,7 @@ const SourcesSection: React.FC = () => {
             width: '100%',
           }}
         >
-          {SOURCES.map((s, i) => {
+          {sources.map((s, i) => {
             const accent = s.open ? '0, 229, 255' : '179, 0, 255'; // cian abierto · morado convenio
             return (
               <div
@@ -329,10 +330,7 @@ const SourcesSection: React.FC = () => {
             <Server size={22} />
           </div>
           <p style={{ fontSize: 'clamp(0.85rem, 1.4vw, 1.05rem)', color: 'rgba(255,255,255,0.7)', margin: 0, lineHeight: 1.6, maxWidth: '760px' }}>
-            <strong style={{ color: '#fff' }}>Tratamiento:</strong> limpieza, geocodificación por comuna y
-            unificación del clima se procesan <strong style={{ color: '#00e5ff' }}>offline en Python</strong> y
-            se publican como artefactos compactos que el navegador consume. Solo viajan{' '}
-            <strong style={{ color: '#00e5ff' }}>datos agregados y anonimizados</strong> — nunca microdatos de pacientes.
+            <strong style={{ color: '#fff' }}>{t.sources.treatmentTitle}</strong> {t.sources.treatmentDesc}
           </p>
         </div>
       </div>

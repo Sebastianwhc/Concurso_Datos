@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useT } from '../../../i18n/useT';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -527,6 +528,7 @@ interface TerritorySectionProps {
 }
 
 const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBrote, broteYear }) => {
+  const { t } = useT();
   const sectionRef = useRef<HTMLElement>(null);
   const rightColumnRef = useRef<HTMLDivElement>(null);
   const [mapActive, setMapActive] = useState(false);
@@ -579,12 +581,6 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
     if (totalSantander === 0) return '0%';
     return ((totalAMB / totalSantander) * 100).toFixed(1) + '%';
   }, [totalAMB, totalSantander]);
-
-  const ambMuniCount = React.useMemo(() => {
-    if (!santanderData) return 0;
-    const ambCodes = new Set(['001', '276', '307', '547']);
-    return santanderData.municipios.filter((m: any) => ambCodes.has(m.code)).length;
-  }, [santanderData]);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -733,7 +729,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
               boxShadow: '0 0 15px rgba(0, 229, 255, 0.12)',
             }}
           >
-            EL TERRITORIO
+            {t.territory.badge}
           </span>
 
           <h2
@@ -748,14 +744,14 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
               opacity: 0,
             }}
           >
-            LOS BROTES SIGUEN{' '}
+            {t.territory.titleLine1}{' '}
             <span style={{
               background: 'linear-gradient(90deg, #00f0ff, #00b8ff, #0055ff)',
               WebkitBackgroundClip: 'text',
               backgroundClip: 'text',
               color: 'transparent',
             }}>
-              PATRONES IDENTIFICABLES
+              {t.territory.titleLine2}
             </span>
           </h2>
 
@@ -769,7 +765,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
               opacity: 0,
             }}
           >
-            Los datos georreferenciados muestran que la transmisión no se distribuye de manera uniforme. Al analizar la concentración histórica de casos es posible identificar territorios donde el riesgo epidemiológico persiste a lo largo del tiempo.
+            {t.territory.desc}
           </p>
         </div>
 
@@ -829,7 +825,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
                 display: 'block',
                 marginTop: '0.3rem',
               }}>
-                Concentración del Riesgo Regional
+                {t.territory.stat1Title}
               </span>
               <p style={{
                 fontSize: '0.98rem',
@@ -837,7 +833,9 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
                 lineHeight: 1.6,
                 margin: '0.5rem 0 0 0',
               }}>
-                Los {ambMuniCount || '4'} municipios del Área Metropolitana consolidan la gran mayoría de la carga epidemiológica de Santander. Tan solo en Bucaramanga, se reportaron {bucaramangaCasesBrote > 0 ? bucaramangaCasesBrote.toLocaleString() : '...'} casos durante el brote de {broteYear}.
+                {t.territory.stat1Desc
+                  .replace('{casos}', bucaramangaCasesBrote > 0 ? bucaramangaCasesBrote.toLocaleString() : '...')
+                  .replace('{anio}', String(broteYear))}
               </p>
             </div>
 
@@ -863,7 +861,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
                 display: 'block',
                 marginTop: '0.3rem',
               }}>
-                Casos Históricos en el Perímetro
+                {t.territory.stat2Title}
               </span>
               <p style={{
                 fontSize: '0.98rem',
@@ -871,7 +869,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
                 lineHeight: 1.6,
                 margin: '0.5rem 0 0 0',
               }}>
-                Decenas de miles de infecciones georreferenciadas revelan patrones persistentes de transmisión. La recurrencia espacial del brote dibuja un mapa de vulnerabilidad continuo a lo largo de los años.
+                {t.territory.stat2Desc}
               </p>
             </div>
 
@@ -900,7 +898,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
                 display: 'block',
                 marginTop: '0.3rem',
               }}>
-                Alertas Clínicas de Dengue Grave
+                {t.territory.stat3Title}
               </span>
               <p style={{
                 fontSize: '0.98rem',
@@ -908,7 +906,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
                 lineHeight: 1.6,
                 margin: '0.5rem 0 0 0',
               }}>
-                Casos severos registrados en el área demuestran que la escala territorial del brote tiene consecuencias clínicas directas, exigiendo un enfoque preventivo de micro-focalización espacial.
+                {t.territory.stat3Desc}
               </p>
             </div>
 
@@ -929,7 +927,7 @@ const TerritorySection: React.FC<TerritorySectionProps> = ({ bucaramangaCasesBro
             opacity: 0,
           }}
         >
-          Comprender dónde ocurre el riesgo es fundamental. El siguiente paso es <span style={{ color: '#00b8ff', fontWeight: 600 }}>anticipar cuándo</span> podría volver a aparecer.
+          {t.territory.transitionText}
         </p>
 
       </div>

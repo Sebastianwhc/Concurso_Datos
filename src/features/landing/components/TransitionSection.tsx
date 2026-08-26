@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useT } from '../../../i18n/useT';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const TransitionSection: React.FC = () => {
+  const { t } = useT();
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -243,7 +245,7 @@ const TransitionSection: React.FC = () => {
             textShadow: '0 0 40px rgba(0, 229, 255, 0.15)',
           }}
         >
-          EL RIESGO TIENE UNA UBICACIÓN
+          {t.transition.title}
         </h2>
 
         {/* Narrative bridge paragraph */}
@@ -258,7 +260,7 @@ const TransitionSection: React.FC = () => {
             opacity: 0,
           }}
         >
-          Comprender el impacto clínico es solo una parte de la historia. Cada caso ocurre en un territorio específico y, cuando los datos se observan en conjunto, comienzan a aparecer patrones espaciales que revelan dónde se concentra el riesgo.
+          {t.transition.desc}
         </p>
       </div>
 

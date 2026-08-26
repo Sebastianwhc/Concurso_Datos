@@ -9,6 +9,7 @@ import SourcesSection from './components/SourcesSection';
 import SimulatorSection from './components/SimulatorSection';
 import CostSection from './components/CostSection';
 import CTASection from './components/CTASection';
+import LangToggle from '../../components/LangToggle';
 import { loadDengueData, COL, type DengueData } from '../dashboard/dengue';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -215,6 +216,8 @@ const LandingView: React.FC = () => {
         overflowX: 'hidden',
       }}
     >
+      <LangToggle variant="floating" />
+
       {/* Sección 1: El Héroe (El Gancho) */}
       <HeroSection />
 

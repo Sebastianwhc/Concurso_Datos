@@ -3,6 +3,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { type ThreatData } from '../LandingView';
 import { ShieldCheck, TriangleAlert, HeartPulse, BedDouble, Activity } from 'lucide-react';
+import { useT } from '../../../i18n/useT';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,10 +12,9 @@ interface ThreatSectionProps {
   loading: boolean;
 }
 
-
-
 /* ─── Main Section ─── */
 const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
+  const { t, lang } = useT();
   const sectionRef = useRef<HTMLElement>(null);
 
   const act1Ref = useRef<HTMLDivElement>(null);
@@ -423,16 +423,15 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               zIndex: 0,
             }}
           />
-          {/* Upper Badge */}
           <span
             className="scroll-reveal-badge"
             style={{
               display: 'inline-block',
               padding: '0.45rem 1.3rem',
               borderRadius: '100px',
-              background: 'rgba(255,77,77,0.07)',
-              border: '1px solid rgba(255,77,77,0.18)',
-              color: '#ff4d4d',
+              background: 'rgba(255, 77, 77, 0.08)',
+              border: '1px solid rgba(255, 77, 77, 0.25)',
+              color: '#ff6b6b',
               fontSize: '0.8rem',
               fontWeight: 600,
               letterSpacing: '2px',
@@ -444,7 +443,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            LA AMENAZA
+            {t.threat.act1Badge}
           </span>
 
           {/* Main Title */}
@@ -462,7 +461,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            EL DENGUE NO ESPERA.
+            {lang === 'es' ? 'EL DENGUE NO ESPERA.' : 'DENGUE DOES NOT WAIT.'}
             <br />
             <span
               style={{
@@ -489,7 +488,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 pointerEvents: 'none',
                 display: 'block',
               }} />
-              ES UNA EMERGENCIA EN CURSO.
+              {lang === 'es' ? 'ES UNA EMERGENCIA EN CURSO.' : 'IT IS AN ONGOING EMERGENCY.'}
             </span>
           </h2>
 
@@ -528,7 +527,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 marginTop: '0.8rem',
               }}
             >
-              CASOS EN EL BROTE DE {data.broteYear}
+              {lang === 'es' ? `CASOS EN EL BROTE DE ${data.broteYear}` : `CASES IN THE ${data.broteYear} OUTBREAK`}
             </span>
             <span
               style={{
@@ -538,7 +537,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 marginTop: '0.3rem',
               }}
             >
-              Confirmado por SIVIGILA (FOSCAL) y boletín INS
+              {lang === 'es' ? 'Confirmado por SIVIGILA (FOSCAL) y boletín INS' : 'Confirmed by SIVIGILA & INS bulletin'}
             </span>
           </div>
 
@@ -582,7 +581,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 opacity: 0,
               }}
             >
-              EL DENGUE NO SOLO ENFERMA
+              {t.threat.act1EconTitle}
             </h4>
 
             <p
@@ -597,18 +596,37 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 opacity: 0,
               }}
             >
-              En el brote epidemiológico de 2024, el dengue le costó a Bucaramanga aproximadamente{' '}
-              <strong style={{
-                color: '#ef4444',
-                fontWeight: 900,
-                display: 'block',
-                fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
-                letterSpacing: '-1.5px',
-                marginTop: '0.5rem',
-                textShadow: '0 0 25px rgba(239,68,68,0.3)',
-              }}>
-                ≈ ${costBrote2024.toLocaleString('de-DE')} millones
-              </strong>
+              {lang === 'es' ? (
+                <>
+                  En el brote epidemiológico de 2024, el dengue le costó a Bucaramanga aproximadamente{' '}
+                  <strong style={{
+                    color: '#ef4444',
+                    fontWeight: 900,
+                    display: 'block',
+                    fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
+                    letterSpacing: '-1.5px',
+                    marginTop: '0.5rem',
+                    textShadow: '0 0 25px rgba(239,68,68,0.3)',
+                  }}>
+                    ≈ ${costBrote2024.toLocaleString('de-DE')} millones
+                  </strong>
+                </>
+              ) : (
+                <>
+                  In the 2024 epidemiological outbreak, dengue cost Bucaramanga approximately{' '}
+                  <strong style={{
+                    color: '#ef4444',
+                    fontWeight: 900,
+                    display: 'block',
+                    fontSize: 'clamp(2rem, 4.5vw, 3.2rem)',
+                    letterSpacing: '-1.5px',
+                    marginTop: '0.5rem',
+                    textShadow: '0 0 25px rgba(239,68,68,0.3)',
+                  }}>
+                    ≈ ${costBrote2024.toLocaleString('en-US')}M COP (~$4M USD)
+                  </strong>
+                </>
+              )}
             </p>
 
             <p
@@ -622,7 +640,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 opacity: 0,
               }}
             >
-              Recursos destinados a atención médica, hospitalizaciones y respuesta sanitaria durante uno de los años más críticos del brote.
+              {t.threat.act1EconSub}
             </p>
 
             {/* Nota Metodológica Académica */}
@@ -638,7 +656,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 opacity: 0,
               }}
             >
-              Fuente: estimación económica del brote de dengue en Bucaramanga 2024 basada en costos directos de atención reportados en estudios colombianos y escenarios documentados del proyecto.
+              {t.threat.act1EconMethodology}
             </div>
           </div>
 
@@ -801,7 +819,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            LA HISTORIA DEL BROTE
+            {t.threat.act2Badge}
           </span>
 
           {/* Main Title */}
@@ -817,7 +835,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            UNA AMENAZA QUE
+            {lang === 'es' ? 'UNA AMENAZA QUE' : 'A THREAT THAT'}
             <br />
             <span
               style={{
@@ -827,7 +845,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 color: 'transparent',
               }}
             >
-              CRECIÓ CON EL TIEMPO
+              {lang === 'es' ? 'CRECIÓ CON EL TIEMPO' : 'GREW OVER TIME'}
             </span>
           </h2>
 
@@ -843,7 +861,11 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            Durante la última década, los casos de dengue han mostrado una evolución variable, alcanzando su punto más alto en <strong style={{ color: '#00f0ff' }}>{data.peakYear}</strong>, cuando se notificaron <strong style={{ color: '#00f0ff' }}>{data.peakCases.toLocaleString()} casos</strong>.
+            {lang === 'es' ? (
+              <>Durante la última década, los casos de dengue han mostrado una evolución variable, alcanzando su punto más alto en <strong style={{ color: '#00f0ff' }}>{data.peakYear}</strong>, cuando se notificaron <strong style={{ color: '#00f0ff' }}>{data.peakCases.toLocaleString()} casos</strong>.</>
+            ) : (
+              <>Over the past decade, dengue cases showed volatile trends, reaching a historic peak in <strong style={{ color: '#00f0ff' }}>{data.peakYear}</strong> with <strong style={{ color: '#00f0ff' }}>{data.peakCases.toLocaleString()} reported cases</strong>.</>
+            )}
           </p>
 
           {/* Historical SVG Chart Container */}
@@ -891,7 +913,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                   flexDirection: 'column',
                   gap: '0.1rem',
                 }}>
-                  <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px', fontWeight: 600 }}>PICO HISTÓRICO</span>
+                  <span style={{ fontSize: '0.65rem', textTransform: 'uppercase', color: 'rgba(255,255,255,0.4)', letterSpacing: '0.5px', fontWeight: 600 }}>
+                    {lang === 'es' ? 'PICO HISTÓRICO' : 'HISTORIC PEAK'}
+                  </span>
                   <span style={{ fontSize: '1.1rem', fontWeight: 800, color: '#fff' }}>{data.peakCases.toLocaleString()}</span>
                   <span style={{ fontSize: '0.65rem', color: '#00f0ff', fontWeight: 600 }}>{data.peakYear}</span>
                 </div>
@@ -989,7 +1013,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             </div>
 
             <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', marginTop: '1.5rem', margin: '0', letterSpacing: '0.5px' }}>
-              Curva Histórica de Casos Totales Anuales — Visualización basada exclusivamente en los registros epidemiológicos reales.
+              {lang === 'es'
+                ? 'Curva Histórica de Casos Totales Anuales — Visualización basada exclusivamente en los registros epidemiológicos reales.'
+                : 'Historical Annual Case Trend — Visualization strictly based on official epidemiological records.'}
             </p>
           </div>
 
@@ -1015,13 +1041,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Año Inicial
+                {lang === 'es' ? 'Año Inicial' : 'Baseline Year'}
               </span>
               <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                 {data.baselineYear}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#00f0ff', fontWeight: 500 }}>
-                {data.baselineCases.toLocaleString()} casos registrados
+                {data.baselineCases.toLocaleString()} {lang === 'es' ? 'casos registrados' : 'reported cases'}
               </span>
             </div>
 
@@ -1040,13 +1066,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Pico Epidémico
+                {lang === 'es' ? 'Pico Epidémico' : 'Epidemic Peak'}
               </span>
               <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                 {data.peakYear}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#00f0ff', fontWeight: 500 }}>
-                {data.peakCases.toLocaleString()} casos registrados
+                {data.peakCases.toLocaleString()} {lang === 'es' ? 'casos registrados' : 'reported cases'}
               </span>
             </div>
 
@@ -1065,13 +1091,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                En curso (2026)
+                {lang === 'es' ? 'En curso (2026)' : 'Ongoing (2026)'}
               </span>
               <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#fff', lineHeight: 1 }}>
                 {data.casos2026 > 0 ? data.casos2026.toLocaleString() : '—'}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#00f0ff', fontWeight: 500 }}>
-                Casos reales · boletín INS (a S{data.semana2026})
+                {lang === 'es' ? `Casos reales · boletín INS (a S${data.semana2026})` : `Real cases · INS bulletin (thru W${data.semana2026})`}
               </span>
             </div>
           </div>
@@ -1184,7 +1210,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               borderRadius: '100px',
               background: 'rgba(179, 0, 255, 0.05)',
               border: '1px solid rgba(179, 0, 255, 0.2)',
-              color: '#b300ff',
+              color: '#df80ff',
               fontSize: '0.8rem',
               fontWeight: 600,
               letterSpacing: '2px',
@@ -1194,7 +1220,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            LAS PERSONAS DETRÁS DE LOS DATOS
+            {t.threat.act3Badge}
           </span>
 
           {/* Main Title */}
@@ -1210,7 +1236,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            EL DENGUE NO AFECTA
+            {lang === 'es' ? 'EL DENGUE NO AFECTA' : 'DENGUE DOES NOT AFFECT'}
             <br />
             <span
               style={{
@@ -1220,7 +1246,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 color: 'transparent',
               }}
             >
-              A TODOS POR IGUAL
+              {lang === 'es' ? 'A TODOS POR IGUAL' : 'EVERYONE EQUALLY'}
             </span>
           </h2>
 
@@ -1236,7 +1262,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            Los registros epidemiológicos muestran diferencias importantes entre grupos poblacionales. La edad y el sexo permiten identificar patrones clave para comprender el comportamiento del brote.
+            {lang === 'es'
+              ? 'Los registros epidemiológicos muestran diferencias importantes entre grupos poblacionales. La edad y el sexo permiten identificar patrones clave para comprender el comportamiento del brote.'
+              : 'Epidemiological records demonstrate distinct patterns across demographic segments. Age and biological sex illuminate critical dynamics of outbreak transmission.'}
           </p>
 
           {/* Two Panels Grid */}
@@ -1285,7 +1313,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 }}
               />
               <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#fff', marginBottom: '2rem', letterSpacing: '0.5px' }}>
-                DISTRIBUCIÓN POR SEXO
+                {lang === 'es' ? 'DISTRIBUCIÓN POR SEXO' : 'DISTRIBUTION BY SEX'}
               </h3>
 
               <div style={{ display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', flexWrap: 'wrap', flex: 1 }}>
@@ -1729,7 +1757,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            IMPACTO CLÍNICO
+            {t.threat.act4Badge}
           </span>
 
           {/* Main Title */}
@@ -1745,7 +1773,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            NO TODOS LOS CASOS
+            {lang === 'es' ? 'NO TODOS LOS CASOS' : 'NOT ALL CASES'}
             <br />
             <span
               style={{
@@ -1755,7 +1783,7 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 color: 'transparent',
               }}
             >
-              EVOLUCIONAN IGUAL
+              {lang === 'es' ? 'EVOLUCIONAN IGUAL' : 'DEVELOP THE SAME'}
             </span>
           </h2>
 
@@ -1771,7 +1799,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               opacity: 0,
             }}
           >
-            El comportamiento clínico del dengue puede variar desde cuadros leves hasta situaciones que requieren atención hospitalaria inmediata. Los datos permiten comprender la magnitud real del impacto sanitario.
+            {lang === 'es'
+              ? 'El comportamiento clínico del dengue puede variar desde cuadros leves hasta situaciones que requieren atención hospitalaria inmediata. Los datos permiten comprender la magnitud real del impacto sanitario.'
+              : 'Clinical manifestation of dengue ranges from mild conditions to critical cases requiring emergency hospitalization. Data reveals the true healthcare burden.'}
           </p>
 
           {/* Visual Principal: Barra de Severidad */}
@@ -1804,7 +1834,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             }}>
               {/* Sin signos label */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: '0.15rem' }}>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Sin signos de alarma</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+                  {lang === 'es' ? 'Sin signos de alarma' : 'Without warning signs'}
+                </span>
                 <span style={{ color: '#facc15', fontSize: '1.1rem', fontWeight: 800 }}>
                   {data.sinSignosCases.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>({data.sinSignosPercent}%)</span>
                 </span>
@@ -1812,7 +1844,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
 
               {/* Con signos label */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem' }}>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Con signos de alarma</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+                  {lang === 'es' ? 'Con signos de alarma' : 'With warning signs'}
+                </span>
                 <span style={{ color: '#fb923c', fontSize: '1.1rem', fontWeight: 800 }}>
                   {data.conSignosCases.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>({data.conSignosPercent}%)</span>
                 </span>
@@ -1820,7 +1854,9 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
 
               {/* Grave label */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.15rem' }}>
-                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>Dengue grave</span>
+                <span style={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>
+                  {lang === 'es' ? 'Dengue grave' : 'Severe dengue'}
+                </span>
                 <span style={{ color: '#ef4444', fontSize: '1.1rem', fontWeight: 800 }}>
                   {data.graveCases.toLocaleString()} <span style={{ fontSize: '0.85rem', fontWeight: 600 }}>({data.gravePercent}%)</span>
                 </span>
@@ -1909,16 +1945,16 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 <ShieldCheck size={22} />
               </div>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Sin Signos de Alarma
+                {lang === 'es' ? 'Sin Signos de Alarma' : 'Without Warning Signs'}
               </span>
               <span style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                 {data.sinSignosCases.toLocaleString()}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#facc15', fontWeight: 600, marginTop: '-0.3rem' }}>
-                {data.sinSignosPercent}% de los casos
+                {data.sinSignosPercent}% {lang === 'es' ? 'de los casos' : 'of cases'}
               </span>
               <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', margin: '0.4rem 0 0 0', lineHeight: 1.4 }}>
-                Casos con evolución clínica favorable.
+                {lang === 'es' ? 'Casos con evolución clínica favorable.' : 'Cases with favorable clinical progression.'}
               </p>
             </div>
 
@@ -1956,16 +1992,16 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 <TriangleAlert size={22} />
               </div>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Con Signos de Alarma
+                {lang === 'es' ? 'Con Signos de Alarma' : 'With Warning Signs'}
               </span>
               <span style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                 {data.conSignosCases.toLocaleString()}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#fb923c', fontWeight: 600, marginTop: '-0.3rem' }}>
-                {data.conSignosPercent}% de los casos
+                {data.conSignosPercent}% {lang === 'es' ? 'de los casos' : 'of cases'}
               </span>
               <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', margin: '0.4rem 0 0 0', lineHeight: 1.4 }}>
-                Pacientes que requieren seguimiento clínico prioritario.
+                {lang === 'es' ? 'Pacientes que requieren seguimiento clínico prioritario.' : 'Patients requiring prioritized clinical monitoring.'}
               </p>
             </div>
 
@@ -2003,16 +2039,16 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
                 <HeartPulse size={22} />
               </div>
               <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                Dengue Grave
+                {lang === 'es' ? 'Dengue Grave' : 'Severe Dengue'}
               </span>
               <span style={{ fontSize: '2rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                 {data.graveCases.toLocaleString()}
               </span>
               <span style={{ fontSize: '0.85rem', color: '#ef4444', fontWeight: 600, marginTop: '-0.3rem' }}>
-                {data.gravePercent}% de los casos
+                {data.gravePercent}% {lang === 'es' ? 'de los casos' : 'of cases'}
               </span>
               <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', margin: '0.4rem 0 0 0', lineHeight: 1.4 }}>
-                Casos con mayor riesgo de complicaciones.
+                {lang === 'es' ? 'Casos con mayor riesgo de complicaciones.' : 'Cases with highest risk of acute complications.'}
               </p>
             </div>
           </div>
@@ -2057,13 +2093,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', flex: 1 }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  HOSPITALIZADOS
+                  {lang === 'es' ? 'HOSPITALIZADOS' : 'HOSPITALIZED'}
                 </span>
                 <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                   {data.hospitalizedCount.toLocaleString()} <span style={{ fontSize: '0.9rem', color: '#facc15', fontWeight: 700 }}>({data.hospitalizedPercent}%)</span>
                 </span>
                 <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.3 }}>
-                  Pacientes que requirieron atención intrahospitalaria.
+                  {lang === 'es' ? 'Pacientes que requirieron atención intrahospitalaria.' : 'Patients requiring in-hospital clinical admission.'}
                 </span>
               </div>
             </div>
@@ -2096,13 +2132,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', flex: 1 }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  FALLECIDOS
+                  {lang === 'es' ? 'FALLECIDOS' : 'FATALITIES'}
                 </span>
                 <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                   {data.deadCount.toLocaleString()}
                 </span>
                 <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.3 }}>
-                  Casos reportados como fallecidos.
+                  {lang === 'es' ? 'Casos reportados como fallecidos.' : 'Reported confirmed fatal cases.'}
                 </span>
               </div>
             </div>
@@ -2135,13 +2171,13 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem', flex: 1 }}>
                 <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                  LETALIDAD
+                  {lang === 'es' ? 'LETALIDAD' : 'CASE FATALITY RATE'}
                 </span>
                 <span style={{ fontSize: '1.8rem', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
                   {data.letalidad}%
                 </span>
                 <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', lineHeight: 1.3 }}>
-                  Tasa observada durante el periodo analizado.
+                  {lang === 'es' ? 'Tasa observada durante el periodo analizado.' : 'Observed rate across the analyzed period.'}
                 </span>
               </div>
             </div>
@@ -2168,10 +2204,14 @@ const ThreatSection: React.FC<ThreatSectionProps> = ({ data, loading }) => {
             }}
           >
             <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: '#facc15', letterSpacing: '1.5px', textTransform: 'uppercase', margin: 0 }}>
-              HALLAZGO CLÍNICO
+              {lang === 'es' ? 'HALLAZGO CLÍNICO' : 'CLINICAL FINDING'}
             </h4>
             <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5, margin: 0 }}>
-              Aunque la mayoría de los pacientes presentaron cuadros sin signos de alarma (<strong style={{ color: '#facc15' }}>{data.sinSignosPercent}%</strong>), una proporción importante (<strong style={{ color: '#fb923c' }}>{data.conSignosPercent}%</strong>) requirió seguimiento clínico especializado y atención hospitalaria.
+              {lang === 'es' ? (
+                <>Aunque la mayoría de los pacientes presentaron cuadros sin signos de alarma (<strong style={{ color: '#facc15' }}>{data.sinSignosPercent}%</strong>), una proporción importante (<strong style={{ color: '#fb923c' }}>{data.conSignosPercent}%</strong>) requirió seguimiento clínico especializado y atención hospitalaria.</>
+              ) : (
+                <>While the majority of patients presented cases without warning signs (<strong style={{ color: '#facc15' }}>{data.sinSignosPercent}%</strong>), a critical proportion (<strong style={{ color: '#fb923c' }}>{data.conSignosPercent}%</strong>) required specialized clinical surveillance and hospital admission.</>
+              )}
             </p>
           </div>
 

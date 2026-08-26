@@ -2,10 +2,12 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useT } from '../../../i18n/useT';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const CTASection: React.FC = () => {
+  const { t } = useT();
   const sectionRef = useRef<HTMLElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
@@ -288,11 +290,11 @@ const CTASection: React.FC = () => {
         <div className="cta-el" style={{ width: '80px', height: '2px', background: 'linear-gradient(90deg, #00e5ff, #7c3aed)', margin: '0 auto 2.5rem', borderRadius: '1px', opacity: 0 }} />
 
         <p className="cta-el" style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)', letterSpacing: '2.5px', textTransform: 'uppercase', marginBottom: '1.2rem', opacity: 0 }}>
-          Concurso Gubernamental
+          {t.cta.competitionSubtitle}
         </p>
 
         <h2 className="cta-el" style={{ fontSize: 'clamp(1.6rem, 3.8vw, 2.8rem)', fontWeight: 800, color: '#fff', lineHeight: 1.3, margin: '0 0 2rem 0', opacity: 0 }}>
-          Datos al Ecosistema 2026:
+          {t.cta.mainTitle}
           <br />
           <span style={{ 
             background: 'linear-gradient(90deg, #00e5ff, #00b8ff, #7c3aed, #9333ea)', 
@@ -302,7 +304,7 @@ const CTASection: React.FC = () => {
             filter: 'drop-shadow(0 0 25px rgba(0, 229, 255, 0.25))',
             fontWeight: 900
           }}>
-            IA para Colombia
+            {t.cta.highlightTitle}
           </span>
         </h2>
 
@@ -324,13 +326,13 @@ const CTASection: React.FC = () => {
           }}
         >
           <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.45)', letterSpacing: '1.5px', textTransform: 'uppercase', fontWeight: 500 }}>
-            Proyecto diseñado para la
+            {t.cta.badgeSubtitle}
           </span>
           <div style={{ fontSize: '1.3rem', fontWeight: 900, margin: '0.2rem 0 0.1rem 0', background: 'linear-gradient(90deg, #00e5ff, #00b8ff, #7c3aed, #9333ea)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent', textShadow: '0 0 15px rgba(0, 229, 255, 0.15)' }}>
-            Categoría Avanzado
+            {t.cta.badgeCategory}
           </div>
           <span style={{ fontSize: '0.8rem', color: 'rgba(0, 229, 255, 0.8)', fontWeight: 600, letterSpacing: '0.5px' }}>
-            Reto: Salud y Bienestar
+            {t.cta.badgeChallenge}
           </span>
         </div>
 
@@ -339,7 +341,7 @@ const CTASection: React.FC = () => {
         {/* Team badge */}
         <div className="cta-el" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.6rem', padding: '0.5rem 1.4rem', borderRadius: '100px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', marginBottom: '3.5rem', opacity: 0 }}>
           <span>👨‍💻</span>
-          EcoSalud IA — Bucaramanga, Santander
+          {t.cta.teamTag}
         </div>
 
         {/* Buttons */}
@@ -356,7 +358,7 @@ const CTASection: React.FC = () => {
               flex: '1 1 220px', maxWidth: '320px',
             }}
           >
-            Explorar el AI Hub
+            {t.cta.btnHub}
           </button>
 
           <button
@@ -383,14 +385,14 @@ const CTASection: React.FC = () => {
               e.currentTarget.style.boxShadow = 'none';
             }}
           >
-            Repositorio del Código
+            {t.cta.btnRepo}
           </button>
         </div>
 
         {/* Sección de Contacto */}
         <div className="cta-el" style={{ marginTop: '5rem', opacity: 0 }}>
           <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'rgba(255,255,255,0.75)', marginBottom: '2rem', letterSpacing: '1.5px', textTransform: 'uppercase' }}>
-            Contacto de los Desarrolladores
+            {t.cta.contactTitle}
           </h3>
           <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap', maxWidth: '640px', margin: '0 auto' }}>
             {/* Tarjeta Daniela */}
@@ -476,7 +478,7 @@ const CTASection: React.FC = () => {
 
       {/* Footer */}
       <div style={{ position: 'absolute', bottom: '2rem', left: 0, right: 0, textAlign: 'center', fontSize: '0.75rem', color: 'rgba(255,255,255,0.25)', letterSpacing: '0.5px', padding: '0 1rem', zIndex: 2 }}>
-        © 2026 EcoSalud IA · Datos abiertos SIVIGILA · IDEAM · CDMB · INS · Hecho con ❤️ en Bucaramanga
+        {t.cta.footerText}
       </div>
 
       <style>{`
